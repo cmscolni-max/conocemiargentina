@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Recorre Argentina</string>
+    <string name="title_activity_main">Recorre Argentina</string>
+    <string name="package_name">com.cumbre.explorer</string>
+    <string name="custom_url_scheme">com.cumbre.explorer</string>
+    <string name="facebook_app_id">785161211317307</string>
+    <string name="facebook_client_token">e68b8947842adea62af6eff06b00d26e</string>
+</resources>

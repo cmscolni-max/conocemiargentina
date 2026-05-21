@@ -1,0 +1,3024 @@
+openapi: 3.0.3
+info:
+  title: Explorer Backend API
+  version: 1.0.0
+  description: |
+    API completa para módulos de Refugios, Actividades/Cursos/Eventos/Entrenamientos, Expediciones,
+    Reservas, Red Social, Amistad, Favoritos, Tiendas, Usuarios y Administración.
+servers:
+  - url: https://api.explorer.com
+security:
+  - bearerAuth: []
+tags:
+  - name: Auth
+  - name: Usuarios
+  - name: Prestadores
+  - name: Refugios
+  - name: Actividades
+  - name: Tiendas
+  - name: Bookings
+  - name: Red
+  - name: Amistad
+  - name: Favoritos
+  - name: Admin
+  - name: Notificaciones
+
+paths:
+  /api/users/me:
+    get:
+      tags: [Usuarios]
+      summary: GetMe
+      responses:
+        "200":
+          description: Perfil completo del usuario autenticado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProfileDetail"
+    put:
+      tags: [Usuarios]
+      summary: EditMe
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProfileUpdateInput"
+      responses:
+        "200":
+          description: Perfil actualizado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProfileDetail"
+    delete:
+      tags: [Usuarios]
+      summary: DeleteMe
+      responses:
+        "204":
+          description: Cuenta desactivada
+
+  /api/users/{id}:
+    get:
+      tags: [Usuarios]
+      summary: GetUserProfile
+      parameters:
+        - $ref: "#/components/parameters/idPath"
+      responses:
+        "200":
+          description: Perfil público
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicProfile"
+
+  /api/users/search:
+    get:
+      tags: [Usuarios]
+      summary: SearchUsers
+      parameters:
+        - in: query
+          name: q
+          required: true
+          schema:
+            type: string
+            minLength: 2
+            maxLength: 60
+      responses:
+        "200":
+          description: Resultados
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/PublicProfileListItem"
+
+  /api/admin/providers/pending:
+    get:
+      tags: [Admin]
+      summary: GetPendingProviders
+      responses:
+        "200":
+          description: Prestadores pendientes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ProviderApprovalItem"
+
+  /api/admin/providers/{id}/approve:
+    put:
+      tags: [Admin]
+      summary: ApproveProvider
+      parameters:
+        - $ref: "#/components/parameters/idPath"
+      responses:
+        "200":
+          description: Prestador aprobado
+
+  /api/admin/providers/{id}/reject:
+    put:
+      tags: [Admin]
+      summary: RejectProvider
+      parameters:
+        - $ref: "#/components/parameters/idPath"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [message]
+              properties:
+                message:
+                  type: string
+                  minLength: 3
+                  maxLength: 500
+      responses:
+        "200":
+          description: Prestador rechazado
+
+  /api/refugios:
+    post:
+      tags: [Refugios]
+      summary: CreateRefugio
+      description: Crea un refugio en estado pending y notifica al administrador.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RefugeCreateInput"
+      responses:
+        "201":
+          description: Refugio creado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RefugeDetail"
+    get:
+      tags: [Refugios]
+      summary: GetRefugios
+      description: Lista solo refugios approved con campos mínimos.
+      parameters:
+        - in: query
+          name: province
+          schema:
+            type: string
+            maxLength: 120
+        - in: query
+          name: search
+          schema:
+            type: string
+            maxLength: 120
+      responses:
+        "200":
+          description: Lista de refugios
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/RefugeListItem"
+
+  /api/refugios/{id}:
+    get:
+      tags: [Refugios]
+      summary: GetRefugioDetail
+      parameters:
+        - $ref: "#/components/parameters/idPath"
+      responses:
+        "200":
+          description: Detalle completo de refugio
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RefugeDetail"
+    put:
+      tags: [Refugios]
+      summary: EditRefugios
+      description: |
+        Edita refugio. Si se cambia estado pending->approved/rejected, se notifica al prestador.
+      parameters:
+        - $ref: "#/components/parameters/idPath"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RefugeUpdateInput"
+      responses:
+        "200":
+          description: Refugio actualizado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RefugeDetail"
+    delete:
+      tags: [Refugios]
+      summary: DeleteRefugios
+      parameters:
+        - $ref: "#/components/parameters/idPath"
+      responses:
+        "204":
+          description: Refugio eliminado
+
+  /api/admin/refugios/pending:
+    get:
+      tags: [Admin]
+      summary: GetPendingRefugios
+      responses:
+        "200":
+          description: Refugios pendientes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/RefugeApprovalItem"
+
+  /api/admin/refugios/{id}/approve:
+    put:
+      tags: [Admin]
+      summary: ApproveRefugio
+      parameters:
+        - $ref: "#/components/parameters/idPath"
+      responses:
+        "200":
+          description: Refugio aprobado
+
+  /api/admin/refugios/{id}/reject:
+    put:
+      tags: [Admin]
+      summary: RejectRefugio
+      parameters:
+        - $ref: "#/components/parameters/idPath"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [message]
+              properties:
+                message:
+                  type: string
+                  minLength: 3
+                  maxLength: 500
+      responses:
+        "200":
+          description: Refugio rechazado
+
+  /api/actividades:
+    post:
+      tags: [Actividades]
+      summary: CreateActivity
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ActivityCreateInput"
+      responses:
+        "201":
+          description: Actividad creada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActivityDetail"
+    get:
+      tags: [Actividades]
+      summary: GetActividades
+      parameters:
+        - in: query
+          name: scope
+          schema:
+            type: string
+            enum: [activity, course, event, training, expedition]
+        - in: query
+          name: activityType
+          schema:
+            $ref: "#/components/schemas/ActivityType"
+        - in: query
+          name: province
+          schema:
+            type: string
+        - in: query
+          name: search
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Lista de actividades
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ActivityListItem"
+
+  /api/actividades/{id}:
+    get:
+      tags: [Actividades]
+      summary: GetActivityDetails
+      parameters:
+        - $ref: "#/components/parameters/idPath"
+      responses:
+        "200":
+          description: Detalle completo
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActivityDetail"
+    put:
+      tags: [Actividades]
+      summary: EditActivity
+      parameters:
+        - $ref: "#/components/parameters/idPath"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ActivityUpdateInput"
+      responses:
+        "200":
+          description: Actividad actualizada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActivityDetail"
+    delete:
+      tags: [Actividades]
+      summary: DeleteActivity
+      parameters:
+        - $ref: "#/components/parameters/idPath"
+      responses:
+        "204":
+          description: Actividad eliminada
+
+  /api/actividades/{id}/sponsored:
+    put:
+      tags: [Actividades]
+      summary: SetActSponsored
+      parameters:
+        - $ref: "#/components/parameters/idPath"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [startAt, endAt]
+              properties:
+                startAt:
+                  type: string
+                  format: date-time
+                endAt:
+                  type: string
+                  format: date-time
+      responses:
+        "200":
+          description: Actividad patrocinada
+    delete:
+      tags: [Actividades]
+      summary: RemoveActSponsored
+      parameters:
+        - $ref: "#/components/parameters/idPath"
+      responses:
+        "200":
+          description: Patrocinio removido
+
+  /api/shops:
+    post:
+      tags: [Tiendas]
+      summary: CreateShop
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ShopCreateInput"
+      responses:
+        "201":
+          description: Tienda creada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShopDetail"
+    get:
+      tags: [Tiendas]
+      summary: GetShops
+      parameters:
+        - in: query
+          name: province
+          schema:
+            type: string
+        - in: query
+          name: hasEquipmentRental
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: Lista de tiendas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ShopListItem"
+
+  /api/shops/{id}:
+    get:
+      tags: [Tiendas]
+      summary: GetShopDetails
+      parameters:
+        - $ref: "#/components/parameters/idPath"
+      responses:
+        "200":
+          description: Detalle completo
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShopDetail"
+    put:
+      tags: [Tiendas]
+      summary: EditShop
+      parameters:
+        - $ref: "#/components/parameters/idPath"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ShopUpdateInput"
+      responses:
+        "200":
+          description: Tienda actualizada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShopDetail"
+    delete:
+      tags: [Tiendas]
+      summary: DeleteShop
+      parameters:
+        - $ref: "#/components/parameters/idPath"
+      responses:
+        "204":
+          description: Tienda eliminada
+
+  /api/shops/{id}/sponsored:
+    put:
+      tags: [Tiendas]
+      summary: SetShopSponsored
+      parameters:
+        - $ref: "#/components/parameters/idPath"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [startAt, endAt]
+              properties:
+                startAt:
+                  type: string
+                  format: date-time
+                endAt:
+                  type: string
+                  format: date-time
+      responses:
+        "200":
+          description: Tienda patrocinada
+    delete:
+      tags: [Tiendas]
+      summary: RemoveShopSponsored
+      parameters:
+        - $ref: "#/components/parameters/idPath"
+      responses:
+        "200":
+          description: Patrocinio removido
+
+  /api/bookings:
+    post:
+      tags: [Bookings]
+      summary: CreateBooking
+      description: Crea en pending y notifica a prestador y participantes.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookingCreateInput"
+      responses:
+        "201":
+          description: Reserva creada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookingDetail"
+    get:
+      tags: [Bookings]
+      summary: GetBooking
+      parameters:
+        - in: query
+          name: as
+          required: true
+          schema:
+            type: string
+            enum: [provider, creator, participant]
+        - in: query
+          name: statuses
+          schema:
+            type: string
+            description: CSV de estados. Default confirmed.
+      responses:
+        "200":
+          description: Reservas filtradas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/BookingListItem"
+
+  /api/bookings/pending:
+    get:
+      tags: [Bookings]
+      summary: GetPendingBookings
+      responses:
+        "200":
+          description: Reservas pendientes del prestador
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/BookingListItem"
+
+  /api/bookings/{id}:
+    put:
+      tags: [Bookings]
+      summary: EditBooking
+      parameters:
+        - $ref: "#/components/parameters/idPath"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookingUpdateInput"
+      responses:
+        "200":
+          description: Reserva actualizada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookingDetail"
+    delete:
+      tags: [Bookings]
+      summary: DeleteBooking
+      parameters:
+        - $ref: "#/components/parameters/idPath"
+      responses:
+        "204":
+          description: Reserva eliminada/cancelada
+
+  /api/red/feed:
+    get:
+      tags: [Red]
+      summary: GetFeed
+      responses:
+        "200":
+          description: Feed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/PostDetail"
+
+  /api/red/posts:
+    post:
+      tags: [Red]
+      summary: SendPost
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PostCreateInput"
+      responses:
+        "201":
+          description: Post creado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostDetail"
+
+  /api/red/posts/{id}:
+    put:
+      tags: [Red]
+      summary: EditPost
+      parameters:
+        - $ref: "#/components/parameters/idPath"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PostUpdateInput"
+      responses:
+        "200":
+          description: Post actualizado
+    delete:
+      tags: [Red]
+      summary: DeletePost
+      parameters:
+        - $ref: "#/components/parameters/idPath"
+      responses:
+        "204":
+          description: Post eliminado
+
+  /api/red/posts/{id}/comments:
+    get:
+      tags: [Red]
+      summary: GetPostComments
+      parameters:
+        - $ref: "#/components/parameters/idPath"
+      responses:
+        "200":
+          description: Comentarios
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/CommentDetail"
+
+  /api/red/comments:
+    post:
+      tags: [Red]
+      summary: SendComment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CommentCreateInput"
+      responses:
+        "201":
+          description: Comentario creado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommentDetail"
+
+  /api/red/comments/{id}:
+    put:
+      tags: [Red]
+      summary: EditComment
+      parameters:
+        - $ref: "#/components/parameters/idPath"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CommentUpdateInput"
+      responses:
+        "200":
+          description: Comentario actualizado
+    delete:
+      tags: [Red]
+      summary: DeleteComment
+      parameters:
+        - $ref: "#/components/parameters/idPath"
+      responses:
+        "204":
+          description: Comentario eliminado
+
+  /api/red/likes:
+    post:
+      tags: [Red]
+      summary: SendLike
+      description: Like sobre post o comentario. Notifica solo al dueño del target.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LikeCreateInput"
+      responses:
+        "201":
+          description: Like registrado
+
+  /api/friend-requests:
+    post:
+      tags: [Amistad]
+      summary: SendFriendRequest
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [toUserId]
+              properties:
+                toUserId:
+                  type: string
+                  format: uuid
+      responses:
+        "201":
+          description: Solicitud enviada
+    get:
+      tags: [Amistad]
+      summary: GetFriendRequests
+      responses:
+        "200":
+          description: Solicitudes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sent:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/FriendRequest"
+                  received:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/FriendRequest"
+
+  /api/friend-requests/{id}/accept:
+    put:
+      tags: [Amistad]
+      summary: AcceptFriendRequest
+      parameters:
+        - $ref: "#/components/parameters/idPath"
+      responses:
+        "200":
+          description: Solicitud aceptada
+
+  /api/friend-requests/{id}/reject:
+    put:
+      tags: [Amistad]
+      summary: RejectFriendRequest
+      parameters:
+        - $ref: "#/components/parameters/idPath"
+      responses:
+        "200":
+          description: Solicitud rechazada
+
+  /api/friend-requests/{id}:
+    delete:
+      tags: [Amistad]
+      summary: CancelFriendRequest
+      parameters:
+        - $ref: "#/components/parameters/idPath"
+      responses:
+        "204":
+          description: Solicitud cancelada
+
+  /api/friendships/{userId}:
+    delete:
+      tags: [Amistad]
+      summary: RemoveFriend
+      parameters:
+        - $ref: "#/components/parameters/userIdPath"
+      responses:
+        "204":
+          description: Amistad eliminada
+
+  /api/follows/{userId}:
+    post:
+      tags: [Amistad]
+      summary: FollowUser
+      parameters:
+        - $ref: "#/components/parameters/userIdPath"
+      responses:
+        "201":
+          description: Siguiendo
+    delete:
+      tags: [Amistad]
+      summary: UnfollowUser
+      parameters:
+        - $ref: "#/components/parameters/userIdPath"
+      responses:
+        "204":
+          description: Ya no sigue
+
+  /api/followers/{userId}:
+    delete:
+      tags: [Amistad]
+      summary: RemoveFollower
+      parameters:
+        - $ref: "#/components/parameters/userIdPath"
+      responses:
+        "204":
+          description: Seguidor eliminado
+
+  /api/follows/followers/{userId}:
+    get:
+      tags: [Amistad]
+      summary: GetFollowers
+      parameters:
+        - $ref: "#/components/parameters/userIdPath"
+      responses:
+        "200":
+          description: Seguidores
+
+  /api/follows/following/{userId}:
+    get:
+      tags: [Amistad]
+      summary: GetFollowing
+      parameters:
+        - $ref: "#/components/parameters/userIdPath"
+      responses:
+        "200":
+          description: Seguidos
+
+  /api/blocks:
+    get:
+      tags: [Amistad]
+      summary: GetBlockedUsers
+      responses:
+        "200":
+          description: Bloqueados
+
+  /api/blocks/{userId}:
+    post:
+      tags: [Amistad]
+      summary: BlockUser
+      parameters:
+        - $ref: "#/components/parameters/userIdPath"
+      responses:
+        "201":
+          description: Usuario bloqueado
+    delete:
+      tags: [Amistad]
+      summary: UnblockUser
+      parameters:
+        - $ref: "#/components/parameters/userIdPath"
+      responses:
+        "204":
+          description: Usuario desbloqueado
+
+  /api/favorites:
+    get:
+      tags: [Favoritos]
+      summary: GetFavorites
+      parameters:
+        - in: query
+          name: entityType
+          schema:
+            type: string
+            enum: [listing, shop]
+      responses:
+        "200":
+          description: Favoritos del usuario
+    post:
+      tags: [Favoritos]
+      summary: AddFavorite
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FavoriteMutationInput"
+      responses:
+        "201":
+          description: Favorito agregado
+    delete:
+      tags: [Favoritos]
+      summary: RemoveFavorite
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FavoriteMutationInput"
+      responses:
+        "204":
+          description: Favorito removido
+
+  /api/notifications:
+    get:
+      tags: [Notificaciones]
+      summary: GetNotifications
+      responses:
+        "200":
+          description: Notificaciones del usuario
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Notification"
+
+  /api/notifications/{id}/read:
+    put:
+      tags: [Notificaciones]
+      summary: MarkNotificationRead
+      parameters:
+        - $ref: "#/components/parameters/idPath"
+      responses:
+        "200":
+          description: Marcada como leída
+
+  /api/push/register-device:
+    post:
+      tags: [Notificaciones]
+      summary: RegisterPushDevice
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [channel, deviceToken]
+              properties:
+                channel:
+                  type: string
+                  enum: [push_web, push_mobile]
+                deviceToken:
+                  type: string
+                  minLength: 10
+                  maxLength: 500
+                platform:
+                  type: string
+                  enum: [web, ios, android]
+      responses:
+        "201":
+          description: Dispositivo registrado
+
+  /api/push/register-device/{id}:
+    delete:
+      tags: [Notificaciones]
+      summary: UnregisterPushDevice
+      parameters:
+        - $ref: "#/components/parameters/idPath"
+      responses:
+        "204":
+          description: Dispositivo eliminado
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    idPath:
+      in: path
+      name: id
+      required: true
+      schema:
+        type: string
+        format: uuid
+    userIdPath:
+      in: path
+      name: userId
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+  schemas:
+    UUID:
+      type: string
+      format: uuid
+
+    UserRole:
+      type: string
+      enum: [explorer, provider, both, admin]
+
+    ProviderKind:
+      type: string
+      enum: [operator, guide, both]
+
+    ListingType:
+      type: string
+      enum: [refuge, activity, course, event, training, expedition]
+
+    ListingStatus:
+      type: string
+      enum: [draft, pending, approved, rejected, paused, archived]
+
+    ActivityType:
+      type: string
+      description: |
+        Valores usados en frontend: Trekking, Ski, Montañismo, Rafting, Kayak, Buceo,
+        Mountain Bike, Escalada Deportiva, Escalada en Hielo, Parapente, Paracaidismo, Boulder.
+        También se aceptan variantes normalizadas backend (trekking, montanismo, etc).
+
+    DifficultyLevel:
+      type: string
+      enum: [bajo, medio, alto, experto]
+
+    MediaType:
+      type: string
+      enum: [image, video]
+
+    BookingStatus:
+      type: string
+      enum: [pending, confirmed, rejected, cancelled]
+
+    ExperienceLevel:
+      type: string
+      enum: [sin_experiencia, nivel_1, nivel_2, nivel_3, nivel_4]
+
+    ProfileBase:
+      type: object
+      required: [id, username, fullName, role, isActive, createdAt, updatedAt]
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        authUserId:
+          $ref: "#/components/schemas/UUID"
+          nullable: true
+        username:
+          type: string
+          minLength: 3
+          maxLength: 40
+          pattern: "^[a-zA-Z0-9_.-]+$"
+        fullName:
+          type: string
+          minLength: 2
+          maxLength: 120
+        email:
+          type: string
+          format: email
+          nullable: true
+        phone:
+          type: string
+          minLength: 6
+          maxLength: 30
+          nullable: true
+        birthDate:
+          type: string
+          format: date
+          nullable: true
+        nationality:
+          type: string
+          maxLength: 80
+          nullable: true
+        avatarUrl:
+          type: string
+          format: uri
+          nullable: true
+        instagramHandle:
+          type: string
+          maxLength: 120
+          nullable: true
+        role:
+          $ref: "#/components/schemas/UserRole"
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ExplorerProfile:
+      type: object
+      required: [explorerLevel]
+      properties:
+        explorerLevel:
+          $ref: "#/components/schemas/ExperienceLevel"
+        bio:
+          type: string
+          maxLength: 2000
+          nullable: true
+
+    ProviderProfile:
+      type: object
+      required: [providerKind, isGuide, acceptsBookings]
+      properties:
+        providerKind:
+          $ref: "#/components/schemas/ProviderKind"
+        displayName:
+          type: string
+          maxLength: 140
+          nullable: true
+        bio:
+          type: string
+          maxLength: 2000
+          nullable: true
+        isGuide:
+          type: boolean
+        guideTitle:
+          type: string
+          maxLength: 140
+          nullable: true
+        guideInstagramHandle:
+          type: string
+          maxLength: 120
+          nullable: true
+        acceptsBookings:
+          type: boolean
+
+    ProfileDetail:
+      allOf:
+        - $ref: "#/components/schemas/ProfileBase"
+        - type: object
+          properties:
+            explorerProfile:
+              $ref: "#/components/schemas/ExplorerProfile"
+              nullable: true
+            providerProfile:
+              $ref: "#/components/schemas/ProviderProfile"
+              nullable: true
+
+    ProfileUpdateInput:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 120
+        fullName:
+          type: string
+          minLength: 2
+          maxLength: 120
+        provincia:
+          type: string
+          maxLength: 120
+        countryOrigin:
+          type: string
+          maxLength: 120
+        isForeigner:
+          type: boolean
+        experience:
+          type: string
+          enum: [Principiante, Medio, Avanzado, Experto]
+        preferredSports:
+          type: array
+          items:
+            $ref: "#/components/schemas/ActivityType"
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+          minLength: 6
+          maxLength: 30
+        birthDate:
+          type: string
+          format: date
+        nationality:
+          type: string
+          maxLength: 80
+        avatarUrl:
+          type: string
+          format: uri
+        instagramHandle:
+          type: string
+          maxLength: 120
+        instagram:
+          type: string
+          maxLength: 120
+        avatar:
+          type: string
+          format: uri
+        explorerProfile:
+          $ref: "#/components/schemas/ExplorerProfile"
+        providerProfile:
+          $ref: "#/components/schemas/ProviderProfile"
+
+    PublicProfile:
+      type: object
+      required: [id, username, fullName, avatarUrl, relationship]
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        username:
+          type: string
+        fullName:
+          type: string
+        avatarUrl:
+          type: string
+          nullable: true
+        province:
+          type: string
+          nullable: true
+        instagramHandle:
+          type: string
+          nullable: true
+        relationship:
+          type: object
+          properties:
+            isFollowing:
+              type: boolean
+            followsYou:
+              type: boolean
+            isFriend:
+              type: boolean
+            isBlockedByYou:
+              type: boolean
+            hasBlockedYou:
+              type: boolean
+
+    PublicProfileListItem:
+      type: object
+      required: [id, username, fullName]
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        username:
+          type: string
+        fullName:
+          type: string
+        avatarUrl:
+          type: string
+          nullable: true
+
+    ListingMediaInput:
+      type: object
+      required: [mediaType, url]
+      properties:
+        mediaType:
+          $ref: "#/components/schemas/MediaType"
+        url:
+          type: string
+          format: uri
+        durationSeconds:
+          type: integer
+          minimum: 0
+          nullable: true
+        sortOrder:
+          type: integer
+          minimum: 0
+          default: 0
+
+    SponsoredWindowInput:
+      type: object
+      required: [startAt, endAt]
+      properties:
+        startAt:
+          type: string
+          format: date-time
+        endAt:
+          type: string
+          format: date-time
+
+    RefugeCreateInput:
+      type: object
+      required:
+        - commercialName
+        - description
+        - province
+        - listingType
+      properties:
+        listingType:
+          type: string
+          enum: [refuge]
+        commercialName:
+          type: string
+          minLength: 3
+          maxLength: 160
+        title:
+          type: string
+          minLength: 3
+          maxLength: 160
+        legalName:
+          type: string
+          maxLength: 180
+        cuit:
+          type: string
+          maxLength: 30
+        description:
+          type: string
+          minLength: 10
+          maxLength: 5000
+        accessInfo:
+          type: string
+          maxLength: 1000
+        province:
+          type: string
+          minLength: 2
+          maxLength: 120
+        locality:
+          type: string
+          maxLength: 120
+        location:
+          type: string
+          maxLength: 120
+        locationLabel:
+          type: string
+          maxLength: 240
+        meetingPoint:
+          type: string
+          maxLength: 240
+        season:
+          type: string
+          maxLength: 120
+        capacity:
+          type: integer
+          minimum: 1
+        bedsAvailable:
+          type: integer
+          minimum: 0
+        tentsAvailable:
+          type: integer
+          minimum: 0
+        bedPrice:
+          type: number
+          minimum: 0
+        tentPrice:
+          type: number
+          minimum: 0
+        priceAmount:
+          type: number
+          minimum: 0
+        currency:
+          type: string
+          minLength: 3
+          maxLength: 3
+          default: ARS
+        bedsCount:
+          type: integer
+          minimum: 0
+        beds:
+          type: integer
+          minimum: 0
+        tentSpotsCount:
+          type: integer
+          minimum: 0
+        tents:
+          type: integer
+          minimum: 0
+        hasCarParking:
+          type: boolean
+        seasonStart:
+          type: string
+          format: date
+        seasonEnd:
+          type: string
+          format: date
+        seasonAllYear:
+          type: boolean
+        isTemporarilyClosed:
+          type: boolean
+        reopeningDate:
+          type: string
+          format: date
+          nullable: true
+        closureReason:
+          type: string
+          maxLength: 500
+          nullable: true
+        contact:
+          type: string
+          maxLength: 240
+        cancellationPolicy:
+          type: string
+          maxLength: 1000
+        checkInTime:
+          type: string
+          maxLength: 20
+        checkOutTime:
+          type: string
+          maxLength: 20
+        amenities:
+          type: array
+          minItems: 1
+          items:
+            type: string
+            minLength: 1
+            maxLength: 120
+        media:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/ListingMediaInput"
+        coverImageUrl:
+          type: string
+          format: uri
+          nullable: true
+        galleryImageUrls:
+          type: array
+          items:
+            type: string
+            format: uri
+        docConcessionFileUrl:
+          type: string
+          format: uri
+          nullable: true
+        docPermitFileUrl:
+          type: string
+          format: uri
+          nullable: true
+        docInsuranceFileUrl:
+          type: string
+          format: uri
+          nullable: true
+        docTaxStatusFileUrl:
+          type: string
+          format: uri
+          nullable: true
+        declarationAccepted:
+          type: boolean
+        reservationRequirements:
+          $ref: "#/components/schemas/ListingReservationRequirementsInput"
+
+    RefugeUpdateInput:
+      type: object
+      properties:
+        commercialName:
+          type: string
+          minLength: 3
+          maxLength: 160
+        title:
+          type: string
+          minLength: 3
+          maxLength: 160
+        legalName:
+          type: string
+          maxLength: 180
+        cuit:
+          type: string
+          maxLength: 30
+        description:
+          type: string
+          minLength: 10
+          maxLength: 5000
+        accessInfo:
+          type: string
+          maxLength: 1000
+        province:
+          type: string
+          minLength: 2
+          maxLength: 120
+        locality:
+          type: string
+          maxLength: 120
+        location:
+          type: string
+          maxLength: 120
+        locationLabel:
+          type: string
+          maxLength: 240
+        meetingPoint:
+          type: string
+          maxLength: 240
+        season:
+          type: string
+          maxLength: 120
+        capacity:
+          type: integer
+          minimum: 1
+        bedsAvailable:
+          type: integer
+          minimum: 0
+        tentsAvailable:
+          type: integer
+          minimum: 0
+        bedPrice:
+          type: number
+          minimum: 0
+        tentPrice:
+          type: number
+          minimum: 0
+        priceAmount:
+          type: number
+          minimum: 0
+        seasonStart:
+          type: string
+          format: date
+        seasonEnd:
+          type: string
+          format: date
+        seasonAllYear:
+          type: boolean
+        isTemporarilyClosed:
+          type: boolean
+        reopeningDate:
+          type: string
+          format: date
+          nullable: true
+        closureReason:
+          type: string
+          maxLength: 500
+          nullable: true
+        contact:
+          type: string
+          maxLength: 240
+        cancellationPolicy:
+          type: string
+          maxLength: 1000
+        bedsCount:
+          type: integer
+          minimum: 0
+        tentSpotsCount:
+          type: integer
+          minimum: 0
+        hasCarParking:
+          type: boolean
+        checkInTime:
+          type: string
+          maxLength: 20
+        checkOutTime:
+          type: string
+          maxLength: 20
+        amenities:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 120
+        media:
+          type: array
+          items:
+            $ref: "#/components/schemas/ListingMediaInput"
+        coverImageUrl:
+          type: string
+          format: uri
+          nullable: true
+        galleryImageUrls:
+          type: array
+          items:
+            type: string
+            format: uri
+        docConcessionFileUrl:
+          type: string
+          format: uri
+          nullable: true
+        docPermitFileUrl:
+          type: string
+          format: uri
+          nullable: true
+        docInsuranceFileUrl:
+          type: string
+          format: uri
+          nullable: true
+        docTaxStatusFileUrl:
+          type: string
+          format: uri
+          nullable: true
+        declarationAccepted:
+          type: boolean
+        reservationRequirements:
+          $ref: "#/components/schemas/ListingReservationRequirementsInput"
+        status:
+          $ref: "#/components/schemas/ListingStatus"
+        adminMessage:
+          type: string
+          maxLength: 500
+
+    RefugeListItem:
+      type: object
+      required: [id, title, province]
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        title:
+          type: string
+        province:
+          type: string
+        locality:
+          type: string
+        locationLabel:
+          type: string
+        rating:
+          type: number
+          minimum: 0
+          maximum: 5
+          nullable: true
+        reviewsCount:
+          type: integer
+          minimum: 0
+          nullable: true
+        heroImage:
+          type: string
+          format: uri
+          nullable: true
+        hasEquipmentRental:
+          type: boolean
+          nullable: true
+
+    RefugeDetail:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        providerUserId:
+          $ref: "#/components/schemas/UUID"
+        listingType:
+          type: string
+          enum: [refuge]
+        status:
+          $ref: "#/components/schemas/ListingStatus"
+        commercialName:
+          type: string
+        title:
+          type: string
+        legalName:
+          type: string
+          nullable: true
+        cuit:
+          type: string
+          nullable: true
+        description:
+          type: string
+        accessInfo:
+          type: string
+          nullable: true
+        province:
+          type: string
+        locality:
+          type: string
+        location:
+          type: string
+          nullable: true
+        locationLabel:
+          type: string
+        meetingPoint:
+          type: string
+        country:
+          type: string
+        season:
+          type: string
+        difficulty:
+          $ref: "#/components/schemas/DifficultyLevel"
+          nullable: true
+        capacity:
+          type: integer
+          nullable: true
+        bedsAvailable:
+          type: integer
+          nullable: true
+        tentsAvailable:
+          type: integer
+          nullable: true
+        bedPrice:
+          type: number
+          nullable: true
+        tentPrice:
+          type: number
+          nullable: true
+        priceAmount:
+          type: number
+          nullable: true
+        currency:
+          type: string
+          nullable: true
+        bedsCount:
+          type: integer
+          nullable: true
+        tentSpotsCount:
+          type: integer
+          nullable: true
+        hasCarParking:
+          type: boolean
+          nullable: true
+        checkInTime:
+          type: string
+          nullable: true
+        checkOutTime:
+          type: string
+          nullable: true
+        seasonStart:
+          type: string
+          format: date
+          nullable: true
+        seasonEnd:
+          type: string
+          format: date
+          nullable: true
+        seasonAllYear:
+          type: boolean
+          nullable: true
+        isTemporarilyClosed:
+          type: boolean
+          nullable: true
+        reopeningDate:
+          type: string
+          format: date
+          nullable: true
+        closureReason:
+          type: string
+          nullable: true
+        contact:
+          type: string
+          nullable: true
+        cancellationPolicy:
+          type: string
+          nullable: true
+        amenities:
+          type: array
+          items:
+            type: string
+        media:
+          type: array
+          items:
+            $ref: "#/components/schemas/ListingMediaInput"
+        coverImageUrl:
+          type: string
+          format: uri
+          nullable: true
+        galleryImageUrls:
+          type: array
+          items:
+            type: string
+            format: uri
+        docConcessionFileUrl:
+          type: string
+          format: uri
+          nullable: true
+        docPermitFileUrl:
+          type: string
+          format: uri
+          nullable: true
+        docInsuranceFileUrl:
+          type: string
+          format: uri
+          nullable: true
+        docTaxStatusFileUrl:
+          type: string
+          format: uri
+          nullable: true
+        declarationAccepted:
+          type: boolean
+          nullable: true
+        reservationRequirements:
+          $ref: "#/components/schemas/ListingReservationRequirementsInput"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ActivityCreateInput:
+      type: object
+      required:
+        - listingType
+        - commercialName
+        - expeditionDescription
+        - province
+      properties:
+        listingType:
+          type: string
+          enum: [activity, course, event, training, expedition]
+        commercialName:
+          type: string
+          minLength: 3
+          maxLength: 180
+        title:
+          type: string
+          minLength: 3
+          maxLength: 180
+        legalName:
+          type: string
+          maxLength: 180
+        cuit:
+          type: string
+          maxLength: 30
+        description:
+          type: string
+          minLength: 10
+          maxLength: 7000
+        expeditionDescription:
+          type: string
+          minLength: 10
+          maxLength: 7000
+        province:
+          type: string
+          minLength: 2
+          maxLength: 120
+        locality:
+          type: string
+          maxLength: 120
+        location:
+          type: string
+          maxLength: 120
+        locationLabel:
+          type: string
+          maxLength: 240
+        meetingPoint:
+          type: string
+          maxLength: 240
+        expeditionStartDate:
+          type: string
+          format: date
+        expeditionEndDate:
+          type: string
+          format: date
+        expeditionDays:
+          type: integer
+          minimum: 0
+        expeditionNights:
+          type: integer
+          minimum: 0
+        expeditionCapacity:
+          type: integer
+          minimum: 1
+        startDate:
+          type: string
+          format: date
+          nullable: true
+        endDate:
+          type: string
+          format: date
+          nullable: true
+        daysCount:
+          type: integer
+          minimum: 0
+          nullable: true
+        nightsCount:
+          type: integer
+          minimum: 0
+          nullable: true
+        minorsAllowed:
+          type: boolean
+          nullable: true
+        difficulty:
+          $ref: "#/components/schemas/DifficultyLevel"
+          nullable: true
+        season:
+          type: string
+          maxLength: 120
+          nullable: true
+        capacity:
+          type: integer
+          minimum: 1
+          nullable: true
+        priceAmount:
+          type: number
+          minimum: 0
+          nullable: true
+        currency:
+          type: string
+          minLength: 3
+          maxLength: 3
+          default: ARS
+        activityType:
+          $ref: "#/components/schemas/ActivityType"
+          nullable: true
+        maxAltitudeMasn:
+          type: string
+          maxLength: 50
+          nullable: true
+          description: Obligatorio para montanismo si el negocio lo requiere.
+        immersionMeters:
+          type: string
+          maxLength: 50
+          nullable: true
+          description: Obligatorio para buceo si el negocio lo requiere.
+        organizedByUserId:
+          $ref: "#/components/schemas/UUID"
+          nullable: true
+        expeditionOrganizerName:
+          type: string
+          maxLength: 160
+        guidedByUserId:
+          $ref: "#/components/schemas/UUID"
+          nullable: true
+        expeditionGuideName:
+          type: string
+          maxLength: 160
+        includesTransportFrom:
+          type: string
+          maxLength: 240
+          nullable: true
+        transferIncludedFrom:
+          type: string
+          maxLength: 240
+          nullable: true
+        personalGear:
+          type: string
+          maxLength: 2000
+          nullable: true
+        requiresMedicalCertificate:
+          type: boolean
+          nullable: true
+        bookingRequireMedicalInsurance:
+          type: boolean
+          nullable: true
+        bookingRequireHealthDeclaration:
+          type: boolean
+          nullable: true
+        bookingRequireLiabilityWaiver:
+          type: boolean
+          nullable: true
+        bookingRequireEmergencyContact:
+          type: boolean
+          nullable: true
+        expeditionVideoUrl:
+          type: string
+          format: uri
+          nullable: true
+        accessInfo:
+          type: string
+          maxLength: 1000
+          nullable: true
+        rules:
+          type: string
+          maxLength: 2000
+          nullable: true
+        contact:
+          type: string
+          maxLength: 240
+          nullable: true
+        cancellationPolicy:
+          type: string
+          maxLength: 1000
+          nullable: true
+        amenities:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 120
+        amenitiesText:
+          type: string
+          maxLength: 2000
+          nullable: true
+        personalEquipment:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 120
+        media:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/ListingMediaInput"
+        coverImageUrl:
+          type: string
+          format: uri
+          nullable: true
+        galleryImageUrls:
+          type: array
+          items:
+            type: string
+            format: uri
+        docConcessionFileUrl:
+          type: string
+          format: uri
+          nullable: true
+        docPermitFileUrl:
+          type: string
+          format: uri
+          nullable: true
+        docInsuranceFileUrl:
+          type: string
+          format: uri
+          nullable: true
+        docTaxStatusFileUrl:
+          type: string
+          format: uri
+          nullable: true
+        declarationAccepted:
+          type: boolean
+        reservationRequirements:
+          $ref: "#/components/schemas/ListingReservationRequirementsInput"
+
+    ActivityUpdateInput:
+      allOf:
+        - $ref: "#/components/schemas/ActivityCreateInput"
+        - type: object
+          properties:
+            sponsoredWindow:
+              $ref: "#/components/schemas/SponsoredWindowInput"
+
+    ActivityListItem:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        listingType:
+          $ref: "#/components/schemas/ListingType"
+        title:
+          type: string
+        province:
+          type: string
+        locality:
+          type: string
+        activityType:
+          $ref: "#/components/schemas/ActivityType"
+          nullable: true
+        difficulty:
+          $ref: "#/components/schemas/DifficultyLevel"
+          nullable: true
+        priceAmount:
+          type: number
+          nullable: true
+        heroImage:
+          type: string
+          format: uri
+          nullable: true
+
+    ActivityDetail:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        providerUserId:
+          $ref: "#/components/schemas/UUID"
+        listingType:
+          $ref: "#/components/schemas/ListingType"
+        status:
+          $ref: "#/components/schemas/ListingStatus"
+        commercialName:
+          type: string
+        title:
+          type: string
+        legalName:
+          type: string
+          nullable: true
+        cuit:
+          type: string
+          nullable: true
+        description:
+          type: string
+        expeditionDescription:
+          type: string
+          nullable: true
+        accessInfo:
+          type: string
+          nullable: true
+        province:
+          type: string
+        locality:
+          type: string
+        location:
+          type: string
+          nullable: true
+        locationLabel:
+          type: string
+        meetingPoint:
+          type: string
+        expeditionStartDate:
+          type: string
+          format: date
+          nullable: true
+        expeditionEndDate:
+          type: string
+          format: date
+          nullable: true
+        expeditionDays:
+          type: integer
+          nullable: true
+        expeditionNights:
+          type: integer
+          nullable: true
+        expeditionCapacity:
+          type: integer
+          nullable: true
+        startDate:
+          type: string
+          format: date
+          nullable: true
+        endDate:
+          type: string
+          format: date
+          nullable: true
+        daysCount:
+          type: integer
+          nullable: true
+        nightsCount:
+          type: integer
+          nullable: true
+        minorsAllowed:
+          type: boolean
+          nullable: true
+        difficulty:
+          $ref: "#/components/schemas/DifficultyLevel"
+          nullable: true
+        season:
+          type: string
+          nullable: true
+        capacity:
+          type: integer
+          nullable: true
+        priceAmount:
+          type: number
+          nullable: true
+        currency:
+          type: string
+          nullable: true
+        activityType:
+          $ref: "#/components/schemas/ActivityType"
+          nullable: true
+        maxAltitudeMasn:
+          type: string
+          nullable: true
+        maxAltitudeReached:
+          type: string
+          nullable: true
+        immersionMeters:
+          type: string
+          nullable: true
+        immersionDepth:
+          type: string
+          nullable: true
+        organizedByUserId:
+          $ref: "#/components/schemas/UUID"
+          nullable: true
+        expeditionOrganizerName:
+          type: string
+          nullable: true
+        guidedByUserId:
+          $ref: "#/components/schemas/UUID"
+          nullable: true
+        expeditionGuideName:
+          type: string
+          nullable: true
+        includesTransportFrom:
+          type: string
+          nullable: true
+        transferIncludedFrom:
+          type: string
+          nullable: true
+        personalGear:
+          type: string
+          nullable: true
+        requiresMedicalCertificate:
+          type: boolean
+          nullable: true
+        bookingRequireMedicalInsurance:
+          type: boolean
+          nullable: true
+        bookingRequireHealthDeclaration:
+          type: boolean
+          nullable: true
+        bookingRequireLiabilityWaiver:
+          type: boolean
+          nullable: true
+        bookingRequireEmergencyContact:
+          type: boolean
+          nullable: true
+        expeditionVideoUrl:
+          type: string
+          format: uri
+          nullable: true
+        rules:
+          type: string
+          nullable: true
+        contact:
+          type: string
+          nullable: true
+        cancellationPolicy:
+          type: string
+          nullable: true
+        amenities:
+          type: array
+          items:
+            type: string
+        amenitiesText:
+          type: string
+          nullable: true
+        personalEquipment:
+          type: array
+          items:
+            type: string
+        media:
+          type: array
+          items:
+            $ref: "#/components/schemas/ListingMediaInput"
+        coverImageUrl:
+          type: string
+          format: uri
+          nullable: true
+        galleryImageUrls:
+          type: array
+          items:
+            type: string
+            format: uri
+        docConcessionFileUrl:
+          type: string
+          format: uri
+          nullable: true
+        docPermitFileUrl:
+          type: string
+          format: uri
+          nullable: true
+        docInsuranceFileUrl:
+          type: string
+          format: uri
+          nullable: true
+        docTaxStatusFileUrl:
+          type: string
+          format: uri
+          nullable: true
+        declarationAccepted:
+          type: boolean
+          nullable: true
+        reservationRequirements:
+          $ref: "#/components/schemas/ListingReservationRequirementsInput"
+        sponsoredWindow:
+          $ref: "#/components/schemas/SponsoredWindowInput"
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ListingReservationRequirementsInput:
+      type: object
+      properties:
+        requireMedicalInsurance:
+          type: boolean
+          default: true
+        requireHealthDeclaration:
+          type: boolean
+          default: true
+        requireLiabilityWaiver:
+          type: boolean
+          default: true
+        requireEmergencyContact:
+          type: boolean
+          default: true
+        requirePhysicalFitnessCertificate:
+          type: boolean
+          default: true
+
+    ShopCreateInput:
+      type: object
+      required: [name, province]
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 160
+        specialty:
+          type: string
+          maxLength: 180
+        province:
+          type: string
+          minLength: 2
+          maxLength: 120
+        locality:
+          type: string
+          maxLength: 120
+        address:
+          type: string
+          maxLength: 300
+        description:
+          type: string
+          maxLength: 5000
+        phone:
+          type: string
+          maxLength: 30
+        website:
+          type: string
+          format: uri
+        instagramHandle:
+          type: string
+          maxLength: 120
+        instagram:
+          type: string
+          maxLength: 120
+        hasEquipmentRental:
+          type: boolean
+        rating:
+          type: number
+          minimum: 0
+          maximum: 5
+        isSponsored:
+          type: boolean
+        media:
+          type: array
+          items:
+            $ref: "#/components/schemas/ListingMediaInput"
+        image:
+          type: string
+          format: uri
+          nullable: true
+        productGallery:
+          type: array
+          items:
+            type: string
+            format: uri
+        branches:
+          type: array
+          items:
+            type: object
+            properties:
+              branchName:
+                type: string
+                minLength: 2
+                maxLength: 120
+              address:
+                type: string
+                maxLength: 300
+              province:
+                type: string
+                maxLength: 120
+              locality:
+                type: string
+                maxLength: 120
+
+    ShopUpdateInput:
+      allOf:
+        - $ref: "#/components/schemas/ShopCreateInput"
+        - type: object
+          properties:
+            isActive:
+              type: boolean
+            sponsoredWindow:
+              $ref: "#/components/schemas/SponsoredWindowInput"
+
+    ShopListItem:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        name:
+          type: string
+        province:
+          type: string
+        locality:
+          type: string
+        hasEquipmentRental:
+          type: boolean
+        rating:
+          type: number
+          nullable: true
+        isSponsored:
+          type: boolean
+        image:
+          type: string
+          format: uri
+          nullable: true
+
+    ShopDetail:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        providerUserId:
+          $ref: "#/components/schemas/UUID"
+          nullable: true
+        name:
+          type: string
+        province:
+          type: string
+        locality:
+          type: string
+        specialty:
+          type: string
+          nullable: true
+        address:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        website:
+          type: string
+          nullable: true
+        instagramHandle:
+          type: string
+          nullable: true
+        instagram:
+          type: string
+          nullable: true
+        hasEquipmentRental:
+          type: boolean
+        rating:
+          type: number
+          nullable: true
+        isSponsored:
+          type: boolean
+        isActive:
+          type: boolean
+        media:
+          type: array
+          items:
+            $ref: "#/components/schemas/ListingMediaInput"
+        image:
+          type: string
+          format: uri
+          nullable: true
+        productGallery:
+          type: array
+          items:
+            type: string
+            format: uri
+        branches:
+          type: array
+          items:
+            type: object
+            properties:
+              branchName:
+                type: string
+              address:
+                type: string
+              province:
+                type: string
+              locality:
+                type: string
+
+    BookingMemberInput:
+      type: object
+      required:
+        - firstName
+        - lastName
+        - document
+      properties:
+        appUserId:
+          type: string
+          nullable: true
+        appUserHandle:
+          type: string
+          nullable: true
+        linkedUserId:
+          $ref: "#/components/schemas/UUID"
+          nullable: true
+        role:
+          type: string
+          enum: [creator, participant]
+        firstName:
+          type: string
+          minLength: 1
+          maxLength: 120
+        lastName:
+          type: string
+          minLength: 1
+          maxLength: 120
+        document:
+          type: string
+          minLength: 3
+          maxLength: 60
+        nationality:
+          type: string
+          maxLength: 120
+          nullable: true
+        email:
+          type: string
+          format: email
+          nullable: true
+        phone:
+          type: string
+          maxLength: 30
+          nullable: true
+        birthDate:
+          type: string
+          format: date
+          nullable: true
+        age:
+          type: integer
+          minimum: 0
+          nullable: true
+        hasExperience:
+          type: boolean
+          nullable: true
+        experienceLevel:
+          $ref: "#/components/schemas/ExperienceLevel"
+          nullable: true
+        hasMedicalInsurance:
+          type: boolean
+          nullable: true
+        insuranceName:
+          type: string
+          maxLength: 160
+          nullable: true
+        insuranceMemberNumber:
+          type: string
+          maxLength: 120
+          nullable: true
+        insurance:
+          type: object
+          nullable: true
+          properties:
+            hasInsurance:
+              type: boolean
+            provider:
+              type: string
+              maxLength: 160
+            memberNumber:
+              type: string
+              maxLength: 120
+        emergencyContactName:
+          type: string
+          maxLength: 160
+          nullable: true
+        emergencyContactPhone:
+          type: string
+          maxLength: 30
+          nullable: true
+        healthDeclarationAnswers:
+          type: object
+          additionalProperties:
+            type: boolean
+          nullable: true
+        healthTruthDeclared:
+          type: boolean
+          nullable: true
+        healthDeclarationConfirmed:
+          type: boolean
+          nullable: true
+        liabilityAccepted:
+          type: boolean
+          nullable: true
+        liabilityWaiverAccepted:
+          type: boolean
+          nullable: true
+        physicalFitnessCertificateUrl:
+          type: string
+          format: uri
+          nullable: true
+
+    BookingCreateInput:
+      type: object
+      required:
+        - listingId
+        - dateFrom
+        - dateTo
+        - reservationName
+        - reservationLastName
+        - reservationUser
+        - email
+        - phone
+        - participantsCount
+        - members
+      properties:
+        listingId:
+          $ref: "#/components/schemas/UUID"
+        spotId:
+          $ref: "#/components/schemas/UUID"
+          nullable: true
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        dateFrom:
+          type: string
+          format: date
+        dateTo:
+          type: string
+          format: date
+        reservationName:
+          type: string
+          minLength: 1
+          maxLength: 120
+        reservationLastName:
+          type: string
+          minLength: 1
+          maxLength: 120
+        reservationUser:
+          type: string
+          minLength: 3
+          maxLength: 60
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+          minLength: 6
+          maxLength: 30
+        needsCarParking:
+          type: boolean
+          nullable: true
+        needsCarStorage:
+          type: boolean
+          nullable: true
+        objective:
+          type: string
+          maxLength: 500
+          nullable: true
+        participantsCount:
+          type: integer
+          minimum: 1
+        peopleCount:
+          type: integer
+          minimum: 1
+        medicalCertificateFileName:
+          type: string
+          maxLength: 255
+          nullable: true
+        total:
+          type: number
+          minimum: 0
+          nullable: true
+        members:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/BookingMemberInput"
+        guests:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/BookingMemberInput"
+
+    BookingUpdateInput:
+      type: object
+      properties:
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        dateFrom:
+          type: string
+          format: date
+        dateTo:
+          type: string
+          format: date
+        needsCarParking:
+          type: boolean
+        needsCarStorage:
+          type: boolean
+        objective:
+          type: string
+          maxLength: 500
+        status:
+          $ref: "#/components/schemas/BookingStatus"
+        providerMessage:
+          type: string
+          maxLength: 500
+        participantsCount:
+          type: integer
+          minimum: 1
+        peopleCount:
+          type: integer
+          minimum: 1
+        medicalCertificateFileName:
+          type: string
+          maxLength: 255
+          nullable: true
+        total:
+          type: number
+          minimum: 0
+        members:
+          type: array
+          items:
+            $ref: "#/components/schemas/BookingMemberInput"
+        guests:
+          type: array
+          items:
+            $ref: "#/components/schemas/BookingMemberInput"
+
+    BookingListItem:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        listingId:
+          $ref: "#/components/schemas/UUID"
+        spotId:
+          $ref: "#/components/schemas/UUID"
+          nullable: true
+        listingTitle:
+          type: string
+        status:
+          $ref: "#/components/schemas/BookingStatus"
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        dateFrom:
+          type: string
+          format: date
+        dateTo:
+          type: string
+          format: date
+        createdByUserId:
+          $ref: "#/components/schemas/UUID"
+        providerUserId:
+          $ref: "#/components/schemas/UUID"
+        participantsCount:
+          type: integer
+        peopleCount:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+
+    BookingDetail:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        listingId:
+          $ref: "#/components/schemas/UUID"
+        spotId:
+          $ref: "#/components/schemas/UUID"
+          nullable: true
+        providerUserId:
+          $ref: "#/components/schemas/UUID"
+        createdByUserId:
+          $ref: "#/components/schemas/UUID"
+        status:
+          $ref: "#/components/schemas/BookingStatus"
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        dateFrom:
+          type: string
+          format: date
+        dateTo:
+          type: string
+          format: date
+        needsCarParking:
+          type: boolean
+          nullable: true
+        needsCarStorage:
+          type: boolean
+          nullable: true
+        objective:
+          type: string
+          nullable: true
+        participantsCount:
+          type: integer
+        peopleCount:
+          type: integer
+        providerMessage:
+          type: string
+          nullable: true
+        medicalCertificateFileName:
+          type: string
+          nullable: true
+        total:
+          type: number
+          nullable: true
+        members:
+          type: array
+          items:
+            $ref: "#/components/schemas/BookingMemberInput"
+        guests:
+          type: array
+          items:
+            $ref: "#/components/schemas/BookingMemberInput"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    PostCreateInput:
+      type: object
+      required: [content]
+      properties:
+        content:
+          type: string
+          minLength: 1
+          maxLength: 4000
+        media:
+          type: array
+          items:
+            $ref: "#/components/schemas/ListingMediaInput"
+        mentions:
+          type: array
+          items:
+            $ref: "#/components/schemas/UUID"
+
+    PostUpdateInput:
+      type: object
+      required: [content]
+      properties:
+        content:
+          type: string
+          minLength: 1
+          maxLength: 4000
+
+    PostDetail:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        authorUserId:
+          $ref: "#/components/schemas/UUID"
+        content:
+          type: string
+        media:
+          type: array
+          items:
+            $ref: "#/components/schemas/ListingMediaInput"
+        mentions:
+          type: array
+          items:
+            $ref: "#/components/schemas/UUID"
+        likesCount:
+          type: integer
+          minimum: 0
+        commentsCount:
+          type: integer
+          minimum: 0
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CommentCreateInput:
+      type: object
+      required: [postId, content]
+      properties:
+        postId:
+          $ref: "#/components/schemas/UUID"
+        content:
+          type: string
+          minLength: 1
+          maxLength: 2000
+
+    CommentUpdateInput:
+      type: object
+      required: [content]
+      properties:
+        content:
+          type: string
+          minLength: 1
+          maxLength: 2000
+
+    CommentDetail:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        postId:
+          $ref: "#/components/schemas/UUID"
+        authorUserId:
+          $ref: "#/components/schemas/UUID"
+        content:
+          type: string
+        likesCount:
+          type: integer
+          minimum: 0
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    LikeCreateInput:
+      type: object
+      required: [targetType, targetId]
+      properties:
+        targetType:
+          type: string
+          enum: [post, comment]
+        targetId:
+          $ref: "#/components/schemas/UUID"
+
+    FriendRequest:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        fromUserId:
+          $ref: "#/components/schemas/UUID"
+        toUserId:
+          $ref: "#/components/schemas/UUID"
+        status:
+          type: string
+          enum: [pending, accepted, rejected, cancelled]
+        createdAt:
+          type: string
+          format: date-time
+        respondedAt:
+          type: string
+          format: date-time
+          nullable: true
+
+    FavoriteMutationInput:
+      type: object
+      required: [entityType, entityId]
+      properties:
+        entityType:
+          type: string
+          enum: [listing, shop]
+        entityId:
+          $ref: "#/components/schemas/UUID"
+
+    Notification:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        recipientUserId:
+          $ref: "#/components/schemas/UUID"
+        actorUserId:
+          $ref: "#/components/schemas/UUID"
+          nullable: true
+        type:
+          type: string
+          enum:
+            - booking_created
+            - booking_pending_review
+            - booking_confirmed
+            - booking_rejected
+            - booking_cancelled
+            - booking_updated
+            - booking_added_as_participant
+            - friend_request_received
+            - friend_request_accepted
+            - post_liked
+            - post_commented
+            - comment_liked
+            - mentioned_in_post
+        title:
+          type: string
+        body:
+          type: string
+          nullable: true
+        entityType:
+          type: string
+          nullable: true
+        entityId:
+          $ref: "#/components/schemas/UUID"
+          nullable: true
+        isRead:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        readAt:
+          type: string
+          format: date-time
+          nullable: true
+
+    ProviderApprovalItem:
+      type: object
+      properties:
+        providerUserId:
+          $ref: "#/components/schemas/UUID"
+        displayName:
+          type: string
+        email:
+          type: string
+          format: email
+        province:
+          type: string
+        submittedAt:
+          type: string
+          format: date-time
+
+    RefugeApprovalItem:
+      type: object
+      properties:
+        listingId:
+          $ref: "#/components/schemas/UUID"
+        providerUserId:
+          $ref: "#/components/schemas/UUID"
+        title:
+          type: string
+        province:
+          type: string
+        submittedAt:
+          type: string
+          format: date-time

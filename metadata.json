@@ -1,0 +1,7 @@
+{
+  "name": "Recorre Argentina",
+  "description": "A premium mobile-first application for exploring, planning, and booking outdoor experiences in Latin America, featuring mountain refuges, campings, and trekking activities.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}

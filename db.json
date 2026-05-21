@@ -1,0 +1,135 @@
+{
+  "spots": [
+    {
+      "id": "b-1",
+      "name": "Realization Climbing",
+      "location": "Palermo, CABA",
+      "province": "CABA",
+      "country": "Argentina",
+      "description": "Uno de los muros de boulder más técnicos de Buenos Aires. Equipado con tomas de alta calidad, campus board y sectores para todos los niveles.",
+      "price": 8500,
+      "rating": 4.8,
+      "reviewsCount": 450,
+      "placeType": "Entrená",
+      "activityType": "Boulder",
+      "difficulty": "Medio",
+      "images": [
+        "https://images.unsplash.com/photo-1522163182402-834f871fd851?auto=format&fit=crop&q=80&w=800",
+        "https://images.unsplash.com/photo-1601391392102-1718f0817361?auto=format&fit=crop&q=80&w=800"
+      ],
+      "amenities": ["Vestuarios", "Bar", "Alquiler de equipo", "Escuela"],
+      "coordinates": { "lat": -34.58, "lng": -58.43 },
+      "weather": { "temp": 22, "condition": "Interior", "forecast": "Climatizado" },
+      "rules": ["Uso de magnesio líquido recomendado", "No saltar desde arriba"],
+      "season": "Todo el año"
+    },
+    {
+      "id": "1",
+      "name": "Refugio Frey",
+      "location": "Cerro Catedral, Bariloche",
+      "province": "Río Negro",
+      "country": "Argentina",
+      "description": "El refugio más emblemático de Bariloche, famoso por sus agujas de granito que lo rodean. Un paraíso para la escalada clásica y el trekking de alta montaña.",
+      "price": 15000,
+      "rating": 4.9,
+      "reviewsCount": 1240,
+      "placeType": "Refugio",
+      "difficulty": "Medio",
+      "camasCount": 40,
+      "carpasCount": 15,
+      "images": [
+        "https://images.unsplash.com/photo-1519904981063-b0cf448d479e?auto=format&fit=crop&q=80&w=800",
+        "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=1200"
+      ],
+      "amenities": ["Camas", "Restaurante", "Guías", "Rescate Montaña", "Cerveza Artesanal"],
+      "coordinates": { "lat": -41.133, "lng": -71.31 },
+      "weather": { "temp": 12, "condition": "Despejado", "forecast": "Soleado" },
+      "rules": ["No hacer fuego", "Bajar basura", "Respetar silencio"],
+      "season": "Diciembre - Marzo"
+    }
+  ],
+  "shops": [
+    {
+      "id": "s1",
+      "name": "Naka Outdoors",
+      "address": "Av. Maipú 953, Vicente López",
+      "province": "Buenos Aires",
+      "specialty": "Escalada y Trekking",
+      "image": "https://images.unsplash.com/photo-1534452286302-2f5631f5a18c?auto=format&fit=crop&q=80&w=400",
+      "rating": 4.8,
+      "isSponsored": true,
+      "website": "https://www.nakaoutdoors.com.ar",
+      "phone": "+54 11 4791-1234",
+      "instagram": "@nakaoutdoors",
+      "description": "Especialistas en materiales técnicos de escalada.",
+      "productGallery": [
+        "https://images.unsplash.com/photo-1522163182402-834f871fd851?auto=format&fit=crop&q=80&w=300"
+      ],
+      "branches": ["Vicente López (Casa Central)", "Showroom CABA"],
+      "coordinates": { "lat": -34.54, "lng": -58.47 }
+    }
+  ],
+  "posts": [
+    {
+      "id": "p1",
+      "userId": "u1",
+      "userName": "Mateo_Climb",
+      "userAvatar": "https://i.pravatar.cc/150?u=mateo",
+      "content": "Increíble día de boulder en Frey. Las agujas estaban perfectas hoy!",
+      "image": "https://images.unsplash.com/photo-1522163182402-834f871fd851?auto=format&fit=crop&q=80&w=800",
+      "location": "Refugio Frey, Bariloche",
+      "timestamp": "Hace 2 horas",
+      "likes": 24,
+      "comments": 5,
+      "type": "post"
+    }
+  ],
+  "friends": [
+    { "id": "f1", "name": "Lucas_V", "avatar": "https://i.pravatar.cc/150?u=lucas", "isFriend": false, "mutualFriends": 12 },
+    { "id": "f2", "name": "Elena_M", "avatar": "https://i.pravatar.cc/150?u=elena", "isFriend": true, "mutualFriends": 8 }
+  ],
+  "explorerUsers": [
+    {
+      "id": "exp-1",
+      "name": "Explorer_Arg",
+      "email": "user@example.com",
+      "avatar": "https://i.pravatar.cc/150?u=new_user",
+      "provincia": "Buenos Aires",
+      "age": 28,
+      "experience": "Principiante",
+      "preferredSports": ["Trekking", "Escalada Deportiva"],
+      "level": 1,
+      "badges": ["Primer Refugio", "Amigo de la Montaña"]
+    }
+  ],
+  "providerUsers": [
+    {
+      "id": "prov-1",
+      "name": "Club Andino Bariloche",
+      "email": "prestador@example.com",
+      "avatar": "https://i.pravatar.cc/150?u=provider",
+      "provincia": "Río Negro",
+      "publishes": ["Refugios", "Actividades", "Expediciones"],
+      "usesBookingModule": true
+    }
+  ],
+  "bookings": [
+    {
+      "id": "b1",
+      "userId": "me",
+      "spotId": "1",
+      "date": "2024-03-15",
+      "status": "confirmed",
+      "total": 15000
+    }
+  ],
+  "alerts": [
+    {
+      "id": "al1",
+      "title": "Alerta de Viento Blanco",
+      "description": "Se esperan ráfagas de más de 80km/h en la zona del Tronador.",
+      "severity": "high",
+      "province": "Río Negro"
+    }
+  ]
+}

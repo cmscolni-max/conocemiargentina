@@ -1,0 +1,92 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover">
+  <title>Recorre Argentina</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {}
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    input:not([type="checkbox"]):not([type="radio"]),
+    textarea,
+    select {
+      font-size: 16px !important;
+      line-height: 1.35;
+      min-width: 0;
+      max-width: 100%;
+      box-sizing: border-box;
+      width: 100%;
+    }
+    select {
+      appearance: none;
+      -webkit-appearance: none;
+    }
+    input[type="date"] {
+      min-height: 52px;
+      height: 52px;
+      padding: 0 12px;
+      appearance: none;
+      -webkit-appearance: none;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    input[type="date"]::-webkit-datetime-edit,
+    input[type="date"]::-webkit-date-and-time-value {
+      min-width: 0;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      margin: 0;
+    }
+    .form-two-col {
+      display: grid;
+      align-items: start;
+      grid-template-columns: repeat(2, calc((100% - 0.75rem) / 2));
+      gap: 0.75rem;
+    }
+    .form-two-col > * {
+      min-width: 0;
+      width: 100%;
+      max-width: 100%;
+      overflow: hidden;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    @media (max-width: 768px) {
+      [class*="text-[8px]"] { font-size: 10px !important; }
+      [class*="text-[9px]"] { font-size: 11px !important; }
+      [class*="text-[10px]"] { font-size: 12px !important; }
+      [class*="text-[11px]"] { font-size: 13px !important; }
+      .text-xs { font-size: 0.875rem !important; }
+    }
+  </style>
+</head>
+<body class="bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-50 transition-colors duration-300">
+  <div id="root"></div>
+<script type="module" src="/index.tsx"></script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+{
+  "name": "recorre-argentina",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "stress:openapi": "node scripts/stress/openapi-stress.mjs",
+    "stress:capacity": "node scripts/stress/service-capacity.mjs",
+    "stress:concurrency": "node scripts/stress/concurrency-capacity.mjs",
+    "stress:report": "node scripts/stress/report-support.mjs",
+    "cap:build": "npm run build && npx cap sync",
+    "cap:ios": "npm run cap:build && npx cap open ios",
+    "cap:android": "npm run cap:build && npx cap open android"
+  },
+  "dependencies": {
+    "@capacitor-firebase/authentication": "^8.2.0",
+    "@capacitor/android": "^8.3.1",
+    "@capacitor/app": "^8.1.0",
+    "@capacitor/browser": "^8.0.3",
+    "@capacitor/cli": "^8.3.1",
+    "@capacitor/core": "^8.3.1",
+    "@capacitor/ios": "^8.3.1",
+    "@capacitor/local-notifications": "^8.0.2",
+    "@capawesome/capacitor-google-sign-in": "^0.1.2",
+    "@supabase/supabase-js": "^2.99.1",
+    "firebase": "^12.12.1",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "sharp": "^0.34.5",
+    "typescript": "~5.8.2",
+    "vite": "^6.2.0"
+  }
+}
