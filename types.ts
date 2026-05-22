@@ -7,6 +7,7 @@ export enum PlaceType {
 
 export enum ActivityType {
   TREKKING = 'Trekking',
+  GASTRONOMIA = 'Gastronómica',
   SKI = 'Ski',
   MONTANISMO = 'Montañismo',
   RAFTING = 'Rafting',

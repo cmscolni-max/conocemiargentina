@@ -1,5 +1,5 @@
 import { adminSupabase, createIsolatedSupabaseClient, publicSupabase, supabase } from './supabaseClient';
-import { MOCK_FRIENDS } from '../constants';
+import { MOCK_FRIENDS, MOCK_SPOTS } from '../constants';
 import {
   ActivityType,
   AvailabilityCheck,
@@ -294,6 +294,7 @@ const fromDbActivityType = (value?: string | null): ActivityType | undefined => 
   if (!value) return undefined;
   const normalized = value.toLowerCase();
   if (normalized === 'trekking') return ActivityType.TREKKING;
+  if (normalized === 'gastronomia') return ActivityType.GASTRONOMIA;
   if (normalized === 'montanismo') return ActivityType.MONTANISMO;
   if (normalized === 'rafting') return ActivityType.RAFTING;
   if (normalized === 'kayak') return ActivityType.KAYAK;
@@ -310,6 +311,7 @@ const fromDbActivityType = (value?: string | null): ActivityType | undefined => 
 const toDbActivityType = (value?: ActivityType | null): string | null => {
   if (!value) return null;
   if (value === ActivityType.TREKKING) return 'trekking';
+  if (value === ActivityType.GASTRONOMIA) return 'gastronomia';
   if (value === ActivityType.MONTANISMO) return 'montanismo';
   if (value === ActivityType.RAFTING) return 'rafting';
   if (value === ActivityType.KAYAK) return 'kayak';
@@ -1923,7 +1925,7 @@ export const cumbreApi = {
       return attachListingReviews(dedupedRows.map(mapListingToSpot));
     } catch (error) {
       console.error('Falling back to seed refugios:', error);
-      return [];
+      return MOCK_SPOTS.filter((spot) => spot.placeType === PlaceType.REFUGIO);
     }
   },
 
@@ -1953,7 +1955,7 @@ export const cumbreApi = {
       return attachListingReviews(liveActividades);
     } catch (error) {
       console.error('Falling back to seed actividades:', error);
-      return [];
+      return MOCK_SPOTS.filter((spot) => spot.placeType !== PlaceType.REFUGIO);
     }
   },
 
@@ -3929,7 +3931,7 @@ export const cumbreApi = {
       media: Array.isArray(row.media_items) ? row.media_items as NotiTipMediaItem[] : [],
       bodyHtml: row.body_html || '',
       bodyText: row.body_text || '',
-      authorName: row.author_name || 'Equipo Explorer',
+      authorName: row.author_name || 'Equipo Recorre Argentina',
       publishedAt: row.published_at || row.created_at || new Date().toISOString(),
       isPublished: Boolean(row.is_published),
       createdAt: row.created_at || undefined,
@@ -3952,7 +3954,7 @@ export const cumbreApi = {
       media: Array.isArray(row.media_items) ? row.media_items as NotiTipMediaItem[] : [],
       bodyHtml: row.body_html || '',
       bodyText: row.body_text || '',
-      authorName: row.author_name || 'Equipo Explorer',
+      authorName: row.author_name || 'Equipo Recorre Argentina',
       publishedAt: row.published_at || row.created_at || new Date().toISOString(),
       isPublished: Boolean(row.is_published),
       createdAt: row.created_at || undefined,
@@ -3978,7 +3980,7 @@ export const cumbreApi = {
       media_items: input.media.slice(0, 4),
       body_html: input.bodyHtml,
       body_text: input.bodyText,
-      author_name: input.authorName.trim() || 'Equipo Explorer',
+      author_name: input.authorName.trim() || 'Equipo Recorre Argentina',
       published_at: input.publishedAt || new Date().toISOString(),
       is_published: input.isPublished,
       updated_at: new Date().toISOString(),
@@ -3998,7 +4000,7 @@ export const cumbreApi = {
       media: Array.isArray(data.media_items) ? data.media_items as NotiTipMediaItem[] : [],
       bodyHtml: data.body_html || '',
       bodyText: data.body_text || '',
-      authorName: data.author_name || 'Equipo Explorer',
+      authorName: data.author_name || 'Equipo Recorre Argentina',
       publishedAt: data.published_at || data.created_at || new Date().toISOString(),
       isPublished: Boolean(data.is_published),
       createdAt: data.created_at || undefined,
@@ -4024,7 +4026,7 @@ export const cumbreApi = {
       media_items: input.media.slice(0, 4),
       body_html: input.bodyHtml,
       body_text: input.bodyText,
-      author_name: input.authorName.trim() || 'Equipo Explorer',
+      author_name: input.authorName.trim() || 'Equipo Recorre Argentina',
       published_at: input.publishedAt || new Date().toISOString(),
       is_published: input.isPublished,
       updated_at: new Date().toISOString(),
@@ -4045,7 +4047,7 @@ export const cumbreApi = {
       media: Array.isArray(data.media_items) ? data.media_items as NotiTipMediaItem[] : [],
       bodyHtml: data.body_html || '',
       bodyText: data.body_text || '',
-      authorName: data.author_name || 'Equipo Explorer',
+      authorName: data.author_name || 'Equipo Recorre Argentina',
       publishedAt: data.published_at || data.created_at || new Date().toISOString(),
       isPublished: Boolean(data.is_published),
       createdAt: data.created_at || undefined,
@@ -4070,7 +4072,7 @@ export const cumbreApi = {
       media: Array.isArray(data.media_items) ? data.media_items as NotiTipMediaItem[] : [],
       bodyHtml: data.body_html || '',
       bodyText: data.body_text || '',
-      authorName: data.author_name || 'Equipo Explorer',
+      authorName: data.author_name || 'Equipo Recorre Argentina',
       publishedAt: data.published_at || data.created_at || new Date().toISOString(),
       isPublished: Boolean(data.is_published),
       createdAt: data.created_at || undefined,

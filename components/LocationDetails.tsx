@@ -883,8 +883,8 @@ export const LocationDetails: React.FC<LocationDetailsProps> = ({
   const handleShare = () => {
     const descText = spot.description ? spot.description.substring(0, 100) + '...' : '';
     const shareData = {
-      title: `Explorer - ${spot.name}`,
-      text: `¡Mirá este lugar en Explorer: ${spot.name}! ${descText}`,
+      title: `Recorre Argentina - ${spot.name}`,
+      text: `¡Mirá este lugar en Recorre Argentina: ${spot.name}! ${descText}`,
       url: window.location.href,
     };
 
@@ -910,7 +910,7 @@ export const LocationDetails: React.FC<LocationDetailsProps> = ({
 
     const review: Review = {
       id: Date.now().toString(),
-      userName: bookingUser?.name?.trim() || (language === 'es' ? 'Explorador' : 'Explorer'),
+      userName: bookingUser?.name?.trim() || (language === 'es' ? 'Explorador' : 'Recorre Argentina'),
       userAvatar: `https://i.pravatar.cc/150?u=${encodeURIComponent(bookingUser?.name?.trim() || 'explorer')}`,
       rating: newRating,
       comment: newComment,
@@ -2567,7 +2567,7 @@ export const LocationDetails: React.FC<LocationDetailsProps> = ({
               >
                 {labels.organizedBy}:{' '}
                 <span className="text-stone-800 dark:text-stone-100 underline underline-offset-4">
-                  {spot.organizerName || (language === 'es' ? 'Guía Explorer' : 'Explorer Guide')}
+                  {spot.organizerName || (language === 'es' ? 'Guía Recorre Argentina' : 'Recorre Argentina Guide')}
                 </span>
               </button>
               {isExpedition && organizerInstagramUrl && (
@@ -2588,7 +2588,7 @@ export const LocationDetails: React.FC<LocationDetailsProps> = ({
                 >
                   {labels.guidedBy}:{' '}
                   <span className="text-stone-800 dark:text-stone-100 underline underline-offset-4">
-                    {spot.guidedByName || (language === 'es' ? 'Guía Explorer' : 'Explorer Guide')}
+                    {spot.guidedByName || (language === 'es' ? 'Guía Recorre Argentina' : 'Recorre Argentina Guide')}
                   </span>
                 </button>
               )}

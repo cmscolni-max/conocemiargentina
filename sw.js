@@ -1,5 +1,5 @@
 self.addEventListener('push', (event) => {
-  let payload = { title: 'Explorer', body: 'Tienes una nueva notificación.' };
+  let payload = { title: 'Recorre Argentina', body: 'Tienes una nueva notificación.' };
   if (event.data) {
     try {
       const parsed = event.data.json();
@@ -9,7 +9,7 @@ self.addEventListener('push', (event) => {
       };
     } catch (error) {
       const text = event.data.text();
-      payload = { title: 'Explorer', body: text || payload.body };
+      payload = { title: 'Recorre Argentina', body: text || payload.body };
     }
   }
 

@@ -64,8 +64,8 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
     e.stopPropagation();
     const descText = spot.description ? spot.description.substring(0, 100) + '...' : '';
     const shareData = {
-      title: `Explorer - ${spot.name}`,
-      text: `¡Mirá este lugar en Explorer: ${spot.name}! ${descText}`,
+      title: `Recorre Argentina - ${spot.name}`,
+      text: `¡Mirá este lugar en Recorre Argentina: ${spot.name}! ${descText}`,
       url: window.location.href,
     };
 
@@ -129,25 +129,25 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
   };
 
   return (
-    <div 
-      className={`rounded-2xl overflow-hidden transition-all cursor-pointer ${
+    <div
+      className={`group rounded-[1.7rem] overflow-hidden transition-all cursor-pointer ${
         isSpotSponsoredActive
-          ? 'bg-gradient-to-br from-amber-50 via-white to-emerald-50 dark:from-amber-950/20 dark:via-stone-900 dark:to-emerald-950/20 shadow-lg border border-amber-300 dark:border-amber-700 ring-2 ring-amber-200/80 dark:ring-amber-800/50'
-          : 'bg-white dark:bg-stone-900 shadow-sm border border-stone-200 dark:border-stone-800'
-      } ${isPastActivity ? 'opacity-60 grayscale cursor-not-allowed' : 'active:scale-95'}`}
+          ? 'bg-[linear-gradient(145deg,#fff8df_0%,#f6fbff_48%,#eef8ff_100%)] dark:from-amber-950/20 dark:via-stone-900 dark:to-sky-950/20 shadow-[0_18px_45px_rgba(20,55,90,0.2)] border border-amber-300 dark:border-amber-700 ring-2 ring-amber-200/80 dark:ring-amber-800/50'
+          : 'bg-white/95 dark:bg-stone-900 shadow-[0_14px_32px_rgba(17,34,54,0.12)] border border-sky-100 dark:border-stone-800'
+      } ${isPastActivity ? 'opacity-60 grayscale cursor-not-allowed' : 'active:scale-[0.985] hover:-translate-y-0.5'}`}
       onClick={() => {
         if (isPastActivity) return;
         onClick(spot);
       }}
     >
-      <div className="relative h-48 w-full">
+      <div className="relative h-52 w-full">
         <img 
           src={cardImage} 
           alt={spot.name} 
           className="w-full h-full object-cover"
         />
         {spot.date && (
-          <div className="absolute top-3 left-3 bg-black/60 text-white text-[9px] font-black uppercase px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 backdrop-blur-sm">
+          <div className="absolute top-3 left-3 bg-white/88 text-sky-900 text-[9px] font-black uppercase px-2.5 py-1.5 rounded-full flex items-center gap-1.5 backdrop-blur-sm border border-sky-100">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3.5 h-3.5">
               <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V5m8 2V5M4 9h16m-1 10H5a1 1 0 0 1-1-1V9h16v9a1 1 0 0 1-1 1Z" />
             </svg>
@@ -155,7 +155,7 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
           </div>
         )}
         {isSpotSponsoredActive && (
-          <div className="absolute left-3 top-3 bg-gradient-to-r from-amber-400 to-orange-500 text-stone-950 text-[9px] font-black uppercase px-3 py-1.5 rounded-full shadow-lg tracking-[0.18em]">
+          <div className="absolute left-3 top-3 bg-gradient-to-r from-amber-300 to-yellow-400 text-stone-950 text-[9px] font-black uppercase px-3 py-1.5 rounded-full shadow-lg tracking-[0.18em]">
             Destacado
           </div>
         )}
@@ -176,7 +176,7 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
           <button 
             onClick={handleShare}
             disabled={isPastActivity}
-            className="p-2 rounded-full shadow-sm bg-white/80 dark:bg-stone-800/80 text-stone-600 dark:text-stone-300 backdrop-blur-sm transition-colors active:bg-emerald-50 active:text-emerald-600"
+            className="p-2 rounded-full shadow-sm bg-white/80 dark:bg-stone-800/80 text-stone-600 dark:text-stone-300 backdrop-blur-sm transition-colors active:bg-sky-50 active:text-sky-700"
           >
             <Icons.Share />
           </button>
@@ -188,25 +188,26 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
             </span>
           </div>
         )}
-        <div className={`absolute bottom-3 left-3 text-[10px] font-black uppercase px-2 py-1 rounded shadow-sm ${
+        <div className={`absolute bottom-3 left-3 text-[10px] font-black uppercase px-2.5 py-1 rounded-full shadow-sm ${
           isSponsoredActive ? 'bg-stone-950/80 text-amber-300 backdrop-blur-sm' : 'bg-emerald-600 text-white'
         }`}>
           {getTranslatedBadge()}
         </div>
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0d2035]/45 via-transparent to-transparent pointer-events-none" />
       </div>
-      <div className="p-4">
+      <div className="p-4 bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(240,248,255,0.92)_100%)]">
         <div className="flex justify-between items-start mb-1">
-          <h3 className="font-bold text-stone-800 dark:text-stone-100 text-lg leading-tight">{spot.name}</h3>
+          <h3 className="font-extrabold text-[#102132] dark:text-stone-100 text-lg leading-tight">{spot.name}</h3>
           <div className="flex items-center gap-1">
             <Icons.Star />
             <span className="text-sm font-medium dark:text-stone-300">{spot.rating}</span>
           </div>
         </div>
-        <p className="text-stone-500 dark:text-stone-400 text-sm mb-3">{spot.location}, {spot.province}</p>
+        <p className="text-slate-600 dark:text-stone-400 text-sm mb-3">{spot.location}, {spot.province}</p>
         <div className="flex justify-between items-end">
           <div className="flex flex-col">
             <div>
-              <span className="font-bold text-emerald-800 dark:text-emerald-400 text-lg">
+              <span className="font-extrabold text-sky-800 dark:text-sky-300 text-lg">
                 {spot.price > 0 ? `$${spot.price}${isForeigner ? ' ARS' : ''}` : (language === 'en' ? 'Free' : 'Gratis')}
               </span>
               {spot.price > 0 && <span className="text-xs text-stone-400 dark:text-stone-500 font-medium"> / {language === 'en' ? 'night' : 'noche'}</span>}

@@ -34,7 +34,7 @@ class RootErrorBoundary extends React.Component<
       return (
         <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0c0a09', color: '#fff', padding: 24 }}>
           <div style={{ maxWidth: 420, background: '#1c1917', border: '1px solid #44403c', borderRadius: 24, padding: 24 }}>
-            <h1 style={{ margin: 0, fontSize: 24 }}>Explorer</h1>
+            <h1 style={{ margin: 0, fontSize: 24 }}>Recorre Argentina</h1>
             <p style={{ marginTop: 12, marginBottom: 0, fontWeight: 600 }}>La app encontró un error al iniciar.</p>
             <p style={{ marginTop: 8, marginBottom: 16, opacity: 0.85 }}>{this.state.message}</p>
             <button

@@ -181,6 +181,10 @@ const ADMIN_PORTAL_PATH = '/portal';
 const ADMIN_INACTIVITY_TIMEOUT_MS = 10 * 60 * 1000;
 const REFUGE_APPLICATIONS_STORAGE_KEY = 'cumbre_refuge_applications';
 const OAUTH_FLOW_STORAGE_KEY = 'cumbre_oauth_flow';
+const MOCK_REGISTERED_EXPLORER_KEY = 'recorre_mock_registered_explorer';
+const MOCK_REGISTERED_PROVIDER_KEY = 'recorre_mock_registered_provider';
+const MOCK_PROFILE_EXPLORER_KEY = 'recorre_mock_profile_explorer';
+const MOCK_PROFILE_PROVIDER_KEY = 'recorre_mock_profile_provider';
 const CHAT_THREADS_STORAGE_KEY = 'cumbre_chat_threads';
 const CHAT_MESSAGES_STORAGE_KEY = 'cumbre_chat_messages';
 const CHAT_PENDING_THREADS_STORAGE_KEY = 'cumbre_chat_pending_threads';
@@ -569,8 +573,9 @@ const hydrateAuthUser = async (sessionUser: any) => {
 };
 
 const PROVIDER_SERVICE_OPTIONS = [
-  { id: 'shelters', labelEs: 'Refugios', labelEn: 'Shelters' },
-  { id: 'activities', labelEs: 'Actividades', labelEn: 'Activities' },
+  { id: 'shelters', labelEs: 'Sitios', labelEn: 'Places' },
+  { id: 'activities', labelEs: 'Experiencias', labelEn: 'Experiences' },
+  { id: 'gastronomy', labelEs: 'Gastronómicas', labelEn: 'Food & Drink' },
   { id: 'courses', labelEs: 'Cursos', labelEn: 'Courses' },
   { id: 'events', labelEs: 'Eventos', labelEn: 'Events' },
   { id: 'shops', labelEs: 'Tiendas', labelEn: 'Shops' },
@@ -578,6 +583,7 @@ const PROVIDER_SERVICE_OPTIONS = [
 
 const SPORT_ICON_MAP: Record<ActivityType, string> = {
   [ActivityType.TREKKING]: '🥾',
+  [ActivityType.GASTRONOMIA]: '🍽️',
   [ActivityType.ESCALADA]: '🧗',
   [ActivityType.BOULDER]: '🪨',
   [ActivityType.MONTANISMO]: '🏔️',
@@ -659,7 +665,7 @@ const App: React.FC = () => {
     isSavingCommunicationPreferences, communicationPreferencesMessage,
   } = usePreferencesViewModel(currentProfileId);
   
-  const [activePlaceTypes, setActivePlaceTypes] = useState<Array<PlaceType | 'Expediciones' | 'Eventos' | 'Cursos'>>([PlaceType.REFUGIO]);
+  const [activePlaceTypes, setActivePlaceTypes] = useState<Array<PlaceType | 'Recorridos' | 'Eventos' | 'Cursos'>>([PlaceType.REFUGIO]);
   const [activeMonthYearFilter, setActiveMonthYearFilter] = useState('');
   const [showActivityFilter, setShowActivityFilter] = useState(false);
   const [communityTab, setCommunityTab] = useState<'network' | 'messages' | 'events'>('network');
@@ -848,7 +854,7 @@ const App: React.FC = () => {
     media: [],
     bodyHtml: '',
     bodyText: '',
-    authorName: 'Equipo Explorer',
+    authorName: 'Equipo Recorre Argentina',
     publishedAt: new Date().toISOString().slice(0, 16),
     isPublished: true,
   });
@@ -1267,11 +1273,11 @@ const App: React.FC = () => {
   const [availabilityChecks, setAvailabilityChecks] = useState<AvailabilityCheck[]>([]);
   const [showActivityFilterDropdown, setShowActivityFilterDropdown] = useState(false);
   const [showExploreFilterSheet, setShowExploreFilterSheet] = useState(false);
-  const [draftExplorePlaceTypes, setDraftExplorePlaceTypes] = useState<Array<PlaceType | 'Expediciones' | 'Eventos' | 'Cursos'>>([]);
-  const [draftExploreActivities, setDraftExploreActivities] = useState<ActivityType[]>([]);
+  const [draftExplorePlaceTypes, setDraftExplorePlaceTypes] = useState<Array<PlaceType | 'Recorridos' | 'Eventos' | 'Cursos'>>([]);
+  const [draftExploreExperiences, setDraftExploreExperiences] = useState<ActivityType[]>([]);
   const [worldTab, setWorldTab] = useState<'shelters' | 'activities'>('shelters');
-  const [worldActivityScope, setWorldActivityScope] = useState<'extreme' | 'courses' | 'trainings' | 'events'>('extreme');
-  const [worldExtremeActivities, setWorldExtremeActivities] = useState<ActivityType[]>([]);
+  const [worldActivityScope, setWorldActivityScope] = useState<'extreme' | 'courses' | 'trainings' | 'events' | 'gastronomy'>('extreme');
+  const [worldExtremeExperiences, setWorldExtremeExperiences] = useState<ActivityType[]>([]);
   const [showWorldExtremeFilter, setShowWorldExtremeFilter] = useState(true);
   const [likedPostIds, setLikedPostIds] = useState<Set<string>>(new Set());
   const [likedCommentIds, setLikedCommentIds] = useState<Set<string>>(new Set());
@@ -1736,6 +1742,7 @@ const App: React.FC = () => {
     const nextTypes: ProviderListingType[] = [];
     if (services.includes('shelters')) nextTypes.push(ActivityType.TREKKING);
     if (services.includes('activities')) nextTypes.push(ActivityType.ESCALADA);
+    if (services.includes('gastronomy')) nextTypes.push(ActivityType.GASTRONOMIA);
     if (services.includes('courses')) nextTypes.push(ActivityType.BOULDER);
     if (services.includes('events')) nextTypes.push(ActivityType.MONTANISMO);
     if (services.includes('shops')) nextTypes.push('shop');
@@ -1937,7 +1944,7 @@ const App: React.FC = () => {
         media: selectedItem.media || [],
         bodyHtml: editorHtml,
         bodyText: selectedItem.bodyText || htmlToPlainText(editorHtml),
-        authorName: selectedItem.authorName || 'Equipo Explorer',
+        authorName: selectedItem.authorName || 'Equipo Recorre Argentina',
         publishedAt: selectedItem.publishedAt ? selectedItem.publishedAt.slice(0, 16) : new Date().toISOString().slice(0, 16),
         isPublished: selectedItem.isPublished,
       });
@@ -2135,7 +2142,7 @@ const App: React.FC = () => {
     const activityNames = Array.from(new Set(
       organizerSpots
         .map((spot) => {
-          if (spot.activityType && expeditionActivityTypes.includes(spot.activityType)) return regLang === 'es' ? 'Expediciones' : 'Expeditions';
+          if (spot.activityType && expeditionActivityTypes.includes(spot.activityType)) return regLang === 'es' ? 'Recorridos' : 'Routes';
           if (spot.kind === 'event') return regLang === 'es' ? 'Eventos' : 'Events';
           if (spot.kind === 'course') return regLang === 'es' ? 'Cursos' : 'Courses';
           return spot.activityType || spot.placeType;
@@ -2143,8 +2150,9 @@ const App: React.FC = () => {
         .filter(Boolean)
     ));
     const providerPublishLabels: Record<ActivityType, string> = {
-      [ActivityType.TREKKING]: regLang === 'es' ? 'Refugios' : 'Shelters',
-      [ActivityType.ESCALADA]: regLang === 'es' ? 'Actividades' : 'Activities',
+      [ActivityType.TREKKING]: regLang === 'es' ? 'Sitios' : 'Places',
+      [ActivityType.GASTRONOMIA]: regLang === 'es' ? 'Gastronómicas' : 'Food & Drink',
+      [ActivityType.ESCALADA]: regLang === 'es' ? 'Experiencias' : 'Experiences',
       [ActivityType.BOULDER]: regLang === 'es' ? 'Cursos' : 'Courses',
       [ActivityType.MONTANISMO]: regLang === 'es' ? 'Eventos' : 'Events',
       [ActivityType.SKI]: 'Ski',
@@ -2156,7 +2164,7 @@ const App: React.FC = () => {
           if (spot.kind === 'event') return regLang === 'es' ? 'Eventos' : 'Events';
           if (spot.kind === 'course') return regLang === 'es' ? 'Cursos' : 'Courses';
           if (spot.activityType) return providerPublishLabels[spot.activityType] || spot.activityType;
-          if (spot.placeType === PlaceType.REFUGIO) return regLang === 'es' ? 'Refugios' : 'Shelters';
+          if (spot.placeType === PlaceType.REFUGIO) return regLang === 'es' ? 'Sitios' : 'Places';
           return null;
         })
         .filter(Boolean)
@@ -2173,7 +2181,7 @@ const App: React.FC = () => {
       listingsCount: organizerSpots.length,
       activityLabel: activityNames.join(' · ') || (resolvedIsProvider
         ? (regLang === 'es' ? 'Prestador' : 'Provider')
-        : (regLang === 'es' ? 'Explorador' : 'Explorer')),
+        : (regLang === 'es' ? 'Viajero' : 'Traveler')),
       listingTypes,
       isFollowing: !!friend.isFollowing,
     });
@@ -2490,7 +2498,7 @@ const App: React.FC = () => {
     const optimisticCommentId = `comment-${post.id}-${Date.now()}`;
     const optimisticComment = {
       id: optimisticCommentId,
-      authorName: profileData.name || (regLang === 'es' ? 'Explorador' : 'Explorer'),
+      authorName: profileData.name || (regLang === 'es' ? 'Viajero' : 'Traveler'),
       authorHandle: currentUserHandle,
       text: commentText,
       createdAt: regLang === 'es' ? 'Ahora' : 'Now',
@@ -3071,9 +3079,9 @@ const App: React.FC = () => {
   );
   const sendProviderRejectionEmail = (name: string, email: string, message: string) => {
     if (!email) return;
-    const subject = encodeURIComponent('Solicitud de prestador rechazada - Explorer');
+    const subject = encodeURIComponent('Solicitud de prestador rechazada - Recorre Argentina');
     const body = encodeURIComponent(
-      `Hola ${name || 'prestador'},\n\nTu solicitud de prestador fue rechazada.\n\nMotivo:\n${message}\n\nPodés corregir la información y reenviar la solicitud desde la app.\n\nEquipo Explorer`
+      `Hola ${name || 'prestador'},\n\nTu solicitud de prestador fue rechazada.\n\nMotivo:\n${message}\n\nPodés corregir la información y reenviar la solicitud desde la app.\n\nEquipo Recorre Argentina`
     );
     window.open(`mailto:${email}?subject=${subject}&body=${body}`, '_blank');
   };
@@ -3548,7 +3556,7 @@ const App: React.FC = () => {
             locale: regLang,
             payload: {
               ...bookingCommunicationBasePayload,
-              userName: targetBooking.reservationName || profileData.name || 'Explorer',
+              userName: targetBooking.reservationName || profileData.name || 'Recorre Argentina',
               providerName: profileData.name || 'Prestador',
               message: regLang === 'es'
                 ? 'Tu reserva fue confirmada por el prestador.'
@@ -3584,7 +3592,7 @@ const App: React.FC = () => {
             locale: regLang,
             payload: {
               ...bookingCommunicationBasePayload,
-              userName: targetBooking.reservationName || profileData.name || 'Explorer',
+              userName: targetBooking.reservationName || profileData.name || 'Recorre Argentina',
               providerName: profileData.name || 'Prestador',
               reason: payload?.providerMessage || '',
               message: regLang === 'es'
@@ -3619,7 +3627,7 @@ const App: React.FC = () => {
             locale: regLang,
             payload: {
               ...bookingCommunicationBasePayload,
-              userName: targetBooking.reservationName || profileData.name || 'Explorer',
+              userName: targetBooking.reservationName || profileData.name || 'Recorre Argentina',
               providerName: profileData.name || 'Prestador',
               reason: payload?.providerMessage || '',
               message: regLang === 'es' ? 'El prestador canceló la reserva.' : 'The provider cancelled the booking.',
@@ -3640,7 +3648,7 @@ const App: React.FC = () => {
             payload: {
               ...bookingCommunicationBasePayload,
               userName: profileData.name || 'Prestador',
-              explorerName: targetBooking.reservationName || profileData.name || 'Explorer',
+              explorerName: targetBooking.reservationName || profileData.name || 'Recorre Argentina',
               reason: payload?.providerMessage || targetBooking.providerMessage || '',
               message: regLang === 'es' ? 'El explorador canceló la reserva.' : 'The explorer cancelled the booking.',
             },
@@ -3664,7 +3672,7 @@ const App: React.FC = () => {
             payload: {
               ...bookingCommunicationBasePayload,
               userName: profileData.name || 'Prestador',
-              explorerName: targetBooking.reservationName || profileData.name || 'Explorer',
+              explorerName: targetBooking.reservationName || profileData.name || 'Recorre Argentina',
               message: regLang === 'es' ? 'El explorador modificó una reserva. Revisala nuevamente.' : 'The explorer modified a booking. Please review it again.',
             },
           });
@@ -3738,7 +3746,7 @@ const App: React.FC = () => {
           regLang === 'es' ? 'Nueva pre-reserva para validar' : 'New availability check to review',
           regLang === 'es'
             ? `${profileData.name || 'Explorador'} solicitó disponibilidad del ${formatDisplayDate(input.dateFrom)} al ${formatDisplayDate(input.dateTo)} para ${input.peopleCount} personas.`
-            : `${profileData.name || 'Explorer'} requested availability from ${formatDisplayDate(input.dateFrom)} to ${formatDisplayDate(input.dateTo)} for ${input.peopleCount} people.`,
+            : `${profileData.name || 'Recorre Argentina'} requested availability from ${formatDisplayDate(input.dateFrom)} to ${formatDisplayDate(input.dateTo)} for ${input.peopleCount} people.`,
           currentProfileId,
           'booking_pending_review'
         );
@@ -3755,7 +3763,7 @@ const App: React.FC = () => {
             bookingDateFrom: input.dateFrom,
             bookingDateTo: input.dateTo,
             peopleCount: input.peopleCount,
-            explorerName: profileData.name || (regLang === 'es' ? 'Explorador' : 'Explorer'),
+            explorerName: profileData.name || (regLang === 'es' ? 'Viajero' : 'Traveler'),
             message:
               regLang === 'es'
                 ? `Nuevo chequeo de disponibilidad pendiente para ${spot.name || 'Refugio'} (${formatDisplayDate(input.dateFrom)} al ${formatDisplayDate(input.dateTo)} · ${input.peopleCount} personas).`
@@ -5128,7 +5136,7 @@ const App: React.FC = () => {
   useEffect(() => {
     if (!showExploreFilterSheet) return;
     setDraftExplorePlaceTypes(activePlaceTypes);
-    setDraftExploreActivities(activeActivity);
+    setDraftExploreExperiences(activeActivity);
   }, [showExploreFilterSheet, activePlaceTypes, activeActivity]);
 
   const refreshPublishedSpots = useCallback(async () => {
@@ -5555,8 +5563,8 @@ const App: React.FC = () => {
       province: draft.province || 'Argentina',
       country: 'Argentina',
       description: isActivityListing
-        ? (draft.expeditionDescription.trim() || draft.accessInfo.trim() || 'Actividad outdoor.')
-        : (draft.accessInfo.trim() || (isRefugio ? 'Refugio de montaña.' : 'Actividad outdoor.')),
+        ? (draft.expeditionDescription.trim() || draft.accessInfo.trim() || 'Experiencia turística en Argentina.')
+        : (draft.accessInfo.trim() || (isRefugio ? 'Refugio de montaña.' : 'Experiencia turística en Argentina.')),
       price: Number(draft.bedPrice) > 0
         ? Number(draft.bedPrice)
         : Number(draft.tentPrice) > 0
@@ -5949,10 +5957,13 @@ const App: React.FC = () => {
     if (isSocialAuthLoading) return;
     if (APP_MOCK_MODE) {
       const mockRole = providerFlow ? 'provider' : 'explorer';
+      const mockRegisteredKey = providerFlow ? MOCK_REGISTERED_PROVIDER_KEY : MOCK_REGISTERED_EXPLORER_KEY;
+      const mockProfileKey = providerFlow ? MOCK_PROFILE_PROVIDER_KEY : MOCK_PROFILE_EXPLORER_KEY;
+      const hasCompletedMockRegistration = localStorage.getItem(mockRegisteredKey) === 'true' || Boolean(localStorage.getItem(mockProfileKey));
       setIsProviderFlow(providerFlow);
       setIsProviderUser(providerFlow);
-      setIsRegistering(false);
-      setIsAuthenticated(true);
+      setIsRegistering(!hasCompletedMockRegistration);
+      setIsAuthenticated(hasCompletedMockRegistration);
       setCurrentProfileId(`mock-${mockRole}`);
       setOauthEmailLocked(false);
       setProfileData((prev) => ({
@@ -5963,8 +5974,12 @@ const App: React.FC = () => {
       }));
       setSocialAuthLoadingLabel('');
       setIsSocialAuthLoading(false);
-      setCurrentView(providerFlow ? 'shelters' : 'explore_public');
-      showToast(regLang === 'es' ? 'Modo mock activo: acceso local habilitado.' : 'Mock mode active: local access enabled.');
+      if (hasCompletedMockRegistration) {
+        setCurrentView(providerFlow ? 'shelters' : 'explore_public');
+        showToast(regLang === 'es' ? 'Modo mock activo: acceso local habilitado.' : 'Mock mode active: local access enabled.');
+      } else {
+        showToast(regLang === 'es' ? 'Completá tu registro para continuar.' : 'Complete your registration to continue.');
+      }
       return;
     }
     try {
@@ -6207,7 +6222,7 @@ const App: React.FC = () => {
   const renderTerms = () => (
     <div className="fixed inset-0 z-[110] max-w-md mx-auto bg-stone-950 flex flex-col items-center justify-center p-8 overflow-hidden">
       <div className="absolute inset-0 opacity-60">
-        <img src="https://images.unsplash.com/photo-1551632811-561732d1e306?auto=format&fit=crop&q=80&w=1200" className="w-full h-full object-cover" alt="Outdoor Person" />
+        <img src="https://images.unsplash.com/photo-1483729558449-99ef09a8c325?auto=format&fit=crop&q=80&w=1200" className="w-full h-full object-cover" alt="Cataratas en Argentina" />
       </div>
       <div className="absolute inset-0 bg-gradient-to-b from-stone-900/30 via-stone-950/70 to-stone-950"></div>
       
@@ -6224,13 +6239,13 @@ const App: React.FC = () => {
               <p className="text-xs font-bold text-emerald-700 dark:text-emerald-300">{acceptanceDate}</p>
             </div>
           )}
-          <p>Bienvenido a Explorer. Al utilizar nuestra aplicación, usted acepta los siguientes términos:</p>
+          <p>Bienvenido a Recorre Argentina. Al utilizar nuestra aplicación, usted acepta los siguientes términos:</p>
           <h3 className="font-black text-stone-800 dark:text-stone-100 uppercase text-[10px] tracking-widest">1. Uso de la Plataforma</h3>
-          <p>Explorer es una herramienta informativa. La práctica de deportes de montaña conlleva riesgos intrínsecos. Usted es responsable de su propia seguridad.</p>
+          <p>Recorre Argentina es una herramienta informativa. La práctica de deportes de montaña conlleva riesgos intrínsecos. Usted es responsable de su propia seguridad.</p>
           <h3 className="font-black text-stone-800 dark:text-stone-100 uppercase text-[10px] tracking-widest">2. Privacidad</h3>
           <p>Sus datos se utilizan para mejorar su experiencia y conectar con otros exploradores. No compartimos su información personal con terceros sin su consentimiento.</p>
           <h3 className="font-black text-stone-800 dark:text-stone-100 uppercase text-[10px] tracking-widest">3. Responsabilidad</h3>
-          <p>Explorer no se hace responsable por accidentes, cambios climáticos o condiciones de los senderos/muros informados por la comunidad.</p>
+          <p>Recorre Argentina no se hace responsable por accidentes, cambios climáticos o condiciones de los senderos/muros informados por la comunidad.</p>
           <p>Al continuar, usted declara ser mayor de edad y estar en condiciones físicas para las actividades que decida realizar.</p>
         </div>
 
@@ -6339,6 +6354,16 @@ const App: React.FC = () => {
                   }
                 }
               }
+              if (APP_MOCK_MODE) {
+                const mockRegisteredKey = isProviderFlow ? MOCK_REGISTERED_PROVIDER_KEY : MOCK_REGISTERED_EXPLORER_KEY;
+                const mockProfileKey = isProviderFlow ? MOCK_PROFILE_PROVIDER_KEY : MOCK_PROFILE_EXPLORER_KEY;
+                localStorage.setItem(mockRegisteredKey, 'true');
+                localStorage.setItem(mockProfileKey, JSON.stringify({
+                  profileId: currentProfileId,
+                  email: profileData.email,
+                  name: profileData.name,
+                }));
+              }
               setIsAuthenticated(true);
               setIsRegistering(false);
               setIsProviderUser(isProviderFlow);
@@ -6361,20 +6386,20 @@ const App: React.FC = () => {
   const renderLanding = () => {
     const landingStats = [
       { value: regLang === 'es' ? 'Refugios' : 'Shelters', label: regLang === 'es' ? 'Hospedajes y bases en montaña' : 'Mountain stays and base camps' },
-      { value: regLang === 'es' ? 'Actividades' : 'Activities', label: regLang === 'es' ? 'Experiencias filtradas por deporte' : 'Experiences filtered by sport' },
-      { value: regLang === 'es' ? 'Tiendas' : 'Shops', label: regLang === 'es' ? 'Marcas y equipamiento outdoor' : 'Brands and outdoor gear' },
+      { value: regLang === 'es' ? 'Actividades' : 'Activities', label: regLang === 'es' ? 'Experiencias por interés y tipo de viaje' : 'Experiences by interest and trip style' },
+      { value: regLang === 'es' ? 'Tiendas' : 'Shops', label: regLang === 'es' ? 'Tiendas, gastronomía y servicios locales' : 'Shops, gastronomy, and local services' },
     ];
     const audienceCards = [
       {
         title: regLang === 'es' ? 'Exploradores' : 'Explorers',
         copy: regLang === 'es'
-          ? 'Entrás y en segundos encontrás opciones para salir, organizarte y conectar con el mundo outdoor desde una sola app.'
-          : 'You jump in and within seconds find options to go out, get organized, and connect with the outdoor world from one app.',
+          ? 'Entrás y en segundos encontrás opciones para salir, organizarte y conectar con distintas experiencias de viaje desde una sola app.'
+          : 'You jump in and within seconds find options to go out, get organized, and connect with different travel experiences from one app.',
         icon: <Icons.Mountain />,
         image: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&q=80&w=1800',
         badge: regLang === 'es' ? 'Para salir más y decidir mejor' : 'For getting out more and deciding better',
         highlights: regLang === 'es'
-          ? ['Elegís expediciones y actividades según deporte o zona', 'Reservás refugios y encontrás base para tu próxima salida', 'Te sumás a cursos y eventos sin perderte nada', 'Explorás tiendas y servicios útiles para equiparte', 'También tenés una red para conectar con personas y prestadores']
+          ? ['Elegís aventuras, cursos, talleres y propuestas familiares por zona', 'Reservás experiencias y organizás tu plan completo desde la app', 'Te sumás a cursos y eventos sin perderte nada', 'Explorás tiendas y servicios útiles para equiparte', 'También tenés una red para conectar con personas y prestadores']
           : ['Choose expeditions and activities by sport or area', 'Book shelters and find a base for your next outing', 'Join courses and events without missing anything', 'Explore shops and useful services to gear up', 'You also get a network to connect with people and providers'],
       },
       {
@@ -6386,7 +6411,7 @@ const App: React.FC = () => {
         image: 'https://images.unsplash.com/photo-1519904981063-b0cf448d479e?auto=format&fit=crop&q=80&w=1800',
         badge: regLang === 'es' ? 'Para publicar y operar con más orden' : 'For publishing and operating with more order',
         highlights: regLang === 'es'
-          ? ['Alta de refugios, actividades, cursos, eventos y tiendas', 'Reservas, inscripciones y visibilidad en una sola app', 'Más control y menos caos operativo']
+          ? ['Alta de experiencias, cursos, talleres, propuestas gastronómicas y tiendas', 'Reservas, inscripciones y visibilidad en una sola app', 'Más control y menos caos operativo']
           : ['Onboard shelters, activities, courses, events, and shops', 'Bookings, enrollments, and visibility in one app', 'More control and less operational chaos'],
       },
     ];
@@ -6424,7 +6449,7 @@ const App: React.FC = () => {
           ? 'Menos vueltas para decidir una salida: encontrás opciones, entendés qué te piden y resolvés todo con más claridad.'
           : 'Less friction when planning an outing: find options, understand requirements, and sort everything out more clearly.',
         bullets: regLang === 'es'
-          ? ['Refugios, actividades y cursos en un mismo lugar', 'Requisitos visibles antes de reservar', 'Menos mensajes cruzados y más info útil']
+          ? ['Aventuras, cursos, talleres y propuestas familiares en un mismo lugar', 'Requisitos visibles antes de reservar', 'Menos mensajes cruzados y más info útil']
           : ['Shelters, activities, and courses in one place', 'Requirements visible before booking', 'Less scattered messaging and more useful info'],
       },
       {
@@ -6441,7 +6466,7 @@ const App: React.FC = () => {
     const sportsShowcase = [
       {
         name: 'Trekking',
-        color: 'from-emerald-400 to-lime-300',
+        color: 'from-sky-400 to-lime-300',
         image: 'https://images.unsplash.com/photo-1551632811-561732d1e306?auto=format&fit=crop&q=80&w=1200',
       },
       {
@@ -6466,7 +6491,7 @@ const App: React.FC = () => {
       },
       {
         name: 'Rafting',
-        color: 'from-teal-400 to-emerald-300',
+        color: 'from-teal-400 to-sky-300',
         image: 'https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&q=80&w=1200',
       },
       {
@@ -6476,7 +6501,7 @@ const App: React.FC = () => {
       },
       {
         name: 'Kayak',
-        color: 'from-emerald-400 to-teal-300',
+        color: 'from-sky-400 to-teal-300',
         image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=1200',
       },
       {
@@ -6518,18 +6543,18 @@ const App: React.FC = () => {
     return (
       <div className="min-h-screen bg-[linear-gradient(180deg,#f4efe7_0%,#efe7d8_50%,#f7f2ea_100%)] text-stone-950">
         <div className="relative overflow-hidden text-white">
-          <img src={heroOutdoorImage} alt="Montañismo outdoor" className="absolute inset-0 h-full w-full object-cover" />
+          <img src={heroOutdoorImage} alt="Paisajes de Argentina" className="absolute inset-0 h-full w-full object-cover" />
           <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(7,18,14,0.86)_0%,rgba(12,44,35,0.74)_45%,rgba(18,64,52,0.54)_100%)]" />
           <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px)', backgroundSize: '36px 36px' }} />
           <div className="relative mx-auto max-w-7xl px-6 py-6 lg:px-10">
             <div className="flex items-center justify-between gap-4 rounded-full border border-white/10 bg-white/5 px-5 py-3 backdrop-blur">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-400 text-stone-950 shadow-lg shadow-emerald-500/30">
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-sky-400 text-stone-950 shadow-lg shadow-emerald-500/30">
                   <Icons.Map />
                 </div>
                 <div>
-                  <p className="text-lg font-black italic tracking-tight">Explorer</p>
-                  <p className="text-[10px] font-black uppercase tracking-[0.22em] text-white/60">Outdoor ecosystem</p>
+                  <p className="text-lg font-black italic tracking-tight">Recorre Argentina</p>
+                  <p className="text-[10px] font-black uppercase tracking-[0.22em] text-white/60">Ecosistema de turismo</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
@@ -6550,23 +6575,23 @@ const App: React.FC = () => {
 
             <div className="grid gap-10 py-14 lg:grid-cols-[1.08fr_0.92fr] lg:items-center lg:py-24">
               <div className="max-w-3xl">
-                <p className="inline-flex rounded-full border border-emerald-300/30 bg-emerald-300/10 px-4 py-2 text-[10px] font-black uppercase tracking-[0.26em] text-emerald-200">
-                  {regLang === 'es' ? 'Salidas, reservas y comunidad outdoor' : 'Outdoor trips, bookings, and community'}
+                <p className="inline-flex rounded-full border border-sky-300/30 bg-sky-300/10 px-4 py-2 text-[10px] font-black uppercase tracking-[0.26em] text-sky-200">
+                  {regLang === 'es' ? 'Viajes, reservas y comunidad argentina' : 'Trips, bookings, and local community'}
                 </p>
                 <h1 className="mt-6 max-w-4xl text-5xl font-black italic leading-[0.95] tracking-[-0.04em] sm:text-6xl lg:text-7xl">
                   {regLang === 'es'
                     ? 'Una forma más simple de encontrar planes, lugares y gente para salir.'
-                    : 'Everything you need to live the outdoor world, in one place.'}
+                    : 'Everything you need to travel Argentina, in one place.'}
                 </h1>
                 <p className="mt-6 max-w-2xl text-base font-bold leading-7 text-white/74 sm:text-lg">
                   {regLang === 'es'
-                    ? 'Descubrí refugios, actividades, cursos, eventos, tiendas y personas con las que salir. Y si ofrecés experiencias, también podés mostrarlas y gestionarlas desde acá.'
-                    : 'Discover shelters, activities, courses, events, shops, and people to head outdoors with. If you also offer experiences, you can publish and manage them from the same ecosystem.'}
+                    ? 'Descubrí aventuras, cursos, talleres, experiencias gastronómicas, tiendas y propuestas para toda la familia. Si ofrecés experiencias, también podés publicarlas y gestionarlas desde acá.'
+                    : 'Discover adventures, courses, workshops, gastronomy, shops, and family-friendly plans. If you offer experiences, you can publish and manage them from the same ecosystem.'}
                 </p>
                 <div className="mt-8 flex flex-wrap gap-3">
                   <button
                     onClick={() => navigateToPath(APP_PUBLIC_PATH)}
-                    className="rounded-full bg-emerald-400 px-6 py-3 text-xs font-black uppercase tracking-[0.22em] text-stone-950 shadow-[0_20px_40px_rgba(16,185,129,0.24)] transition hover:-translate-y-0.5"
+                    className="rounded-full bg-sky-400 px-6 py-3 text-xs font-black uppercase tracking-[0.22em] text-stone-950 shadow-[0_20px_40px_rgba(16,185,129,0.24)] transition hover:-translate-y-0.5"
                   >
                     {regLang === 'es' ? 'Quiero conocer la app' : 'I want to see the app'}
                   </button>
@@ -6580,7 +6605,7 @@ const App: React.FC = () => {
                 <div className="mt-10 grid gap-3 sm:grid-cols-3">
                   {landingStats.map((stat) => (
                     <div key={stat.value} className="rounded-[1.75rem] border border-white/10 bg-white/6 p-4 backdrop-blur">
-                      <p className="text-sm font-black uppercase tracking-[0.18em] text-emerald-200">{stat.value}</p>
+                      <p className="text-sm font-black uppercase tracking-[0.18em] text-sky-200">{stat.value}</p>
                       <p className="mt-2 text-sm font-bold leading-6 text-white/70">{stat.label}</p>
                     </div>
                   ))}
@@ -6588,7 +6613,7 @@ const App: React.FC = () => {
               </div>
               <div className="relative min-h-[560px]">
                 <div className="absolute -left-8 top-10 h-40 w-40 rounded-full bg-amber-300/20 blur-3xl" />
-                <div className="absolute -right-10 bottom-10 h-48 w-48 rounded-full bg-emerald-300/20 blur-3xl" />
+                <div className="absolute -right-10 bottom-10 h-48 w-48 rounded-full bg-sky-300/20 blur-3xl" />
                 <div className="absolute left-1/2 top-1/2 w-[330px] max-w-[84%] -translate-x-1/2 -translate-y-1/2">
                   <div className="relative rounded-[3.6rem] bg-[#111512] p-[8px] shadow-[0_45px_100px_rgba(0,0,0,0.56)] ring-1 ring-white/12">
                     <div className="absolute -left-[3px] top-28 h-14 w-[3px] rounded-r-full bg-[#2b2f2c]" />
@@ -6603,9 +6628,9 @@ const App: React.FC = () => {
                           <div className="border-b border-stone-100 bg-white px-4 pb-3 pt-9 shadow-sm">
                             <div className="mb-4 flex items-center justify-between">
                               <div className="flex flex-col">
-                                <p className="text-[26px] font-black italic leading-none tracking-[-0.05em] text-stone-900">Explorer</p>
-                                <span className="mt-1 text-[8px] font-bold uppercase tracking-[0.18em] text-emerald-600">
-                                  {regLang === 'es' ? 'Mundo Outdoor' : 'Outdoor World'}
+                                <p className="text-[26px] font-black italic leading-none tracking-[-0.05em] text-stone-900">Recorre Argentina</p>
+                                <span className="mt-1 text-[8px] font-bold uppercase tracking-[0.18em] text-sky-600">
+                                  {regLang === 'es' ? 'Descubrí Argentina' : 'Outdoor World'}
                                 </span>
                               </div>
                               <div className="flex items-center gap-2">
@@ -6615,7 +6640,7 @@ const App: React.FC = () => {
                                 <div className="h-10 w-10 overflow-hidden rounded-2xl ring-1 ring-stone-100">
                                   <img
                                     src="https://images.unsplash.com/photo-1522163182402-834f871fd851?auto=format&fit=crop&w=400&q=80"
-                                    alt="Explorer profile"
+                                    alt="Recorre Argentina profile"
                                     className="h-full w-full object-cover"
                                   />
                                 </div>
@@ -6640,7 +6665,7 @@ const App: React.FC = () => {
                             </div>
 
                             <div className="mt-3 grid grid-cols-2 gap-2">
-                              <div className="rounded-2xl bg-emerald-800 px-3 py-3 text-center text-[10px] font-black uppercase tracking-[0.18em] text-white shadow-md">
+                              <div className="rounded-2xl bg-sky-800 px-3 py-3 text-center text-[10px] font-black uppercase tracking-[0.18em] text-white shadow-md">
                                 {regLang === 'es' ? 'Refugios' : 'Shelters'}
                               </div>
                               <div className="rounded-2xl border border-stone-200 bg-white px-3 py-3 text-center text-[10px] font-black uppercase tracking-[0.18em] text-stone-500">
@@ -6658,7 +6683,7 @@ const App: React.FC = () => {
                               ].map((chip, index) => (
                                 <div
                                   key={chip}
-                                  className={`min-w-0 rounded-xl px-3 py-2 text-center text-[8px] font-black uppercase tracking-[0.14em] leading-tight ${index === 0 ? 'bg-emerald-800 text-white' : 'border border-stone-200 bg-white text-stone-500'}`}
+                                  className={`min-w-0 rounded-xl px-3 py-2 text-center text-[8px] font-black uppercase tracking-[0.14em] leading-tight ${index === 0 ? 'bg-sky-800 text-white' : 'border border-stone-200 bg-white text-stone-500'}`}
                                 >
                                   <span className="block truncate">{chip}</span>
                                 </div>
@@ -6676,7 +6701,7 @@ const App: React.FC = () => {
                                         {regLang === 'es' ? 'Mendoza · Alta montaña' : 'Mendoza · High mountain'}
                                       </p>
                                     </div>
-                                    <div className="rounded-full bg-emerald-100 px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-emerald-700">
+                                    <div className="rounded-full bg-sky-100 px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-sky-700">
                                       4.9
                                     </div>
                                   </div>
@@ -6690,7 +6715,7 @@ const App: React.FC = () => {
 
                               <div className="grid grid-cols-2 gap-3">
                                 <div className="rounded-[1.7rem] bg-[#123826] px-4 py-4 text-white shadow-[0_15px_35px_rgba(6,78,59,0.18)]">
-                                  <p className="text-[10px] font-black uppercase tracking-[0.18em] text-emerald-200">
+                                  <p className="text-[10px] font-black uppercase tracking-[0.18em] text-sky-200">
                                     {regLang === 'es' ? 'Mapa vivo' : 'Live map'}
                                   </p>
                                   <p className="mt-2 text-base font-black leading-5">
@@ -6717,10 +6742,10 @@ const App: React.FC = () => {
                                 { label: regLang === 'es' ? 'Perfil' : 'Profile', active: false, icon: <Icons.User /> },
                               ].map((item) => (
                                 <div key={item.label} className="flex flex-col items-center gap-1.5">
-                                  <div className={`flex h-10 w-10 items-center justify-center rounded-2xl ${item.active ? 'bg-emerald-800 text-white shadow-md' : 'text-stone-400'}`}>
+                                  <div className={`flex h-10 w-10 items-center justify-center rounded-2xl ${item.active ? 'bg-sky-800 text-white shadow-md' : 'text-stone-400'}`}>
                                     {item.icon}
                                   </div>
-                                  <span className={`text-[8px] font-black uppercase tracking-[0.14em] ${item.active ? 'text-emerald-700' : 'text-stone-400'}`}>
+                                  <span className={`text-[8px] font-black uppercase tracking-[0.14em] ${item.active ? 'text-sky-700' : 'text-stone-400'}`}>
                                     {item.label}
                                   </span>
                                 </div>
@@ -6742,13 +6767,13 @@ const App: React.FC = () => {
           <div className="mx-auto max-w-7xl px-6 py-16 lg:px-10 lg:py-24">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <p className="text-[11px] font-black uppercase tracking-[0.25em] text-emerald-700">
+              <p className="text-[11px] font-black uppercase tracking-[0.25em] text-sky-700">
                 {regLang === 'es' ? 'Una plataforma, varios roles' : 'One platform, multiple roles'}
               </p>
               <h2 className="mt-3 max-w-2xl text-4xl font-black italic tracking-tight text-stone-950 sm:text-5xl">
                 {regLang === 'es'
-                  ? 'Explorer acompaña a quien sale y también a quien organiza experiencias.'
-                  : 'Two ways to use Explorer, one well-organized experience.'}
+                  ? 'Recorre Argentina acompaña a quien sale y también a quien organiza experiencias.'
+                  : 'Two ways to use Recorre Argentina, one well-organized experience.'}
               </h2>
             </div>
             <p className="max-w-xl text-sm font-bold leading-7 text-stone-500">
@@ -6763,7 +6788,7 @@ const App: React.FC = () => {
                 <img src={card.image} alt={card.title} className="absolute inset-0 h-full w-full object-cover" />
                 <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(12,10,9,0.18)_0%,rgba(12,10,9,0.56)_45%,rgba(12,10,9,0.9)_100%)]" />
                 <div className="relative p-6 text-white">
-                <div className="inline-flex rounded-full border border-white/15 bg-white/12 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-emerald-200 backdrop-blur">
+                <div className="inline-flex rounded-full border border-white/15 bg-white/12 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-sky-200 backdrop-blur">
                   {card.badge}
                 </div>
                 <div className="mt-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-white/15 backdrop-blur text-white">
@@ -6775,7 +6800,7 @@ const App: React.FC = () => {
                   {card.highlights.map((item) => (
                     <div key={item} className="rounded-2xl border border-white/10 bg-white/10 px-4 py-3 backdrop-blur">
                       <div className="flex items-start gap-3">
-                        <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-300/20 text-emerald-200">
+                        <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-sky-300/20 text-sky-200">
                           <Icons.Check />
                         </div>
                         <p className="text-xs font-black leading-5 text-white/92">{item}</p>
@@ -6791,12 +6816,12 @@ const App: React.FC = () => {
             <div className="grid lg:grid-cols-[1.1fr_0.9fr]">
               <img
                 src="https://images.unsplash.com/photo-1501555088652-021faa106b9b?auto=format&fit=crop&q=80&w=1600"
-                alt="Vida outdoor"
+                alt="Vida de viaje"
                 className="h-full min-h-[320px] w-full object-cover"
               />
-              <div className="bg-[linear-gradient(180deg,#123b2f_0%,#0f251d_100%)] p-8 text-white">
-                <p className="text-[10px] font-black uppercase tracking-[0.24em] text-emerald-200">
-                  {regLang === 'es' ? 'Vida outdoor' : 'Outdoor life'}
+              <div className="bg-[linear-gradient(180deg,#0f3f66_0%,#0b2b46_100%)] p-8 text-white">
+                <p className="text-[10px] font-black uppercase tracking-[0.24em] text-sky-200">
+                  {regLang === 'es' ? 'Vida de viaje' : 'Travel life'}
                 </p>
                 <h3 className="mt-4 text-3xl font-black italic tracking-tight">
                   {regLang === 'es'
@@ -6805,8 +6830,8 @@ const App: React.FC = () => {
                 </h3>
                 <p className="mt-4 text-sm font-bold leading-7 text-white/75">
                   {regLang === 'es'
-                    ? 'La idea es que, apenas entrás, entiendas que hay comunidad, información útil y una forma más clara de moverte dentro del outdoor.'
-                    : 'The idea is that, as soon as you land here, you understand there is community, useful information, and a clearer way to move through the outdoor world.'}
+                    ? 'La idea es que, apenas entrás, entiendas que hay comunidad, información útil y una forma más clara de moverte dentro del turismo argentino.'
+                    : 'The idea is that, as soon as you land here, you understand there is community, useful information, and a clearer way to move through tourism in Argentina.'}
                 </p>
               </div>
             </div>
@@ -6817,24 +6842,24 @@ const App: React.FC = () => {
         <section className="border-t border-stone-200/70 bg-[#f0ece4]">
         <div className="mx-auto max-w-7xl px-6 pb-16 pt-16 lg:px-10 lg:pb-24 lg:pt-24">
           <div className="grid gap-8 xl:grid-cols-[1.1fr_0.9fr]">
-            <div className="rounded-[2rem] bg-[linear-gradient(180deg,#17352a_0%,#10271f_100%)] p-8 text-white shadow-sm">
-              <p className="text-[11px] font-black uppercase tracking-[0.25em] text-emerald-200">
+            <div className="rounded-[2rem] bg-[linear-gradient(180deg,#11456d_0%,#0c2f4d_100%)] p-8 text-white shadow-sm">
+              <p className="text-[11px] font-black uppercase tracking-[0.25em] text-sky-200">
                 {regLang === 'es' ? 'Producto real' : 'Real product'}
               </p>
               <h2 className="mt-3 max-w-3xl text-4xl font-black italic tracking-tight sm:text-5xl">
                 {regLang === 'es'
                   ? 'Planear una salida o gestionar reservas debería sentirse mucho más simple.'
-                  : 'Going out, booking, and organizing outdoor experiences should not feel messy.'}
+                  : 'Planning, booking, and organizing travel experiences should not feel messy.'}
               </h2>
               <p className="mt-4 max-w-2xl text-sm font-bold leading-7 text-white/78">
                 {regLang === 'es'
                   ? 'La idea es bajar fricción: entender rápido qué hay, qué te piden y qué tenés que hacer después. Y del otro lado, trabajar con más orden.'
-                  : 'Explorer is designed to make finding a plan, understanding requirements, and following a booking simpler. And to give providers less operational chaos.'}
+                  : 'Recorre Argentina is designed to make finding a plan, understanding requirements, and following a booking simpler. And to give providers less operational chaos.'}
               </p>
               <div className="mt-8 grid gap-4 md:grid-cols-2">
                 {appRoles.map((item) => (
                   <article key={item.title} className="rounded-[1.6rem] border border-white/10 bg-white/8 p-5 backdrop-blur-sm">
-                    <p className="text-[10px] font-black uppercase tracking-[0.22em] text-emerald-200">
+                    <p className="text-[10px] font-black uppercase tracking-[0.22em] text-sky-200">
                       {item.eyebrow}
                     </p>
                     <h3 className="mt-3 text-2xl font-black italic tracking-tight">
@@ -6857,7 +6882,7 @@ const App: React.FC = () => {
 
             <div className="grid gap-4">
               <article className="rounded-[2rem] border border-stone-200 bg-white p-6 shadow-sm">
-                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-emerald-700">
+                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-sky-700">
                   {regLang === 'es' ? 'Qué pasa hoy' : 'What happens today'}
                 </p>
                 <div className="mt-4 space-y-3">
@@ -6889,7 +6914,7 @@ const App: React.FC = () => {
                 </div>
               </article>
               <article className="rounded-[2rem] border border-stone-200 bg-white p-6 shadow-sm">
-                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-emerald-700">
+                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-sky-700">
                   {regLang === 'es' ? 'Por qué sirve' : 'Why it helps'}
                 </p>
                 <div className="mt-4 grid gap-3 sm:grid-cols-3">
@@ -6912,7 +6937,7 @@ const App: React.FC = () => {
                 </div>
               </article>
               <article className="rounded-[2rem] bg-[linear-gradient(180deg,#ede7db_0%,#ffffff_100%)] p-6 shadow-sm ring-1 ring-stone-200">
-                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-emerald-700">
+                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-sky-700">
                   {regLang === 'es' ? 'Lo importante' : 'What matters'}
                 </p>
                 <p className="mt-4 text-lg font-black italic tracking-tight text-stone-950">
@@ -6931,17 +6956,17 @@ const App: React.FC = () => {
         </div>
       </section>
 
-        <section className="relative overflow-hidden border-t border-white/10 bg-[linear-gradient(135deg,#0f172a_0%,#123b2f_45%,#0f3f34_100%)] px-6 py-16 text-white lg:px-10 lg:py-24">
+        <section className="relative overflow-hidden border-t border-white/10 bg-[linear-gradient(135deg,#0f172a_0%,#0f3f66_45%,#0f3f34_100%)] px-6 py-16 text-white lg:px-10 lg:py-24">
           <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&q=80&w=1600)', backgroundSize: 'cover', backgroundPosition: 'center' }} />
           <div className="relative mx-auto max-w-7xl">
             <div className="max-w-3xl">
-              <p className="text-[11px] font-black uppercase tracking-[0.26em] text-emerald-200">
-                {regLang === 'es' ? 'Deportes dentro de Explorer' : 'Sports inside Explorer'}
+              <p className="text-[11px] font-black uppercase tracking-[0.26em] text-sky-200">
+                {regLang === 'es' ? 'Experiencias dentro de Recorre Argentina' : 'Experiences inside Recorre Argentina'}
               </p>
               <h2 className="mt-4 text-4xl font-black italic tracking-tight sm:text-5xl">
                 {regLang === 'es'
-                  ? 'Si te gustan los deportes outdoor y la naturaleza, seguro encontrás tu lugar.'
-                  : 'If you love the outdoors, you will find your place here.'}
+                  ? 'Si querés recorrer Argentina, seguro encontrás tu lugar.'
+                  : 'If you want to explore Argentina, you will find your place here.'}
               </h2>
               <p className="mt-4 max-w-2xl text-sm font-bold leading-7 text-white/80">
                 {regLang === 'es'
@@ -6960,7 +6985,7 @@ const App: React.FC = () => {
                     <div className="px-5 py-5">
                       <p className="text-xl font-black italic tracking-tight">{sport.name}</p>
                       <p className="mt-2 text-[10px] font-black uppercase tracking-[0.22em] text-white/55">
-                      {regLang === 'es' ? 'Categoría outdoor' : 'Outdoor category'}
+                      {regLang === 'es' ? 'Categoría de experiencia' : 'Experience category'}
                       </p>
                     </div>
                   </div>
@@ -6973,13 +6998,13 @@ const App: React.FC = () => {
         <section className="border-t border-stone-200/70 bg-[#e7dfd0]">
           <div className="mx-auto grid max-w-7xl gap-10 px-6 py-16 lg:grid-cols-[0.95fr_1.05fr] lg:px-10 lg:py-24">
             <div className="rounded-[2.5rem] bg-stone-950 p-8 text-white shadow-2xl">
-              <p className="text-[11px] font-black uppercase tracking-[0.24em] text-emerald-300">
+              <p className="text-[11px] font-black uppercase tracking-[0.24em] text-sky-300">
                 {regLang === 'es' ? 'Cómo acompaña una salida' : 'How it supports a trip'}
               </p>
               <h2 className="mt-4 text-4xl font-black italic leading-tight tracking-tight">
                 {regLang === 'es'
-                  ? 'La idea es que usar Explorer se sienta más claro de principio a fin.'
-                  : 'The idea is that using Explorer feels clearer from start to finish.'}
+                  ? 'La idea es que usar Recorre Argentina se sienta más claro de principio a fin.'
+                  : 'The idea is that using Recorre Argentina feels clearer from start to finish.'}
               </h2>
               <p className="mt-4 text-sm font-bold leading-7 text-white/70">
                 {regLang === 'es'
@@ -7004,7 +7029,7 @@ const App: React.FC = () => {
                   <img src={row.image} alt={row.title} className="absolute inset-0 h-full w-full object-cover" />
                   <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(12,10,9,0.84)_0%,rgba(12,10,9,0.62)_55%,rgba(12,10,9,0.28)_100%)]" />
                   <div className="relative p-6 text-white">
-                  <p className="text-[10px] font-black uppercase tracking-[0.24em] text-emerald-200">{row.eyebrow}</p>
+                  <p className="text-[10px] font-black uppercase tracking-[0.24em] text-sky-200">{row.eyebrow}</p>
                   <h3 className="mt-3 text-2xl font-black tracking-tight">{row.title}</h3>
                   <p className="mt-3 text-sm font-bold leading-7 text-white/80">{row.copy}</p>
                   </div>
@@ -7016,14 +7041,14 @@ const App: React.FC = () => {
 
         <section className="border-t border-stone-200/70 bg-[#f6efe4]">
           <div className="mx-auto grid max-w-7xl gap-6 px-6 py-16 lg:grid-cols-[1.1fr_0.9fr] lg:px-10 lg:py-24">
-            <div className="rounded-[2.5rem] bg-[linear-gradient(180deg,#183429_0%,#10231b_100%)] p-8 text-white shadow-[0_20px_50px_rgba(20,30,20,0.14)] lg:p-10">
-              <p className="text-[10px] font-black uppercase tracking-[0.24em] text-emerald-200">
-                {regLang === 'es' ? 'Red social outdoor' : 'Outdoor social network'}
+            <div className="rounded-[2.5rem] bg-[linear-gradient(180deg,#11456d_0%,#0b2b46_100%)] p-8 text-white shadow-[0_20px_50px_rgba(20,30,20,0.14)] lg:p-10">
+              <p className="text-[10px] font-black uppercase tracking-[0.24em] text-sky-200">
+                {regLang === 'es' ? 'Comunidad viajera' : 'Travel community'}
               </p>
               <h2 className="mt-4 max-w-3xl text-4xl font-black italic tracking-tight sm:text-5xl">
                 {regLang === 'es'
-                  ? 'La comunidad no está al costado: es una parte importante de Explorer.'
-                  : 'Community is also part of Explorer.'}
+                  ? 'La comunidad no está al costado: es una parte importante de Recorre Argentina.'
+                  : 'Community is also part of Recorre Argentina.'}
               </h2>
               <p className="mt-4 max-w-3xl text-sm font-bold leading-7 text-white/78">
                 {regLang === 'es'
@@ -7033,8 +7058,8 @@ const App: React.FC = () => {
               <div className="mt-6 grid gap-3 sm:grid-cols-2">
                 {[
                   regLang === 'es'
-                    ? 'Conectar con personas que comparten intereses outdoor'
-                    : 'Connect with people who share outdoor interests',
+                    ? 'Conectar con personas que comparten intereses de viaje'
+                    : 'Connect with people who share travel interests',
                   regLang === 'es'
                     ? 'Descubrir tips, referencias y experiencias reales'
                     : 'Discover tips, references, and real experiences',
@@ -7051,12 +7076,12 @@ const App: React.FC = () => {
                 <div className="overflow-hidden rounded-[2rem] border border-white/10">
                   <img
                     src="https://images.unsplash.com/photo-1527631746610-bca00a040d60?auto=format&fit=crop&q=80&w=1600"
-                    alt="Grupo outdoor"
+                    alt="Grupo viajero"
                     className="h-56 w-full object-cover"
                   />
                 </div>
                 <div className="rounded-[2rem] border border-white/10 bg-white/6 p-5">
-                  <p className="text-[10px] font-black uppercase tracking-[0.22em] text-emerald-200">
+                  <p className="text-[10px] font-black uppercase tracking-[0.22em] text-sky-200">
                     {regLang === 'es' ? '¿Para qué sirve?' : 'What is it for?'}
                   </p>
                   <div className="mt-4 space-y-3 text-sm font-black leading-6 text-white/84">
@@ -7067,8 +7092,8 @@ const App: React.FC = () => {
                     </p>
                     <p>
                       {regLang === 'es'
-                        ? 'La red ayuda a descubrir gente, intercambiar info útil y sentirse más acompañado dentro del outdoor.'
-                        : 'The network helps people discover others, exchange useful information, and feel more supported outdoors.'}
+                        ? 'La red ayuda a descubrir gente, intercambiar info útil y sentirse más acompañado dentro del turismo argentino.'
+                        : 'The network helps people discover others, exchange useful information, and feel more supported while traveling.'}
                     </p>
                   </div>
                 </div>
@@ -7078,12 +7103,12 @@ const App: React.FC = () => {
               <div className="overflow-hidden rounded-[2.5rem] border border-stone-200 bg-white shadow-sm">
                 <img
                   src="https://images.unsplash.com/photo-1511988617509-a57c8a288659?auto=format&fit=crop&q=80&w=1600"
-                  alt="Comunidad outdoor"
+                  alt="Comunidad viajera"
                   className="h-full min-h-[280px] w-full object-cover"
                 />
               </div>
               <div className="rounded-[2rem] bg-white p-6 shadow-sm ring-1 ring-stone-200">
-                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-emerald-700">
+                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-sky-700">
                   {regLang === 'es' ? 'También suma' : 'Also adds'}
                 </p>
                 <div className="mt-4 grid gap-3">
@@ -7115,7 +7140,7 @@ const App: React.FC = () => {
                 <div className="overflow-hidden rounded-[1.6rem] border border-stone-200">
                   <img
                     src="https://images.pexels.com/photos/16359288/pexels-photo-16359288.jpeg?cs=srgb&dl=pexels-introspectivedsgn-16359288.jpg&fm=jpg"
-                    alt="Mochila y equipo de montanista en tienda outdoor"
+                    alt="Mesa con platos regionales y productos locales"
                     className="h-36 w-full object-cover"
                     referrerPolicy="no-referrer"
                     onError={(event) => {
@@ -7137,7 +7162,7 @@ const App: React.FC = () => {
                   />
                 </div>
               </div>
-              <p className="text-[10px] font-black uppercase tracking-[0.24em] text-emerald-700">
+              <p className="text-[10px] font-black uppercase tracking-[0.24em] text-sky-700">
                 {regLang === 'es' ? 'Tiendas y servicios' : 'Shops and services'}
               </p>
               <h2 className="mt-4 text-4xl font-black italic tracking-tight text-stone-950">
@@ -7147,16 +7172,16 @@ const App: React.FC = () => {
               </h2>
               <p className="mt-4 text-sm font-bold leading-7 text-stone-600">
                 {regLang === 'es'
-                  ? 'Explorer no se queda solo en el plan. También suma tiendas de montaña, equipamiento técnico y alquiler de equipos para que preparar una salida sea mucho más simple.'
-                  : 'Explorer does not stop at the plan. It also includes shops, brands, and useful services so getting ready for a trip feels easier.'}
+                  ? 'Recorre Argentina no se queda solo en el plan. También suma tiendas de montaña, equipamiento técnico y alquiler de equipos para que preparar una salida sea mucho más simple.'
+                  : 'Recorre Argentina does not stop at the plan. It also includes shops, brands, and useful services so getting ready for a trip feels easier.'}
               </p>
               <div className="mt-6 grid gap-3">
                 {[
                   regLang === 'es'
-                    ? 'Tiendas de montaña dentro del mismo ecosistema outdoor'
-                    : 'Brands and shops inside the same outdoor ecosystem',
+                    ? 'Tiendas y servicios dentro del mismo ecosistema turístico'
+                    : 'Shops and services inside the same travel ecosystem',
                   regLang === 'es'
-                    ? 'Alquiler de equipos para salidas, cursos o expediciones'
+                    ? 'Servicios para escapadas, cursos o actividades familiares'
                     : 'Equipment rental for outings, courses, or expeditions',
                   regLang === 'es'
                     ? 'Más contexto para saber dónde equiparte antes de salir'
@@ -7185,11 +7210,11 @@ const App: React.FC = () => {
 
         <section className="mx-auto max-w-7xl border-t border-stone-200/70 px-6 py-16 lg:px-10 lg:py-24">
             <div className="rounded-[2.5rem] bg-[linear-gradient(135deg,#11261d_0%,#17372b_50%,#2c5e4a_100%)] p-8 text-white shadow-[0_30px_80px_rgba(9,18,14,0.24)] lg:p-10">
-              <p className="text-[10px] font-black uppercase tracking-[0.24em] text-emerald-200">
-                {regLang === 'es' ? 'Descargá Explorer' : 'Download Explorer'}
+              <p className="text-[10px] font-black uppercase tracking-[0.24em] text-sky-200">
+                {regLang === 'es' ? 'Descargá Recorre Argentina' : 'Download Recorre Argentina'}
               </p>
               <h2 className="mt-4 max-w-3xl text-4xl font-black italic tracking-tight sm:text-5xl">
-                {regLang === 'es' ? 'Descargá Explorer desde tu tienda.' : 'Download Explorer from your store.'}
+                {regLang === 'es' ? 'Descargá Recorre Argentina desde tu tienda.' : 'Download Recorre Argentina from your store.'}
               </h2>
               <p className="mt-4 max-w-3xl text-sm font-bold leading-7 text-white/74">
                 {regLang === 'es'
@@ -7206,9 +7231,9 @@ const App: React.FC = () => {
                       <div className="overflow-hidden rounded-[2.7rem] border border-white/8 bg-stone-50">
                         <div className="h-[455px] bg-stone-50">
                           <div className="border-b border-stone-100 bg-white px-4 pb-3 pt-8 shadow-sm">
-                            <p className="text-[22px] font-black italic leading-none tracking-[-0.05em] text-stone-900">Explorer</p>
-                            <span className="mt-1 block text-[8px] font-bold uppercase tracking-[0.18em] text-emerald-600">
-                              {regLang === 'es' ? 'Mundo Outdoor' : 'Outdoor World'}
+                            <p className="text-[22px] font-black italic leading-none tracking-[-0.05em] text-stone-900">Recorre Argentina</p>
+                            <span className="mt-1 block text-[8px] font-bold uppercase tracking-[0.18em] text-sky-600">
+                              {regLang === 'es' ? 'Descubrí Argentina' : 'Outdoor World'}
                             </span>
                           </div>
                           <div className="px-4 py-4">
@@ -7228,7 +7253,7 @@ const App: React.FC = () => {
                             </div>
                             <div className="mt-4 grid grid-cols-2 gap-3">
                               <div className="rounded-[1.5rem] bg-[#123826] px-4 py-4 text-white">
-                                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-emerald-200">
+                                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-sky-200">
                                   {regLang === 'es' ? 'Mapa vivo' : 'Live map'}
                                 </p>
                                 <p className="mt-2 text-sm font-black leading-5">
@@ -7254,7 +7279,7 @@ const App: React.FC = () => {
                 <div className="grid gap-4 md:grid-cols-2">
                   {storeDownloadOptions.map((item, index) => (
                     <article key={item.title} className={`rounded-[2rem] border p-5 shadow-sm ${index === 0 ? 'border-white/14 bg-white text-stone-950' : 'border-white/16 bg-black/18 text-white'}`}>
-                      <p className={`text-[10px] font-black uppercase tracking-[0.22em] ${index === 0 ? 'text-emerald-700' : 'text-emerald-200'}`}>
+                      <p className={`text-[10px] font-black uppercase tracking-[0.22em] ${index === 0 ? 'text-sky-700' : 'text-sky-200'}`}>
                         {regLang === 'es' ? 'Escanear QR' : 'Scan QR'}
                       </p>
                       <h3 className="mt-3 text-2xl font-black italic tracking-tight">
@@ -7281,14 +7306,14 @@ const App: React.FC = () => {
               <div className="mt-6 flex flex-wrap gap-3">
                 <button
                   onClick={() => navigateToPath(APP_PUBLIC_PATH)}
-                  className="rounded-full border border-emerald-200/30 px-6 py-3 text-xs font-black uppercase tracking-[0.22em] text-emerald-100 transition hover:bg-white/10"
+                  className="rounded-full border border-sky-200/30 px-6 py-3 text-xs font-black uppercase tracking-[0.22em] text-sky-100 transition hover:bg-white/10"
                 >
                   {regLang === 'es' ? 'Abrir demo web' : 'Open web demo'}
                 </button>
                 <p className="self-center text-[11px] font-bold tracking-[0.04em] text-white/60">
                   {regLang === 'es'
-                    ? 'Cuando estén las fichas reales de Explorer en cada tienda, estos accesos se apuntan directo ahí.'
-                    : 'Once Explorer has its real store listings, these entry points can link directly there.'}
+                    ? 'Cuando estén las fichas reales de Recorre Argentina en cada tienda, estos accesos se apuntan directo ahí.'
+                    : 'Once Recorre Argentina has its real store listings, these entry points can link directly there.'}
                 </p>
               </div>
             </div>
@@ -7299,7 +7324,7 @@ const App: React.FC = () => {
             <div className="relative overflow-hidden rounded-[2.5rem] p-8 shadow-[0_20px_50px_rgba(245,158,11,0.18)]">
               <img
                 src="https://images.unsplash.com/photo-1522163182402-834f871fd851?auto=format&fit=crop&q=80&w=1600"
-                alt="Prestador outdoor"
+                alt="Anfitrión turístico"
                 className="absolute inset-0 h-full w-full object-cover"
               />
               <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(255,241,201,0.94)_0%,rgba(255,216,154,0.88)_45%,rgba(255,184,120,0.84)_100%)]" />
@@ -7309,12 +7334,12 @@ const App: React.FC = () => {
               </p>
               <h2 className="mt-4 text-4xl font-black italic tracking-tight text-stone-950">
                 {regLang === 'es'
-                  ? 'Si tenés algo para ofrecer en outdoor, este es tu lugar.'
-                  : 'If you have something to offer in the outdoor world, this is your place.'}
+                  ? 'Si tenés algo para ofrecer al turismo argentino, este es tu lugar.'
+                  : 'If you have something to offer to tourism in Argentina, this is your place.'}
               </h2>
               <p className="mt-4 text-sm font-bold leading-7 text-stone-700">
                 {regLang === 'es'
-                  ? 'Refugios, actividades, cursos, eventos o tiendas: podés mostrar lo que hacés, recibir consultas y ordenar tus reservas desde un mismo lugar.'
+                  ? 'Sitios, experiencias, cursos, talleres, propuestas gastronómicas o tiendas: podés mostrar lo que hacés, recibir consultas y ordenar tus reservas desde un mismo lugar.'
                   : 'Shelters, activities, courses, events, or shops: you can join, show what you do, and start getting visibility and traction inside the ecosystem.'}
               </p>
               <div className="mt-6 grid gap-3 sm:grid-cols-2">
@@ -7342,7 +7367,7 @@ const App: React.FC = () => {
                   onClick={() => navigateToPath(APP_PUBLIC_PATH)}
                   className="rounded-full bg-stone-950 px-6 py-3 text-xs font-black uppercase tracking-[0.22em] text-white transition hover:-translate-y-0.5"
                 >
-                    {regLang === 'es' ? 'Quiero ofrecer en Explorer' : 'I want to offer on Explorer'}
+                    {regLang === 'es' ? 'Quiero ofrecer en Recorre Argentina' : 'I want to offer on Recorre Argentina'}
                 </button>
                 <button
                   onClick={() => navigateToPath(APP_PUBLIC_PATH)}
@@ -7355,19 +7380,19 @@ const App: React.FC = () => {
             </div>
             <div className="overflow-hidden rounded-[2.5rem] bg-white shadow-sm ring-1 ring-stone-200">
               <div className="grid h-full md:grid-cols-[0.9fr_1.1fr]">
-                <div className="bg-[linear-gradient(180deg,#184936_0%,#0d2119_100%)] p-8 text-white">
-                  <p className="text-[10px] font-black uppercase tracking-[0.24em] text-emerald-200">
+                <div className="bg-[linear-gradient(180deg,#0f3f66_0%,#0b2b46_100%)] p-8 text-white">
+                  <p className="text-[10px] font-black uppercase tracking-[0.24em] text-sky-200">
                     {regLang === 'es' ? 'Beneficios para prestadores' : 'Benefits for providers'}
                   </p>
                   <ul className="mt-6 space-y-4 text-sm font-bold leading-7 text-white/85">
                     <li>{regLang === 'es' ? 'Mostrás tu propuesta con contexto, fotos y requisitos reales' : 'Show your offer with real context, images, and requirements'}</li>
                     <li>{regLang === 'es' ? 'Gestionás reservas e inscripciones con más seguimiento' : 'Manage bookings and enrollments with better follow-up'}</li>
-                    <li>{regLang === 'es' ? 'Ganás visibilidad dentro de una comunidad ya interesada en outdoor' : 'Gain visibility inside a community already interested in outdoor'}</li>
+                    <li>{regLang === 'es' ? 'Ganás visibilidad dentro de una comunidad interesada en recorrer Argentina' : 'Gain visibility inside a community interested in traveling Argentina'}</li>
                   </ul>
                 </div>
                 <img
                   src="https://images.unsplash.com/photo-1527631746610-bca00a040d60?auto=format&fit=crop&q=80&w=1400"
-                  alt="Prestador outdoor"
+                  alt="Anfitrión turístico"
                   className="h-full w-full object-cover"
                 />
               </div>
@@ -7379,15 +7404,15 @@ const App: React.FC = () => {
           <div className="mx-auto max-w-7xl px-6 py-12 lg:px-10">
             <div className="grid gap-8 md:grid-cols-3">
               <div>
-                <p className="text-2xl font-black italic tracking-tight">Explorer</p>
+                <p className="text-2xl font-black italic tracking-tight">Recorre Argentina</p>
                 <p className="mt-3 max-w-sm text-sm font-bold leading-7 text-white/65">
                   {regLang === 'es'
-                    ? 'Una plataforma para descubrir, publicar y conectar el mundo outdoor.'
-                    : 'A platform to discover, publish, and connect the outdoor world.'}
+                    ? 'Una plataforma para descubrir, publicar y conectar el turismo argentino.'
+                    : 'A platform to discover, publish, and connect tourism in Argentina.'}
                 </p>
               </div>
               <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.24em] text-emerald-200">
+                <p className="text-[10px] font-black uppercase tracking-[0.24em] text-sky-200">
                   {regLang === 'es' ? 'Navegación' : 'Navigation'}
                 </p>
                 <div className="mt-4 flex flex-col gap-3 text-sm font-bold text-white/75">
@@ -7399,7 +7424,7 @@ const App: React.FC = () => {
                 </div>
               </div>
               <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.24em] text-emerald-200">
+                <p className="text-[10px] font-black uppercase tracking-[0.24em] text-sky-200">
                   {regLang === 'es' ? 'Contacto' : 'Contact'}
                 </p>
                 <div className="mt-4 flex flex-col gap-3 text-sm font-bold text-white/75">
@@ -7410,7 +7435,7 @@ const App: React.FC = () => {
               </div>
             </div>
             <div className="mt-10 border-t border-white/10 pt-6 text-[10px] font-black uppercase tracking-[0.22em] text-white/45">
-              © 2026 Explorer. {regLang === 'es' ? 'Outdoor ecosystem.' : 'Outdoor ecosystem.'}
+              © 2026 Recorre Argentina. {regLang === 'es' ? 'Ecosistema de turismo.' : 'Ecosistema de turismo.'}
             </div>
           </div>
         </footer>
@@ -7555,19 +7580,19 @@ const App: React.FC = () => {
         </div>
       )}
       <div className="absolute inset-0 opacity-60">
-        <img src="https://images.unsplash.com/photo-1551632811-561732d1e306?auto=format&fit=crop&q=80&w=1200" className="w-full h-full object-cover" alt="Outdoor Person" />
+        <img src="https://images.unsplash.com/photo-1483729558449-99ef09a8c325?auto=format&fit=crop&q=80&w=1200" className="w-full h-full object-cover" alt="Cataratas en Argentina" />
       </div>
       <div className="absolute inset-0 bg-gradient-to-b from-stone-900/30 via-stone-950/70 to-stone-950"></div>
       
       {!isRegistering && !isProviderFlow ? (
         <div className="relative z-10 w-full max-w-sm flex flex-col items-center animate-in fade-in duration-700">
           <div className="mb-12 text-center">
-            <h1 className="text-6xl font-black text-white tracking-tighter mb-2 italic">Explorer</h1>
-            <p className="text-emerald-400 font-bold uppercase tracking-[0.3em] text-[10px]">Outdoor Argentina</p>
+            <h1 className="text-6xl font-black text-white tracking-tighter mb-2 italic">Recorre Argentina</h1>
+            <p className="text-emerald-400 font-bold uppercase tracking-[0.3em] text-[10px]">Descubrí Argentina</p>
           </div>
           <div className="w-full space-y-4">
             <p className="text-[9px] text-stone-400 font-black uppercase tracking-[0.2em] text-center">
-              {regLang === 'es' ? 'Acceso para Exploradores' : 'Access for Explorers'}
+              {regLang === 'es' ? 'Acceso para Viajeros' : 'Access for Travelers'}
             </p>
             <button disabled={isSocialAuthLoading} onClick={() => { void handleSocialLogin('google', false); }} className={`w-full bg-white text-stone-900 font-black py-4 rounded-2xl flex items-center justify-center gap-3 active:scale-95 transition-all shadow-xl ${isSocialAuthLoading ? 'opacity-60 cursor-not-allowed' : ''}`}>
               <Icons.Google /> {isSocialAuthLoading ? (regLang === 'es' ? 'Conectando...' : 'Connecting...') : (regLang === 'es' ? 'Continuar con Google' : 'Continue with Google')}
@@ -7580,22 +7605,22 @@ const App: React.FC = () => {
             </button>
             <div className="pt-3 border-t border-white/10">
               <p className="text-[9px] text-emerald-300/80 font-black uppercase tracking-[0.2em] text-center mb-3">
-                {regLang === 'es' ? 'Acceso para Prestadores' : 'Access for Providers'}
+                {regLang === 'es' ? 'Acceso para Anfitriones' : 'Access for Hosts'}
               </p>
             <button onClick={() => { setIsProviderFlow(true); setProfileData({...profileData, isForeigner: false, countryOrigin: ''}); setFormErrors({}); }} className="w-full bg-emerald-900/40 border border-emerald-400/30 text-emerald-100 font-black py-4 rounded-2xl flex items-center justify-center gap-3 active:scale-95 transition-all">
-              {regLang === 'es' ? 'Soy un Prestador' : 'I am a Provider'}
+              {regLang === 'es' ? 'Soy Anfitrión' : 'I am a Host'}
             </button>
             </div>
           </div>
           <p className="mt-12 text-stone-500 text-[10px] text-center px-8 leading-relaxed uppercase font-bold tracking-widest">
-            {regLang === 'es' ? '© 2026 Explorer. Todos los derechos reservados. El contenido y diseño de esta app están protegidos por derechos de autor.' : '© 2026 Explorer. All rights reserved. App content and design are protected by copyright law.'}
+            {regLang === 'es' ? '© 2026 Recorre Argentina. Todos los derechos reservados. El contenido y diseño de esta app están protegidos por derechos de autor.' : '© 2026 Recorre Argentina. All rights reserved. App content and design are protected by copyright law.'}
           </p>
         </div>
       ) : !isRegistering && isProviderFlow ? (
         <div className="relative z-10 w-full max-w-sm flex flex-col items-center animate-in fade-in duration-700">
           <div className="mb-12 text-center">
-            <h1 className="text-6xl font-black text-white tracking-tighter mb-2 italic">Explorer</h1>
-            <p className="text-emerald-400 font-bold uppercase tracking-[0.3em] text-[10px]">{regLang === 'es' ? 'Portal de Prestadores' : 'Providers Portal'}</p>
+            <h1 className="text-6xl font-black text-white tracking-tighter mb-2 italic">Recorre Argentina</h1>
+            <p className="text-emerald-400 font-bold uppercase tracking-[0.3em] text-[10px]">{regLang === 'es' ? 'Portal de Anfitriones' : 'Hosts Portal'}</p>
           </div>
           <div className="w-full space-y-4">
             <button
@@ -7633,7 +7658,7 @@ const App: React.FC = () => {
             </button>
           </div>
           <p className="mt-12 text-stone-500 text-[10px] text-center px-8 leading-relaxed uppercase font-bold tracking-widest">
-            {regLang === 'es' ? '© 2026 Explorer. Todos los derechos reservados. El contenido y diseño de esta app están protegidos por derechos de autor.' : '© 2026 Explorer. All rights reserved. App content and design are protected by copyright law.'}
+            {regLang === 'es' ? '© 2026 Recorre Argentina. Todos los derechos reservados. El contenido y diseño de esta app están protegidos por derechos de autor.' : '© 2026 Recorre Argentina. All rights reserved. App content and design are protected by copyright law.'}
           </p>
         </div>
       ) : (
@@ -7685,13 +7710,13 @@ const App: React.FC = () => {
             <div className="flex gap-2">
                 <button 
                   onClick={() => setRegLang('es')} 
-                  className={`flex-1 py-2 rounded-xl text-[10px] font-black uppercase transition-all border ${regLang === 'es' ? 'bg-emerald-800 text-white border-emerald-800 shadow-md' : 'bg-stone-50 dark:bg-stone-800 text-stone-400 border-stone-100 dark:border-stone-700'}`}
+                  className={`flex-1 py-2 rounded-xl text-[10px] font-black uppercase transition-all border ${regLang === 'es' ? 'bg-sky-700 text-white border-sky-700 shadow-md' : 'bg-stone-50 dark:bg-stone-800 text-stone-400 border-stone-100 dark:border-stone-700'}`}
                 >
                   Español
                 </button>
                 <button 
                   onClick={() => setRegLang('en')} 
-                  className={`flex-1 py-2 rounded-xl text-[10px] font-black uppercase transition-all border ${regLang === 'en' ? 'bg-emerald-800 text-white border-emerald-800 shadow-md' : 'bg-stone-50 dark:bg-stone-800 text-stone-400 border-stone-100 dark:border-stone-700'}`}
+                  className={`flex-1 py-2 rounded-xl text-[10px] font-black uppercase transition-all border ${regLang === 'en' ? 'bg-sky-700 text-white border-sky-700 shadow-md' : 'bg-stone-50 dark:bg-stone-800 text-stone-400 border-stone-100 dark:border-stone-700'}`}
                 >
                   English
                 </button>
@@ -7891,7 +7916,7 @@ const App: React.FC = () => {
               {isProviderFlow && providerServicesRequireSports(profileData.providerServices) && (
                 <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase text-stone-400 ml-1">
-                    {regLang === 'es' ? 'Deportes para Actividades' : 'Sports for Activities'}
+                    {regLang === 'es' ? 'Deportes para Experiencias' : 'Sports for Experiences'}
                   </label>
                   <div className="flex flex-wrap gap-2">
                     {Object.values(ActivityType).map((sport) => {
@@ -7958,7 +7983,7 @@ const App: React.FC = () => {
       return (
         <div className="min-h-screen bg-stone-950 text-white flex items-center justify-center px-6 py-12">
           <div className="w-full max-w-md bg-stone-900 border border-stone-800 rounded-[2rem] p-10 shadow-2xl">
-            <h1 className="text-4xl font-black italic tracking-tighter">Explorer</h1>
+            <h1 className="text-4xl font-black italic tracking-tighter">Recorre Argentina</h1>
             <p className="text-[10px] mt-1 uppercase tracking-[0.25em] font-black text-emerald-400">Portal Admin</p>
             <div className="mt-8 space-y-4">
               <div>
@@ -8139,8 +8164,8 @@ const App: React.FC = () => {
       ...adminInactiveSpots.filter((spot) => spot.placeType === PlaceType.REFUGIO),
       ...refugeApplications.filter((application) => application.status === 'rejected').map((application) => application.spot),
     ].filter((spot, index, self) => self.findIndex((item) => item.id === spot.id) === index);
-    const adminActivities = spots.filter((spot) => spot.placeType !== PlaceType.REFUGIO);
-    const inactiveActivities = adminInactiveSpots.filter((spot) => spot.placeType !== PlaceType.REFUGIO);
+    const adminExperiences = spots.filter((spot) => spot.placeType !== PlaceType.REFUGIO);
+    const inactiveExperiences = adminInactiveSpots.filter((spot) => spot.placeType !== PlaceType.REFUGIO);
     const adminShops = shops;
     const inactiveShops = adminInactiveShops;
     const effectiveAdminStatusFilters = adminStatusFilters.length === 0 ? ['active', 'inactive'] : adminStatusFilters;
@@ -8154,9 +8179,9 @@ const App: React.FC = () => {
       ...(effectiveAdminStatusFilters.includes('active') ? activeRefuges.map((spot) => ({ ...spot, adminStatus: 'Activo' as const })) : []),
       ...(effectiveAdminStatusFilters.includes('inactive') ? inactiveRefuges.map((spot) => ({ ...spot, adminStatus: 'Inactivo' as const })) : []),
     ].filter((spot) => matchesAdminSearch(spot.name || '') && matchesAdminProvince(spot.province) && (!adminSponsoredOnly || isSponsoredActive(spot.sponsoredStartDate, spot.sponsoredEndDate, spot.isSponsored)));
-    const visibleActivities = [
-      ...(effectiveAdminStatusFilters.includes('active') ? adminActivities.map((spot) => ({ ...spot, adminStatus: 'Activo' as const })) : []),
-      ...(effectiveAdminStatusFilters.includes('inactive') ? inactiveActivities.map((spot) => ({ ...spot, adminStatus: 'Inactivo' as const })) : []),
+    const visibleExperiences = [
+      ...(effectiveAdminStatusFilters.includes('active') ? adminExperiences.map((spot) => ({ ...spot, adminStatus: 'Activo' as const })) : []),
+      ...(effectiveAdminStatusFilters.includes('inactive') ? inactiveExperiences.map((spot) => ({ ...spot, adminStatus: 'Inactivo' as const })) : []),
     ].filter((spot) => matchesAdminSearch(spot.name || '') && matchesAdminProvince(spot.province) && (!adminSponsoredOnly || isSponsoredActive(spot.sponsoredStartDate, spot.sponsoredEndDate, spot.isSponsored)));
     const visibleShops = [
       ...(effectiveAdminStatusFilters.includes('active') ? adminShops.map((shop) => ({ ...shop, adminStatus: 'Activa' as const })) : []),
@@ -8513,7 +8538,7 @@ const App: React.FC = () => {
     const shouldShowAdminBookings = !adminSponsoredOnly && (adminShowBookings || normalizedAdminBookingsSearchQuery.length > 0);
     const shouldShowProviders = adminContentFilter === 'all' || adminContentFilter === 'providers';
     const shouldShowRefuges = adminContentFilter === 'all' || adminContentFilter === 'refuges';
-    const shouldShowActivities = adminContentFilter === 'all' || adminContentFilter === 'activities' || adminContentFilter === 'courses' || adminContentFilter === 'events' || adminContentFilter === 'trainings';
+    const shouldShowExperiences = adminContentFilter === 'all' || adminContentFilter === 'activities' || adminContentFilter === 'courses' || adminContentFilter === 'events' || adminContentFilter === 'trainings';
     const shouldShowShops = adminContentFilter === 'all' || adminContentFilter === 'shops';
     const matchesAdminActivityTypeFilter = (activity: OutdoorSpot) => {
       if (adminContentFilter === 'courses') return activity.kind === 'course' || activity.activityType === ActivityType.BOULDER;
@@ -8566,7 +8591,7 @@ const App: React.FC = () => {
           }
         )),
       })) : []),
-      ...(shouldShowActivities ? visibleActivities.filter(matchesAdminActivityTypeFilter).map((activity) => ({
+      ...(shouldShowExperiences ? visibleExperiences.filter(matchesAdminActivityTypeFilter).map((activity) => ({
         id: `activity-${activity.id}`,
         entityId: activity.id,
         itemType: 'spot' as const,
@@ -8650,7 +8675,7 @@ const App: React.FC = () => {
         <div className="mx-auto max-w-7xl grid gap-6 lg:grid-cols-[260px_minmax(0,1fr)]">
           <aside className="lg:sticky lg:top-8 lg:self-start">
             <div className="bg-stone-950 text-white rounded-[2rem] border border-stone-900 p-5 shadow-2xl">
-              <p className="text-3xl font-black italic tracking-tight">Explorer</p>
+              <p className="text-3xl font-black italic tracking-tight">Recorre Argentina</p>
               <p className="mt-1 text-[10px] uppercase tracking-[0.24em] font-black text-emerald-400">Portal Admin</p>
               <div className="mt-6 rounded-[1.5rem] bg-white/5 border border-white/10 p-4">
                 <p className="text-[10px] font-black uppercase tracking-[0.18em] text-white/45">Sesión actual</p>
@@ -8714,7 +8739,7 @@ const App: React.FC = () => {
                   </h1>
                   <p className="text-[10px] uppercase tracking-[0.2em] font-black text-stone-400 mt-1">
                     {adminMenuSection === 'home'
-                      ? `Prestadores pendientes: ${pendingProviders.length} · Refugios pendientes: ${pendingRefuges.length}`
+                      ? `Prestadores pendientes: ${pendingProviders.length} · Sitios pendientes: ${pendingRefuges.length}`
                       : adminMenuSection === 'profile'
                         ? 'Datos de la cuenta administrativa y seguridad'
                         : adminMenuSection === 'content'
@@ -8898,7 +8923,7 @@ const App: React.FC = () => {
                 <div className="space-y-4">
                   <div className="bg-white dark:bg-stone-900 rounded-[2rem] border border-stone-100 dark:border-stone-800 p-6 shadow-sm">
                     <p className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-400">Sesión</p>
-                    <p className="mt-3 text-2xl font-black text-stone-900 dark:text-stone-100">{adminProfileDraft.displayName || 'Administrador Explorer'}</p>
+                    <p className="mt-3 text-2xl font-black text-stone-900 dark:text-stone-100">{adminProfileDraft.displayName || 'Administrador Recorre Argentina'}</p>
                     <p className="mt-1 text-sm font-bold text-stone-500 dark:text-stone-400">{adminProfileDraft.email || adminAuthProfile?.email || '-'}</p>
                     <p className="mt-4 text-[10px] font-black uppercase tracking-widest text-stone-400">Usuario actual</p>
                     <p className="mt-1 text-sm font-black text-stone-900 dark:text-stone-100">{adminProfileDraft.username || adminAuthProfile?.username || '-'}</p>
@@ -8951,7 +8976,7 @@ const App: React.FC = () => {
                             media: [],
                             bodyHtml: '',
                             bodyText: '',
-                            authorName: 'Equipo Explorer',
+                            authorName: 'Equipo Recorre Argentina',
                             publishedAt: new Date().toISOString().slice(0, 16),
                             isPublished: true,
                           });
@@ -8989,7 +9014,7 @@ const App: React.FC = () => {
                                 media: item.media || [],
                                 bodyHtml: item.bodyHtml,
                                 bodyText: item.bodyText || htmlToPlainText(item.bodyHtml || ''),
-                                authorName: item.authorName || 'Equipo Explorer',
+                                authorName: item.authorName || 'Equipo Recorre Argentina',
                                 publishedAt: item.publishedAt,
                                 isPublished: true,
                               })
@@ -9022,7 +9047,7 @@ const App: React.FC = () => {
                                 media: item.media || [],
                                 bodyHtml: item.bodyHtml,
                                 bodyText: item.bodyText || htmlToPlainText(item.bodyHtml || ''),
-                                authorName: item.authorName || 'Equipo Explorer',
+                                authorName: item.authorName || 'Equipo Recorre Argentina',
                                 publishedAt: item.publishedAt,
                                 isPublished: false,
                               })
@@ -9125,7 +9150,7 @@ const App: React.FC = () => {
                                 media: item.media || [],
                                 bodyHtml: editorHtml,
                                 bodyText: item.bodyText || htmlToPlainText(editorHtml),
-                                authorName: item.authorName || 'Equipo Explorer',
+                                authorName: item.authorName || 'Equipo Recorre Argentina',
                                 publishedAt: item.publishedAt ? item.publishedAt.slice(0, 16) : new Date().toISOString().slice(0, 16),
                                 isPublished: item.isPublished,
                               });
@@ -9184,7 +9209,7 @@ const App: React.FC = () => {
                                   media: item.media || [],
                                   bodyHtml: editorHtml,
                                   bodyText: item.bodyText || htmlToPlainText(editorHtml),
-                                  authorName: item.authorName || 'Equipo Explorer',
+                                  authorName: item.authorName || 'Equipo Recorre Argentina',
                                   publishedAt: item.publishedAt ? item.publishedAt.slice(0, 16) : new Date().toISOString().slice(0, 16),
                                   isPublished: item.isPublished,
                                 });
@@ -9470,7 +9495,7 @@ const App: React.FC = () => {
                                 media: previous.media || [],
                                 bodyHtml: editorHtml,
                                 bodyText: previous.bodyText || htmlToPlainText(editorHtml),
-                                authorName: previous.authorName || 'Equipo Explorer',
+                                authorName: previous.authorName || 'Equipo Recorre Argentina',
                                 publishedAt: previous.publishedAt ? previous.publishedAt.slice(0, 16) : new Date().toISOString().slice(0, 16),
                                 isPublished: previous.isPublished,
                               });
@@ -9504,7 +9529,7 @@ const App: React.FC = () => {
                               media: (notiTipDraft.media || []).slice(0, 4),
                               bodyHtml: notiTipDraft.bodyHtml,
                               bodyText: notiTipDraft.bodyText || htmlToPlainText(notiTipDraft.bodyHtml),
-                              authorName: notiTipDraft.authorName || 'Equipo Explorer',
+                              authorName: notiTipDraft.authorName || 'Equipo Recorre Argentina',
                               publishedAt: notiTipDraft.publishedAt ? new Date(notiTipDraft.publishedAt).toISOString() : new Date().toISOString(),
                               isPublished: notiTipDraft.isPublished,
                             };
@@ -9998,7 +10023,7 @@ const App: React.FC = () => {
                                 bookingDateTo: new Date(Date.now() + 86400000).toISOString().slice(0, 10),
                                 peopleCount: 2,
                                 totalAmount: 0,
-	                              providerName: 'Explorer',
+	                              providerName: 'Recorre Argentina',
 	                              explorerName: communicationTestName.trim() || 'Usuario test',
 	                              bookingDate: new Date().toISOString().slice(0, 10),
 	                              reason: 'Prueba desde el portal admin',
@@ -10334,7 +10359,7 @@ const App: React.FC = () => {
               {[
                 { id: 'all', label: 'Todas' },
                 { id: 'providers', label: 'Prestadores' },
-                { id: 'refuges', label: 'Refugios' },
+                { id: 'refuges', label: 'Sitios' },
               ].map((item) => {
                 const isActive = adminPendingFilter === item.id;
                 return (
@@ -10488,11 +10513,11 @@ const App: React.FC = () => {
                   {[
                     { id: 'all', label: 'Todo' },
                     { id: 'providers', label: 'Prestadores' },
-                    { id: 'refuges', label: 'Refugios' },
-                    { id: 'activities', label: 'Actividades' },
+                    { id: 'refuges', label: 'Sitios' },
+                    { id: 'activities', label: 'Experiencias' },
                     { id: 'courses', label: 'Cursos' },
                     { id: 'events', label: 'Eventos' },
-                    { id: 'trainings', label: 'Entrenamientos' },
+                    { id: 'trainings', label: 'Talleresmientos' },
                     { id: 'shops', label: 'Tiendas' },
                   ].map((item) => {
                     const isActive = adminContentFilter === item.id;
@@ -12785,6 +12810,7 @@ const App: React.FC = () => {
         const providerReviewPending = currentProviderApproval?.status === 'pending';
         const providerListingLabels: Record<ProviderListingType, string> = {
           [ActivityType.TREKKING]: regLang === 'es' ? 'Refugio' : 'Shelter',
+          [ActivityType.GASTRONOMIA]: regLang === 'es' ? 'Gastronómica' : 'Food & Drink',
           [ActivityType.ESCALADA]: regLang === 'es' ? 'Actividad' : 'Activity',
           [ActivityType.BOULDER]: regLang === 'es' ? 'Curso' : 'Course',
           [ActivityType.MONTANISMO]: regLang === 'es' ? 'Evento' : 'Event',
@@ -13178,7 +13204,7 @@ const App: React.FC = () => {
                           {formatDisplayDate(check.dateFrom)} - {formatDisplayDate(check.dateTo)} · {check.peopleCount} {regLang === 'es' ? 'personas' : 'people'}
                         </p>
                         <p className="text-[10px] font-bold text-stone-500 dark:text-stone-400">
-                          {regLang === 'es' ? 'Explorador' : 'Explorer'}: {check.explorerHandle}
+                          {regLang === 'es' ? 'Viajero' : 'Traveler'}: {check.explorerHandle}
                         </p>
                         <div className="mt-2 flex gap-2">
                           <button
@@ -14070,7 +14096,7 @@ const App: React.FC = () => {
                           type="text"
                           value={providerDraftForm.commercialName}
                           onChange={(e) => setProviderDraftForm(prev => ({ ...prev, commercialName: e.target.value }))}
-                          placeholder={regLang === 'es' ? 'Título (ej. Expedición Explorer Aconcagua)' : 'Title (e.g. Aconcagua Summit Expedition)'}
+                          placeholder={regLang === 'es' ? 'Título (ej. Expedición Recorre Argentina Aconcagua)' : 'Title (e.g. Aconcagua Summit Expedition)'}
                           className="w-full bg-stone-50 dark:bg-stone-800 border border-stone-100 dark:border-stone-700 rounded-2xl py-3 px-4 font-bold text-stone-800 dark:text-stone-100 outline-none"
                         />
                       </div>
@@ -15361,7 +15387,7 @@ const App: React.FC = () => {
                   : 'bg-stone-50 dark:bg-stone-800 text-stone-500 dark:text-stone-300 border-stone-200 dark:border-stone-700'
               }`}
             >
-              {regLang === 'es' ? 'Refugios' : 'Shelters'} · {ownListings.filter((item) => item.type === ActivityType.TREKKING).length}
+              {regLang === 'es' ? 'Sitios' : 'Places'} · {ownListings.filter((item) => item.type === ActivityType.TREKKING).length}
             </button>
             <button
               onClick={() => setProviderPublicationsSection('actividades')}
@@ -15371,7 +15397,7 @@ const App: React.FC = () => {
                   : 'bg-stone-50 dark:bg-stone-800 text-stone-500 dark:text-stone-300 border-stone-200 dark:border-stone-700'
               }`}
             >
-              {regLang === 'es' ? 'Actividades' : 'Activities'} · {ownListings.filter((item) => item.type !== ActivityType.TREKKING && item.type !== 'shop').length}
+              {regLang === 'es' ? 'Experiencias' : 'Experiences'} · {ownListings.filter((item) => item.type !== ActivityType.TREKKING && item.type !== 'shop').length}
             </button>
           </div>
           {providerPublicationsSection === 'actividades' && (
@@ -15597,23 +15623,23 @@ const App: React.FC = () => {
 
     return (
     <div className="flex flex-col h-full bg-stone-50 dark:bg-stone-950 transition-colors">
-      <div className="bg-white dark:bg-stone-900 px-6 pt-4 pb-2 sticky top-0 z-30 shadow-sm border-b border-stone-100 dark:border-stone-800">
+      <div className="bg-[linear-gradient(180deg,#e8f6ff_0%,#f7fbff_100%)] dark:bg-stone-900 px-6 pt-4 pb-3 sticky top-0 z-30 shadow-[0_10px_30px_rgba(16,33,50,0.08)] border-b border-sky-100 dark:border-stone-800">
         <div className="flex justify-between items-center mb-4">
           <div className="flex flex-col">
-            <h1 className="text-[1.7rem] font-black text-stone-900 dark:text-stone-50 tracking-tighter italic leading-none">Explorer</h1>
-            <span className="text-[9px] font-bold text-emerald-600 uppercase tracking-[0.18em] mt-0.5">Outdoor Argentina</span>
+            <h1 className="text-[1.7rem] font-black text-stone-900 dark:text-stone-50 tracking-tighter italic leading-none">Recorre Argentina</h1>
+            <span className="text-[9px] font-black text-sky-700 uppercase tracking-[0.22em] mt-0.5">Descubrí Argentina</span>
           </div>
           <div className="flex items-center gap-2.5">
             {renderNotificationBell()}
             <button
               onClick={() => openMenuFromView('shelters')}
-              className="p-2.5 rounded-2xl border bg-white dark:bg-stone-800 text-stone-600 dark:text-stone-300 border-stone-200 dark:border-stone-700 shadow-sm transition-all active:scale-95"
+              className="p-2.5 rounded-2xl border bg-white/90 dark:bg-stone-800 text-sky-800 dark:text-stone-300 border-sky-200 dark:border-stone-700 shadow-sm transition-all active:scale-95"
             >
               <Icons.Menu />
             </button>
             <button 
               onClick={() => setCurrentView('profile')}
-              className="w-10 h-10 rounded-2xl border-2 border-white dark:border-stone-700 shadow-md overflow-hidden active:scale-90 transition-all ring-1 ring-stone-100 dark:ring-stone-800"
+              className="w-10 h-10 rounded-2xl border-2 border-sky-100 dark:border-stone-700 shadow-md overflow-hidden active:scale-90 transition-all ring-2 ring-white dark:ring-stone-800"
             >
               <img src={effectiveProfileAvatar} className="w-full h-full object-cover" alt="Profile" referrerPolicy="no-referrer" />
             </button>
@@ -15624,14 +15650,14 @@ const App: React.FC = () => {
           <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400"><Icons.Search /></div>
           <input 
             type="text" 
-            placeholder="Buscar refugios, muros, cerros..." 
-            className="w-full bg-stone-100 dark:bg-stone-800 border-none rounded-2xl py-3 pl-10 pr-4 font-bold text-[13px] outline-none focus:ring-2 focus:ring-emerald-500/20 focus:bg-white dark:focus:bg-stone-700 text-stone-900 dark:text-stone-100 transition-all"
+            placeholder="Buscar destinos, experiencias y lugares..." 
+            className="w-full bg-white/92 dark:bg-stone-800 border border-sky-100 rounded-full py-3 pl-10 pr-4 font-bold text-[13px] outline-none focus:ring-2 focus:ring-sky-500/25 focus:bg-white dark:focus:bg-stone-700 text-stone-900 dark:text-stone-100 transition-all shadow-sm"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
 
-        <div className="py-2 border-t border-stone-50 dark:border-stone-800 mt-1 grid grid-cols-2 gap-2.5">
+        <div className="py-2 border-t border-sky-100 dark:border-stone-800 mt-1 grid grid-cols-2 gap-2.5">
           <div className="relative">
             <label className="mb-1 block text-[9px] font-black uppercase text-stone-400 whitespace-nowrap">
               {regLang === 'es' ? 'Provincias' : 'Provinces'}
@@ -15639,7 +15665,7 @@ const App: React.FC = () => {
             <select
               value={activeProvince}
               onChange={(e) => setActiveProvince(e.target.value)}
-              className="w-full bg-stone-100 dark:bg-stone-800 border-none rounded-xl py-2 px-3.5 pr-8 font-bold text-[10px] outline-none appearance-none text-stone-800 dark:text-stone-100 transition-all cursor-pointer"
+              className="w-full bg-white dark:bg-stone-800 border border-sky-100 rounded-2xl py-2.5 px-3.5 pr-8 font-bold text-[10px] outline-none appearance-none text-stone-800 dark:text-stone-100 transition-all cursor-pointer"
             >
               <option value="Todas">{regLang === 'es' ? 'Provincias' : 'Provinces'}</option>
               {PROVINCIAS_ARGENTINA.map(p => (
@@ -15659,7 +15685,7 @@ const App: React.FC = () => {
             <button
               type="button"
               onClick={openMonthYearPicker}
-              className="w-full bg-stone-100 dark:bg-stone-800 border-none rounded-xl py-2 px-3.5 pr-8 font-bold text-[10px] text-stone-800 dark:text-stone-100 text-left"
+              className="w-full bg-white dark:bg-stone-800 border border-sky-100 rounded-2xl py-2.5 px-3.5 pr-8 font-bold text-[10px] text-stone-800 dark:text-stone-100 text-left"
               aria-label={regLang === 'es' ? 'Fecha (mes y año)' : 'Date (month and year)'}
             >
               {monthYearLabel}
@@ -15768,9 +15794,9 @@ const App: React.FC = () => {
                 </p>
                 <div className="space-y-2">
                   {[
-                    { label: regLang === 'es' ? 'Actividades' : 'Activities', value: PlaceType.ACTIVIDAD },
-                    { label: regLang === 'es' ? 'Expediciones' : 'Expeditions', value: 'Expediciones' as const },
-                    { label: regLang === 'es' ? 'Entrena' : 'Train', value: PlaceType.ENTRENA },
+                    { label: regLang === 'es' ? 'Experiencias' : 'Experiences', value: PlaceType.ACTIVIDAD },
+                    { label: regLang === 'es' ? 'Recorridos' : 'Routes', value: 'Recorridos' as const },
+                    { label: regLang === 'es' ? 'Talleres' : 'Workshops', value: PlaceType.ENTRENA },
                     { label: regLang === 'es' ? 'Eventos' : 'Events', value: 'Eventos' as const },
                     { label: regLang === 'es' ? 'Cursos' : 'Courses', value: 'Cursos' as const },
                   ].map((item) => {
@@ -15809,13 +15835,13 @@ const App: React.FC = () => {
                       ActivityType.SKI,
                       ActivityType.BOULDER,
                     ].map((type) => {
-                      const checked = draftExploreActivities.includes(type);
+                      const checked = draftExploreExperiences.includes(type);
                       return (
                         <label key={type} className="flex items-center gap-3 px-1 py-1 cursor-pointer">
                           <input
                             type="checkbox"
                             checked={checked}
-                            onChange={() => setDraftExploreActivities((prev) => (
+                            onChange={() => setDraftExploreExperiences((prev) => (
                               checked ? prev.filter((item) => item !== type) : [...prev, type]
                             ))}
                             className="w-4 h-4 rounded border-stone-300 text-emerald-600 focus:ring-emerald-500"
@@ -15832,7 +15858,7 @@ const App: React.FC = () => {
                 <button
                   onClick={() => {
                     setDraftExplorePlaceTypes([]);
-                    setDraftExploreActivities([]);
+                    setDraftExploreExperiences([]);
                   }}
                   className="flex-1 bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-200 font-black py-3 rounded-2xl uppercase tracking-widest text-[10px]"
                 >
@@ -15841,7 +15867,7 @@ const App: React.FC = () => {
                 <button
                   onClick={() => {
                     setActivePlaceTypes(draftExplorePlaceTypes);
-                    setActiveActivity(draftExplorePlaceTypes.includes(PlaceType.ACTIVIDAD) ? draftExploreActivities : []);
+                    setActiveActivity(draftExplorePlaceTypes.includes(PlaceType.ACTIVIDAD) ? draftExploreExperiences : []);
                     setShowExploreFilterSheet(false);
                   }}
                   className="flex-1 bg-emerald-800 text-white font-black py-3 rounded-2xl uppercase tracking-widest text-[10px]"
@@ -15870,13 +15896,13 @@ const App: React.FC = () => {
       const normalizedActivityType = spot.activityType || (
         `${spot.name} ${spot.description}`.toLowerCase().includes('buceo') ? ActivityType.BUCEO : undefined
       );
-      const isLegacyBoulderTraining = spot.placeType === PlaceType.ENTRENA && normalizedActivityType === ActivityType.BOULDER;
+      const isLegacyBoulderWorkshopsing = spot.placeType === PlaceType.ENTRENA && normalizedActivityType === ActivityType.BOULDER;
       const isSportActivitySpot = spot.placeType === PlaceType.ACTIVIDAD || spot.placeType === PlaceType.ENTRENA;
       const isExpeditionSpot = spot.placeType === PlaceType.ACTIVIDAD &&
         !!normalizedActivityType &&
         expeditionActivityTypes.includes(normalizedActivityType);
-      const matchesExtremeSelection = worldExtremeActivities.length === 0 || (
-        !!normalizedActivityType && worldExtremeActivities.some((activity) =>
+      const matchesExtremeSelection = worldExtremeExperiences.length === 0 || (
+        !!normalizedActivityType && worldExtremeExperiences.some((activity) =>
           activity === ActivityType.ESCALADA
             ? normalizedActivityType === ActivityType.ESCALADA || normalizedActivityType === ActivityType.BOULDER
             : normalizedActivityType === activity
@@ -15887,23 +15913,30 @@ const App: React.FC = () => {
         return spot.placeType === PlaceType.REFUGIO && matchesSearch && matchesProvince && matchesMonthYear;
       }
 
-      if (worldActivityScope === 'trainings') {
-        return spot.placeType === PlaceType.ENTRENA && !isLegacyBoulderTraining && matchesSearch && matchesProvince && matchesMonthYear;
-      }
-
       if (worldActivityScope === 'courses') {
-        return (spot.kind === 'course' || isLegacyBoulderTraining) && matchesSearch && matchesProvince && matchesMonthYear;
+        const isCourseOrTraining =
+          spot.kind === 'course' ||
+          isLegacyBoulderWorkshopsing ||
+          (spot.placeType === PlaceType.ENTRENA && !isLegacyBoulderWorkshopsing);
+        return isCourseOrTraining && matchesSearch && matchesProvince && matchesMonthYear;
       }
 
       if (worldActivityScope === 'events') {
         return spot.kind === 'event' && matchesSearch && matchesProvince && matchesMonthYear;
       }
 
-      const buceoSelected = worldExtremeActivities.includes(ActivityType.BUCEO);
+      if (worldActivityScope === 'gastronomy') {
+        const isGastronomicSpot =
+          normalizedActivityType === ActivityType.GASTRONOMIA ||
+          `${spot.name} ${spot.description}`.toLowerCase().includes('gastron');
+        return isSportActivitySpot && isGastronomicSpot && matchesSearch && matchesProvince && matchesMonthYear;
+      }
+
+      const buceoSelected = worldExtremeExperiences.includes(ActivityType.BUCEO);
       const buceoSpot = normalizedActivityType === ActivityType.BUCEO ||
         `${spot.name} ${spot.description}`.toLowerCase().includes('buceo');
 
-      if (buceoSelected && worldExtremeActivities.length === 1) {
+      if (buceoSelected && worldExtremeExperiences.length === 1) {
         return isSportActivitySpot &&
           buceoSpot &&
           matchesSearch &&
@@ -15911,7 +15944,7 @@ const App: React.FC = () => {
           matchesMonthYear;
       }
 
-      return (isSportActivitySpot || isLegacyBoulderTraining) &&
+      return (isSportActivitySpot || isLegacyBoulderWorkshopsing) &&
         !!normalizedActivityType &&
         (extremeActivityOptions.includes(normalizedActivityType) || isExpeditionSpot) &&
         matchesExtremeSelection &&
@@ -15921,7 +15954,7 @@ const App: React.FC = () => {
     });
     const isBuceoFilterActive = worldTab === 'activities' &&
       worldActivityScope === 'extreme' &&
-      worldExtremeActivities.includes(ActivityType.BUCEO);
+      worldExtremeExperiences.includes(ActivityType.BUCEO);
     const buceoSpots = spots.filter((spot) => {
       const matchesSearch = spot.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         spot.location.toLowerCase().includes(searchQuery.toLowerCase());
@@ -15937,25 +15970,25 @@ const App: React.FC = () => {
 
     return (
       <div className="flex flex-col h-full bg-stone-50 dark:bg-stone-950 transition-colors">
-        <div className="bg-white dark:bg-stone-900 px-6 pt-4 pb-3 sticky top-0 z-30 shadow-sm border-b border-stone-100 dark:border-stone-800">
+        <div className="bg-[linear-gradient(180deg,#e8f6ff_0%,#f7fbff_100%)] dark:bg-stone-900 px-6 pt-4 pb-3 sticky top-0 z-30 shadow-[0_10px_30px_rgba(16,33,50,0.08)] border-b border-sky-100 dark:border-stone-800">
           <div className="flex justify-between items-center mb-4">
             <div className="flex flex-col">
-              <h1 className="text-[1.7rem] font-black text-stone-900 dark:text-stone-50 tracking-tighter italic leading-none">Explorer</h1>
-              <span className="text-[9px] font-bold text-emerald-600 uppercase tracking-[0.18em] mt-0.5">
-                {regLang === 'es' ? 'Mundo Outdoor' : 'Outdoor World'}
+              <h1 className="text-[1.7rem] font-black text-stone-900 dark:text-stone-50 tracking-tighter italic leading-none">Recorre Argentina</h1>
+              <span className="text-[9px] font-black text-sky-700 uppercase tracking-[0.22em] mt-0.5">
+                {regLang === 'es' ? 'Descubrí Argentina' : 'Discover Argentina'}
               </span>
             </div>
             <div className="flex items-center gap-2.5">
               {renderNotificationBell()}
               <button
                 onClick={() => openMenuFromView('explore_public')}
-                className="p-2.5 rounded-2xl border bg-white dark:bg-stone-800 text-stone-600 dark:text-stone-300 border-stone-200 dark:border-stone-700 shadow-sm transition-all active:scale-95"
+                className="p-2.5 rounded-2xl border bg-white/90 dark:bg-stone-800 text-sky-800 dark:text-stone-300 border-sky-200 dark:border-stone-700 shadow-sm transition-all active:scale-95"
               >
                 <Icons.Menu />
               </button>
               <button
                 onClick={() => setCurrentView('profile')}
-                className="w-10 h-10 rounded-2xl border-2 border-white dark:border-stone-700 shadow-md overflow-hidden active:scale-90 transition-all ring-1 ring-stone-100 dark:ring-stone-800"
+                className="w-10 h-10 rounded-2xl border-2 border-sky-100 dark:border-stone-700 shadow-md overflow-hidden active:scale-90 transition-all ring-2 ring-white dark:ring-stone-800"
               >
                 <img src={effectiveProfileAvatar} className="w-full h-full object-cover" alt="Profile" referrerPolicy="no-referrer" />
               </button>
@@ -15966,8 +15999,8 @@ const App: React.FC = () => {
             <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400"><Icons.Search /></div>
             <input
               type="text"
-              placeholder={regLang === 'es' ? 'Buscar en Mundo...' : 'Search in World...'}
-              className="w-full bg-stone-100 dark:bg-stone-800 border-none rounded-2xl py-3 pl-10 pr-4 font-bold text-[13px] outline-none focus:ring-2 focus:ring-emerald-500/20 focus:bg-white dark:focus:bg-stone-700 text-stone-900 dark:text-stone-100 transition-all"
+              placeholder={regLang === 'es' ? 'Buscar en Argentina...' : 'Search in Argentina...'}
+              className="w-full bg-white/92 dark:bg-stone-800 border border-sky-100 rounded-full py-3 pl-10 pr-4 font-bold text-[13px] outline-none focus:ring-2 focus:ring-sky-500/25 focus:bg-white dark:focus:bg-stone-700 text-stone-900 dark:text-stone-100 transition-all shadow-sm"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -15981,7 +16014,7 @@ const App: React.FC = () => {
               <select
                 value={activeProvince}
                 onChange={(e) => setActiveProvince(e.target.value)}
-                className="w-full bg-stone-100 dark:bg-stone-800 border-none rounded-xl py-2 px-3.5 pr-8 font-bold text-[10px] outline-none appearance-none text-stone-800 dark:text-stone-100 transition-all cursor-pointer"
+                className="w-full bg-white dark:bg-stone-800 border border-sky-100 rounded-2xl py-2.5 px-3.5 pr-8 font-bold text-[10px] outline-none appearance-none text-stone-800 dark:text-stone-100 transition-all cursor-pointer"
               >
                 <option value="Todas">{regLang === 'es' ? 'Provincias' : 'Provinces'}</option>
                 {PROVINCIAS_ARGENTINA.map((p) => (
@@ -16002,7 +16035,7 @@ const App: React.FC = () => {
                 <button
                   type="button"
                   onClick={openMonthYearPicker}
-                  className="w-full bg-stone-100 dark:bg-stone-800 border-none rounded-xl py-2 px-3.5 pr-8 font-bold text-[10px] text-stone-800 dark:text-stone-100 text-left"
+                  className="w-full bg-white dark:bg-stone-800 border border-sky-100 rounded-2xl py-2.5 px-3.5 pr-8 font-bold text-[10px] text-stone-800 dark:text-stone-100 text-left"
                   aria-label={regLang === 'es' ? 'Fecha (mes y año)' : 'Date (month and year)'}
                 >
                   {monthYearLabel}
@@ -16021,21 +16054,21 @@ const App: React.FC = () => {
               onClick={() => setWorldTab('shelters')}
               className={`py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest border transition-all ${
                 worldTab === 'shelters'
-                  ? 'bg-emerald-800 text-white border-emerald-800 shadow-md'
-                  : 'bg-white dark:bg-stone-800 text-stone-500 dark:text-stone-400 border-stone-200 dark:border-stone-700'
+                  ? 'bg-sky-700 text-white border-sky-700 shadow-md'
+                  : 'bg-white dark:bg-stone-800 text-slate-600 dark:text-stone-400 border-sky-100 dark:border-stone-700'
               }`}
             >
-              {regLang === 'es' ? 'Refugios' : 'Shelters'}
+              {regLang === 'es' ? 'Sitios' : 'Places'}
             </button>
             <button
               onClick={() => setWorldTab('activities')}
               className={`py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest border transition-all ${
                 worldTab === 'activities'
-                  ? 'bg-emerald-800 text-white border-emerald-800 shadow-md'
-                  : 'bg-white dark:bg-stone-800 text-stone-500 dark:text-stone-400 border-stone-200 dark:border-stone-700'
+                  ? 'bg-sky-700 text-white border-sky-700 shadow-md'
+                  : 'bg-white dark:bg-stone-800 text-slate-600 dark:text-stone-400 border-sky-100 dark:border-stone-700'
               }`}
             >
-              {regLang === 'es' ? 'Actividades' : 'Activities'}
+              {regLang === 'es' ? 'Experiencias' : 'Experiences'}
             </button>
           </div>
 
@@ -16043,9 +16076,9 @@ const App: React.FC = () => {
             <div className="mt-3 space-y-3">
               <div className="flex gap-2 overflow-x-auto no-scrollbar">
                 {[
-                  { id: 'extreme', label: regLang === 'es' ? 'Expediciones\n+ de 24hs' : 'Expeditions\n+24h' },
+                  { id: 'extreme', label: regLang === 'es' ? 'Aventuras' : 'Adventures' },
+                  { id: 'gastronomy', label: regLang === 'es' ? 'Gastronómicas' : 'Food & Drink' },
                   { id: 'courses', label: regLang === 'es' ? 'Cursos' : 'Courses' },
-                  { id: 'trainings', label: regLang === 'es' ? 'Entrena' : 'Train' },
                   { id: 'events', label: regLang === 'es' ? 'Eventos' : 'Events' },
                 ].map((item) => (
                   <button
@@ -16053,18 +16086,13 @@ const App: React.FC = () => {
                     onClick={() => setWorldActivityScope(item.id as typeof worldActivityScope)}
                     className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest whitespace-pre-line leading-tight border transition-all ${
                       worldActivityScope === item.id
-                        ? 'bg-emerald-800 text-white border-emerald-800 shadow-md'
-                        : 'bg-white dark:bg-stone-800 text-stone-500 dark:text-stone-400 border-stone-200 dark:border-stone-700'
+                        ? 'bg-sky-700 text-white border-sky-700 shadow-md'
+                        : 'bg-white dark:bg-stone-800 text-slate-600 dark:text-stone-400 border-sky-100 dark:border-stone-700'
                     }`}
                   >
                     {item.label}
                   </button>
                 ))}
-                <div className="flex items-center px-1 text-stone-300 dark:text-stone-600">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                  </svg>
-                </div>
               </div>
 
               {worldActivityScope === 'extreme' && (
@@ -16080,7 +16108,7 @@ const App: React.FC = () => {
                       </span>
                     </button>
                     <button
-                      onClick={() => setWorldExtremeActivities([])}
+                      onClick={() => setWorldExtremeExperiences([])}
                       className="text-[9px] font-black text-emerald-600 uppercase tracking-widest"
                     >
                       {regLang === 'es' ? 'Limpiar' : 'Clear'}
@@ -16101,20 +16129,20 @@ const App: React.FC = () => {
                       ActivityType.PARACAIDISMO,
                       ActivityType.SKI,
                     ].map((type) => {
-                      const checked = worldExtremeActivities.includes(type);
+                      const checked = worldExtremeExperiences.includes(type);
                       return (
                         <label key={type} className="flex items-center gap-2 px-2 py-2 rounded-xl bg-stone-50 dark:bg-stone-900 cursor-pointer">
                           <input
                             type="checkbox"
                             checked={checked}
-                            onChange={() => setWorldExtremeActivities((prev) => (
+                            onChange={() => setWorldExtremeExperiences((prev) => (
                               checked ? prev.filter((item) => item !== type) : [...prev, type]
                             ))}
                             className="w-4 h-4 rounded border-stone-300 text-emerald-600 focus:ring-emerald-500"
                           />
                           <span className="text-[9px] font-black text-stone-700 dark:text-stone-200 uppercase tracking-tight">
                             {type === ActivityType.MONTANISMO
-                              ? (regLang === 'es' ? 'Expediciones + de 24hs' : 'Expeditions +24h')
+                              ? (regLang === 'es' ? 'Recorridos + de 24hs' : 'Routes +24h')
                               : type === ActivityType.ESCALADA
                               ? (regLang === 'es' ? 'Escalada en roca' : 'Rock climbing')
                               : type}
@@ -17084,7 +17112,7 @@ const App: React.FC = () => {
                       <p className="text-[9px] font-black uppercase tracking-widest text-stone-400">
                         {selectedChatOtherParticipant.isProvider
                           ? (regLang === 'es' ? 'Prestador' : 'Provider')
-                          : (regLang === 'es' ? 'Explorador' : 'Explorer')}
+                          : (regLang === 'es' ? 'Viajero' : 'Traveler')}
                       </p>
                     </div>
                   </>
@@ -17189,7 +17217,7 @@ const App: React.FC = () => {
                     <span className="text-[9px] font-black uppercase tracking-widest text-stone-400">
                       {friend.isProvider
                         ? (regLang === 'es' ? 'Prestador' : 'Provider')
-                        : (regLang === 'es' ? 'Explorador' : 'Explorer')}
+                        : (regLang === 'es' ? 'Viajero' : 'Traveler')}
                     </span>
                   </button>
                 )) : (
@@ -17272,7 +17300,7 @@ const App: React.FC = () => {
         <div className="flex justify-between items-center mb-4">
           <div>
             <h1 className="text-3xl font-black text-stone-900 dark:text-stone-50 tracking-tighter italic leading-none">{regLang === 'es' ? 'Tiendas' : 'Shops'}</h1>
-            <p className="text-stone-400 text-[10px] font-bold uppercase tracking-widest mt-1">{regLang === 'es' ? 'Tiendas de montaña, escalada y outdoor en Argentina' : 'Mountain, climbing, and outdoor stores in Argentina'}</p>
+            <p className="text-stone-400 text-[10px] font-bold uppercase tracking-widest mt-1">{regLang === 'es' ? 'Tiendas, servicios y equipamiento turístico en Argentina' : 'Travel shops, services, and gear in Argentina'}</p>
           </div>
           <div className="flex items-center gap-3">
             {renderNotificationBell()}
@@ -17519,8 +17547,9 @@ const App: React.FC = () => {
 
   const renderProfile = () => {
     const providerPublishLabels: Record<ActivityType, string> = {
-      [ActivityType.TREKKING]: regLang === 'es' ? 'Refugios' : 'Shelters',
-      [ActivityType.ESCALADA]: regLang === 'es' ? 'Actividades' : 'Activities',
+      [ActivityType.TREKKING]: regLang === 'es' ? 'Sitios' : 'Places',
+      [ActivityType.GASTRONOMIA]: regLang === 'es' ? 'Gastronómicas' : 'Food & Drink',
+      [ActivityType.ESCALADA]: regLang === 'es' ? 'Experiencias' : 'Experiences',
       [ActivityType.BOULDER]: regLang === 'es' ? 'Cursos' : 'Courses',
       [ActivityType.MONTANISMO]: regLang === 'es' ? 'Eventos' : 'Events',
       [ActivityType.SKI]: 'Ski',
@@ -17599,15 +17628,15 @@ const App: React.FC = () => {
     const providerShelterPublications = providerPublicationItems.filter((item) => item.spot.placeType === PlaceType.REFUGIO);
     const providerActivityPublications = providerPublicationItems.filter((item) => item.spot.placeType === PlaceType.ACTIVIDAD);
     const todayPublicationKey = formatPublicationDateKey(new Date());
-    const providerUpcomingActivities = providerActivityPublications.filter((item) => {
+    const providerUpcomingExperiences = providerActivityPublications.filter((item) => {
       const key = getPublicationDateKey(item.spot);
       return !key || key >= todayPublicationKey;
     });
-    const providerPastActivities = providerActivityPublications.filter((item) => {
+    const providerPastExperiences = providerActivityPublications.filter((item) => {
       const key = getPublicationDateKey(item.spot);
       return !!key && key < todayPublicationKey;
     });
-    const providerActivityList = providerPublicationsActivityScope === 'past' ? providerPastActivities : providerUpcomingActivities;
+    const providerActivityList = providerPublicationsActivityScope === 'past' ? providerPastExperiences : providerUpcomingExperiences;
     const providerActivityCalendarMonthLabel = providerPublicationsCalendarMonth.toLocaleDateString(regLang === 'es' ? 'es-AR' : 'en-US', {
       month: 'long',
       year: 'numeric',
@@ -17829,7 +17858,7 @@ const App: React.FC = () => {
               {isProviderUser && providerServicesRequireSports(editForm.providerServices) && (
                 <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase text-stone-400 ml-1">
-                    {regLang === 'es' ? 'Deportes para Actividades' : 'Sports for Activities'}
+                    {regLang === 'es' ? 'Deportes para Experiencias' : 'Sports for Experiences'}
                   </label>
                   <div className="flex flex-wrap gap-2">
                     {Object.values(ActivityType).map((sport) => {
@@ -17908,7 +17937,7 @@ const App: React.FC = () => {
                 <img src={effectiveProfileAvatar} className="w-full h-full object-cover rounded-xl" alt="mini-avatar" referrerPolicy="no-referrer" />
               </div>
               <h3 className="text-xl font-black text-stone-900 tracking-tighter italic leading-none">@{profileData.name.toLowerCase().replace(/\s/g, '_')}</h3>
-              <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest mt-1">Explorer</p>
+              <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest mt-1">Recorre Argentina</p>
               <div className="w-44 h-44 bg-stone-900 p-4 rounded-3xl shadow-inner my-6 flex items-center justify-center">
                 <div className="text-white scale-[3.5]"><Icons.QRCode /></div>
               </div>
@@ -17992,7 +18021,7 @@ const App: React.FC = () => {
               <>
                 <div className="bg-white dark:bg-stone-900 p-5 rounded-[2rem] shadow-sm border border-stone-100 dark:border-stone-800">
                   <p className="text-[9px] font-black text-stone-400 uppercase tracking-widest mb-1">
-                    {regLang === 'es' ? 'Explorador' : 'Explorer'}
+                    {regLang === 'es' ? 'Viajero' : 'Traveler'}
                   </p>
                   <p className="text-xs font-bold text-stone-800 dark:text-stone-200">
                     {regLang === 'es' ? 'Nivel 1' : 'Level 1'}
@@ -18329,7 +18358,7 @@ const App: React.FC = () => {
 
           <div className="bg-white dark:bg-stone-900 p-6 rounded-[2rem] shadow-sm border border-stone-100 dark:border-stone-800 mb-6">
             <h3 className="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-4">
-              {isProviderUser ? (regLang === 'es' ? 'Deportes habilitados para Actividades' : 'Sports enabled for Activities') : rt.sports}
+              {isProviderUser ? (regLang === 'es' ? 'Deportes habilitados para Experiencias' : 'Sports enabled for Experiences') : rt.sports}
             </h3>
             <div className="flex flex-wrap gap-2">
               {profileData.preferredSports.length > 0 ? (
@@ -18421,7 +18450,7 @@ const App: React.FC = () => {
                           : 'bg-stone-50 dark:bg-stone-800 text-stone-500 dark:text-stone-300 border-stone-200 dark:border-stone-700'
                       }`}
                     >
-                      {regLang === 'es' ? 'Refugios' : 'Shelters'} · {providerShelterPublications.length}
+                      {regLang === 'es' ? 'Sitios' : 'Places'} · {providerShelterPublications.length}
                     </button>
                     <button
                       onClick={() => setProviderPublicationsSection('actividades')}
@@ -18431,7 +18460,7 @@ const App: React.FC = () => {
                           : 'bg-stone-50 dark:bg-stone-800 text-stone-500 dark:text-stone-300 border-stone-200 dark:border-stone-700'
                       }`}
                     >
-                      {regLang === 'es' ? 'Actividades' : 'Activities'} · {providerActivityPublications.length}
+                      {regLang === 'es' ? 'Experiencias' : 'Experiences'} · {providerActivityPublications.length}
                     </button>
                   </div>
 
@@ -18471,7 +18500,7 @@ const App: React.FC = () => {
                               : 'bg-stone-50 dark:bg-stone-800 text-stone-500 dark:text-stone-300 border-stone-200 dark:border-stone-700'
                           }`}
                         >
-                          {regLang === 'es' ? 'Próximas' : 'Upcoming'} · {providerUpcomingActivities.length}
+                          {regLang === 'es' ? 'Próximas' : 'Upcoming'} · {providerUpcomingExperiences.length}
                         </button>
                         <button
                           onClick={() => setProviderPublicationsActivityScope('past')}
@@ -18481,7 +18510,7 @@ const App: React.FC = () => {
                               : 'bg-stone-50 dark:bg-stone-800 text-stone-500 dark:text-stone-300 border-stone-200 dark:border-stone-700'
                           }`}
                         >
-                          {regLang === 'es' ? 'Pasadas' : 'Past'} · {providerPastActivities.length}
+                          {regLang === 'es' ? 'Pasadas' : 'Past'} · {providerPastExperiences.length}
                         </button>
                         <button
                           onClick={() => setProviderPublicationsView('list')}
@@ -18585,7 +18614,7 @@ const App: React.FC = () => {
                             ))}
                           </div>
                           <p className="text-[9px] font-black text-stone-500 uppercase tracking-widest">
-                            {regLang === 'es' ? 'Actividades del día' : 'Activities for day'}: {providerActivityCalendarSelectedDate}
+                            {regLang === 'es' ? 'Experiencias del día' : 'Experiences for day'}: {providerActivityCalendarSelectedDate}
                           </p>
                           {providerActivitySelectedDateItems.length > 0 ? (
                             <div className="space-y-3">
@@ -19039,7 +19068,7 @@ const App: React.FC = () => {
         </button>
 
         <div className="mt-12 mb-8 text-center opacity-40">
-          <p className="text-[9px] font-black text-stone-400 dark:text-stone-500 uppercase tracking-[0.2em]">© 2025 Explorer</p>
+          <p className="text-[9px] font-black text-stone-400 dark:text-stone-500 uppercase tracking-[0.2em]">© 2025 Recorre Argentina</p>
           <p className="text-[8px] font-bold text-stone-300 dark:text-stone-600 uppercase tracking-widest mt-1.5">Versión 1.2.4 - Build Stable</p>
         </div>
       </div>
@@ -19151,14 +19180,14 @@ const App: React.FC = () => {
             ).map(item => (
               (() => {
                 const isCommunityItem = item.id === 'community';
-                const isSheltersItem = item.id === 'shelters';
+                const isPlacesItem = item.id === 'shelters';
                 const isActive = currentView === item.id || (item.id === 'profile' && currentView === 'saved');
                 const showUnread = isCommunityItem && unreadCommunityPostsCount > 0;
                 return (
               <button 
                 key={item.id} 
                 onClick={() => {
-                  if (isSheltersItem) {
+                  if (isPlacesItem) {
                     setCurrentView('shelters');
                     return;
                   }
@@ -19758,10 +19787,11 @@ const App: React.FC = () => {
           }} 
           onOpenProfile={(userId) => {
             const providerPublishLabels: Record<ActivityType, string> = {
-              [ActivityType.TREKKING]: regLang === 'es' ? 'Expediciones' : 'Expeditions',
-              [ActivityType.ESCALADA]: regLang === 'es' ? 'Actividades' : 'Activities',
-              [ActivityType.BOULDER]: regLang === 'es' ? 'Entrenamientos' : 'Trainings',
-              [ActivityType.MONTANISMO]: regLang === 'es' ? 'Expediciones' : 'Expeditions',
+              [ActivityType.TREKKING]: regLang === 'es' ? 'Recorridos' : 'Routes',
+              [ActivityType.GASTRONOMIA]: regLang === 'es' ? 'Gastronómicas' : 'Food & Drink',
+              [ActivityType.ESCALADA]: regLang === 'es' ? 'Experiencias' : 'Experiences',
+              [ActivityType.BOULDER]: regLang === 'es' ? 'Talleresmientos' : 'Workshopsings',
+              [ActivityType.MONTANISMO]: regLang === 'es' ? 'Recorridos' : 'Routes',
               [ActivityType.SKI]: 'Ski',
               [ActivityType.RAFTING]: 'Rafting',
             };
@@ -19770,13 +19800,13 @@ const App: React.FC = () => {
             if (found && isProfileBlocked(found.id, found.name, toUserHandleFromName(found.name))) {
               return;
             }
-            const organizerName = found?.name || selectedSpot.organizerName || (regLang === 'es' ? 'Guía Explorer' : 'Explorer Guide');
+            const organizerName = found?.name || selectedSpot.organizerName || (regLang === 'es' ? 'Guía Recorre Argentina' : 'Recorre Argentina Guide');
             const organizerSpots = spots.filter((spot) => spot.organizerUserId === organizerKey || spot.organizerName === organizerName);
             const expeditionCount = organizerSpots.filter((spot) => !!spot.activityType && expeditionActivityTypes.includes(spot.activityType)).length;
             const activityNames = Array.from(new Set(
               organizerSpots
                 .map((spot) => {
-                  if (spot.activityType && expeditionActivityTypes.includes(spot.activityType)) return regLang === 'es' ? 'Expediciones' : 'Expeditions';
+                  if (spot.activityType && expeditionActivityTypes.includes(spot.activityType)) return regLang === 'es' ? 'Recorridos' : 'Routes';
                   if (spot.kind === 'event') return regLang === 'es' ? 'Eventos' : 'Events';
                   if (spot.kind === 'course') return regLang === 'es' ? 'Cursos' : 'Courses';
                   return spot.activityType || spot.placeType;
@@ -19789,7 +19819,7 @@ const App: React.FC = () => {
                   if (spot.kind === 'event') return regLang === 'es' ? 'Eventos' : 'Events';
                   if (spot.kind === 'course') return regLang === 'es' ? 'Cursos' : 'Courses';
                   if (spot.activityType) return providerPublishLabels[spot.activityType] || spot.activityType;
-                  if (spot.placeType === PlaceType.REFUGIO) return regLang === 'es' ? 'Refugios' : 'Shelters';
+                  if (spot.placeType === PlaceType.REFUGIO) return regLang === 'es' ? 'Sitios' : 'Places';
                   return null;
                 })
                 .filter(Boolean)
@@ -19806,7 +19836,7 @@ const App: React.FC = () => {
               listingsCount: organizerSpots.length,
               activityLabel: activityNames.join(' · ') || (resolvedIsProvider
                 ? (regLang === 'es' ? 'Prestador' : 'Provider')
-                : (regLang === 'es' ? 'Explorador' : 'Explorer')),
+                : (regLang === 'es' ? 'Viajero' : 'Traveler')),
               listingTypes,
               isFollowing: !!found?.isFollowing,
             });
@@ -19999,7 +20029,7 @@ const App: React.FC = () => {
                   <div>
                     <p className="text-lg font-black text-stone-900 dark:text-stone-100">{publicProfile.expeditionsCount}</p>
                     <p className="text-[9px] font-black text-stone-400 uppercase tracking-widest">
-                      {regLang === 'es' ? 'Expediciones' : 'Expeditions'}
+                      {regLang === 'es' ? 'Recorridos' : 'Routes'}
                     </p>
                   </div>
                   <div>
@@ -20024,7 +20054,7 @@ const App: React.FC = () => {
               <p className="mt-1 text-[10px] font-black text-stone-400 uppercase tracking-widest">
                 {publicProfile.isProvider
                   ? (regLang === 'es' ? 'Prestador' : 'Provider')
-                  : (regLang === 'es' ? 'Explorador' : 'Explorer')}
+                  : (regLang === 'es' ? 'Viajero' : 'Traveler')}
               </p>
               <p className="mt-3 text-sm font-bold text-stone-700 dark:text-stone-200">{publicProfile.activityLabel}</p>
             </div>
