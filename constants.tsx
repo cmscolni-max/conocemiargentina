@@ -572,11 +572,11 @@ export const MOCK_SPOTS: OutdoorSpot[] = [
   // --- REFUGIOS DE MONTAÑA ---
   {
     id: '1',
-    name: 'Refugio Frey',
-    location: 'Cerro Catedral, Bariloche',
+    name: 'Camping Los Coihues',
+    location: 'Villa La Angostura, Neuquén',
     province: 'Río Negro',
     country: 'Argentina',
-    description: 'El refugio más emblemático de Bariloche, famoso por sus agujas de granito que lo rodean. Un paraíso para la escalada clásica y el trekking de alta montaña.',
+    description: 'Camping de montaña con vista al lago, domos compartidos y base ideal para trekking, kayak y escapadas de fin de semana.',
     price: 15000,
     rating: 4.9,
     reviewsCount: 1240,
@@ -587,7 +587,7 @@ export const MOCK_SPOTS: OutdoorSpot[] = [
     carpasCount: 15,
     carpasDisponibles: 15,
     images: [
-      'https://images.unsplash.com/photo-1519904981063-b0cf448d479e?auto=format&fit=crop&q=80&w=800',
+      '/landing-shots/hero-home-card.jpg',
       'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=1200'
     ],
     amenities: ['Camas', 'Restaurante', 'Guías', 'Rescate Montaña', 'Cerveza Artesanal'],

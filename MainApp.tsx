@@ -578,7 +578,6 @@ const PROVIDER_SERVICE_OPTIONS = [
   { id: 'gastronomy', labelEs: 'Gastronómicas', labelEn: 'Food & Drink' },
   { id: 'courses', labelEs: 'Cursos', labelEn: 'Courses' },
   { id: 'events', labelEs: 'Eventos', labelEn: 'Events' },
-  { id: 'shops', labelEs: 'Tiendas', labelEn: 'Shops' },
 ] as const;
 
 const SPORT_ICON_MAP: Record<ActivityType, string> = {
@@ -645,6 +644,12 @@ const App: React.FC = () => {
   const [notiTipReadMap, setNotiTipReadMap] = useState<Record<string, string>>({});
   const [notiTipReadStatsById, setNotiTipReadStatsById] = useState<Record<string, { readers: number; lastReadAt?: string }>>({});
   const announcedNotiTipIdsRef = useRef<Set<string>>(new Set());
+  useEffect(() => {
+    if (currentView === 'shops') {
+      setCurrentView('explore');
+    }
+  }, [currentView, setCurrentView]);
+
   const toNotiTipEditorHtml = useCallback((item: { bodyHtml?: string; bodyText?: string }) => {
     const html = String(item.bodyHtml || '').trim();
     if (html) return html;
@@ -6387,7 +6392,7 @@ const App: React.FC = () => {
     const landingStats = [
       { value: regLang === 'es' ? 'Refugios' : 'Shelters', label: regLang === 'es' ? 'Hospedajes y bases en montaña' : 'Mountain stays and base camps' },
       { value: regLang === 'es' ? 'Actividades' : 'Activities', label: regLang === 'es' ? 'Experiencias por interés y tipo de viaje' : 'Experiences by interest and trip style' },
-      { value: regLang === 'es' ? 'Tiendas' : 'Shops', label: regLang === 'es' ? 'Tiendas, gastronomía y servicios locales' : 'Shops, gastronomy, and local services' },
+      { value: regLang === 'es' ? 'Gastronomía' : 'Gastronomy', label: regLang === 'es' ? 'Experiencias gastronómicas y cultura local' : 'Food experiences and local culture' },
     ];
     const audienceCards = [
       {
@@ -6399,8 +6404,8 @@ const App: React.FC = () => {
         image: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&q=80&w=1800',
         badge: regLang === 'es' ? 'Para salir más y decidir mejor' : 'For getting out more and deciding better',
         highlights: regLang === 'es'
-          ? ['Elegís aventuras, cursos, talleres y propuestas familiares por zona', 'Reservás experiencias y organizás tu plan completo desde la app', 'Te sumás a cursos y eventos sin perderte nada', 'Explorás tiendas y servicios útiles para equiparte', 'También tenés una red para conectar con personas y prestadores']
-          : ['Choose expeditions and activities by sport or area', 'Book shelters and find a base for your next outing', 'Join courses and events without missing anything', 'Explore shops and useful services to gear up', 'You also get a network to connect with people and providers'],
+          ? ['Elegís aventuras, cursos, talleres y propuestas familiares por zona', 'Reservás experiencias y organizás tu plan completo desde la app', 'Te sumás a cursos y eventos sin perderte nada', 'Descubrís propuestas gastronómicas con identidad regional', 'También tenés una red para conectar con personas y prestadores']
+          : ['Choose expeditions and activities by sport or area', 'Book shelters and find a base for your next outing', 'Join courses and events without missing anything', 'Discover food experiences with local identity', 'You also get a network to connect with people and providers'],
       },
       {
         title: regLang === 'es' ? 'Prestadores' : 'Providers',
@@ -6411,8 +6416,8 @@ const App: React.FC = () => {
         image: 'https://images.unsplash.com/photo-1519904981063-b0cf448d479e?auto=format&fit=crop&q=80&w=1800',
         badge: regLang === 'es' ? 'Para publicar y operar con más orden' : 'For publishing and operating with more order',
         highlights: regLang === 'es'
-          ? ['Alta de experiencias, cursos, talleres, propuestas gastronómicas y tiendas', 'Reservas, inscripciones y visibilidad en una sola app', 'Más control y menos caos operativo']
-          : ['Onboard shelters, activities, courses, events, and shops', 'Bookings, enrollments, and visibility in one app', 'More control and less operational chaos'],
+          ? ['Alta de experiencias, cursos, talleres y propuestas gastronómicas', 'Reservas, inscripciones y visibilidad en una sola app', 'Más control y menos caos operativo']
+          : ['Onboard shelters, activities, courses, events, and food experiences', 'Bookings, enrollments, and visibility in one app', 'More control and less operational chaos'],
       },
     ];
     const featureRows = [
@@ -6425,12 +6430,12 @@ const App: React.FC = () => {
         image: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=1400',
       },
       {
-        eyebrow: regLang === 'es' ? 'Tiendas y servicios' : 'Shops and services',
-        title: regLang === 'es' ? 'También tenés dónde equiparte' : 'You also know where to gear up',
+        eyebrow: regLang === 'es' ? 'Gastronomía local' : 'Local gastronomy',
+        title: regLang === 'es' ? 'También descubrís sabores y cultura de cada región' : 'You also discover local flavors and culture',
         copy: regLang === 'es'
-          ? 'Marcas, tiendas y servicios útiles también forman parte del ecosistema, así que no tenés que salir a buscarlos por otro lado.'
-          : 'Brands, shops, and useful services are also part of the ecosystem, so you do not have to search elsewhere.',
-        image: 'https://images.unsplash.com/photo-1519904981063-b0cf448d479e?auto=format&fit=crop&q=80&w=1400',
+          ? 'Además de aventuras, también encontrás experiencias gastronómicas y propuestas culturales conectadas a cada destino.'
+          : 'Beyond adventures, you also find gastronomy and cultural proposals tied to each destination.',
+        image: 'https://images.unsplash.com/photo-1541544741938-0af808871cc0?auto=format&fit=crop&q=80&w=1400',
       },
       {
         eyebrow: regLang === 'es' ? 'Seguimiento' : 'Follow-up',
@@ -6520,7 +6525,64 @@ const App: React.FC = () => {
         image: 'https://images.pexels.com/photos/11114515/pexels-photo-11114515.jpeg?cs=srgb&dl=pexels-tomfisk-11114515.jpg&fm=jpg',
       },
     ];
+    const regionHighlights = [
+      {
+        title: regLang === 'es' ? 'Norte Argentino' : 'Northern Argentina',
+        subtitle: regLang === 'es' ? 'Jujuy, Salta, Tucumán y Catamarca' : 'Jujuy, Salta, Tucuman, and Catamarca',
+        reference: regLang === 'es' ? 'Quebrada, puna, cultura y sabores regionales' : 'Ravines, highlands, culture, and local flavors',
+        image: 'https://images.unsplash.com/photo-1651059716588-715013b83557?auto=format&fit=crop&q=80&w=1400',
+      },
+      {
+        title: regLang === 'es' ? 'Cuyo y Andes Centrales' : 'Cuyo and Central Andes',
+        subtitle: regLang === 'es' ? 'Mendoza, San Juan y San Luis' : 'Mendoza, San Juan, and San Luis',
+        reference: regLang === 'es' ? 'Alta montaña, rutas del vino y escapadas activas' : 'High mountain routes, wine roads, and active getaways',
+        image: 'https://images.unsplash.com/photo-1624138784614-87fd1b6528f8?auto=format&fit=crop&q=80&w=1400',
+      },
+      {
+        title: regLang === 'es' ? 'Patagonia' : 'Patagonia',
+        subtitle: regLang === 'es' ? 'Neuquén, Río Negro, Chubut y Santa Cruz' : 'Neuquen, Rio Negro, Chubut, and Santa Cruz',
+        reference: regLang === 'es' ? 'Glaciares, lagos, trekking y aventura extrema' : 'Glaciers, lakes, trekking, and extreme adventure',
+        image: 'https://images.unsplash.com/photo-1544737151-6e4b87b1e0dd?auto=format&fit=crop&q=80&w=1400',
+      },
+      {
+        title: regLang === 'es' ? 'Litoral y Delta' : 'Litoral and Delta',
+        subtitle: regLang === 'es' ? 'Misiones, Corrientes, Entre Ríos y Santa Fe' : 'Misiones, Corrientes, Entre Rios, and Santa Fe',
+        reference: regLang === 'es' ? 'Iguazú, humedales, río y naturaleza viva' : 'Iguazu, wetlands, river routes, and living nature',
+        image: 'https://images.unsplash.com/photo-1580493721634-b35b4fe30f86?auto=format&fit=crop&q=80&w=1400',
+      },
+    ];
+    const tourismBlocks = [
+      {
+        title: regLang === 'es' ? 'Aventuras' : 'Adventures',
+        description: regLang === 'es'
+          ? 'Trekking, escalada, kayak, rafting, nieve y circuitos para distintos niveles.'
+          : 'Trekking, climbing, kayak, rafting, snow, and circuits for different levels.',
+        image: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=1400',
+      },
+      {
+        title: regLang === 'es' ? 'Experiencias gastronómicas' : 'Food experiences',
+        description: regLang === 'es'
+          ? 'Catas, cocina regional, rutas de bodegas y propuestas locales con identidad.'
+          : 'Wine tastings, regional cuisine, winery routes, and local identity-driven proposals.',
+        image: 'https://images.unsplash.com/photo-1541544741938-0af808871cc0?auto=format&fit=crop&q=80&w=1400',
+      },
+      {
+        title: regLang === 'es' ? 'Cursos y talleres' : 'Courses and workshops',
+        description: regLang === 'es'
+          ? 'Formaciones técnicas, talleres prácticos y capacitaciones con prestadores.'
+          : 'Technical training, practical workshops, and skill sessions with providers.',
+        image: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&q=80&w=1400',
+      },
+      {
+        title: regLang === 'es' ? 'Eventos turísticos' : 'Tourism events',
+        description: regLang === 'es'
+          ? 'Festivales, encuentros temáticos y agenda activa para todo el año.'
+          : 'Festivals, themed gatherings, and an active calendar throughout the year.',
+        image: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&q=80&w=1400',
+      },
+    ];
     const heroOutdoorImage = 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=1800';
+    const heroAppPreviewImage = '/landing-shots/app-home-current.png';
     const appStoreUrl = 'https://apps.apple.com/';
     const googlePlayUrl = 'https://play.google.com/store/apps';
     const storeDownloadOptions = [
@@ -6544,12 +6606,12 @@ const App: React.FC = () => {
       <div className="min-h-screen bg-[linear-gradient(180deg,#f4efe7_0%,#efe7d8_50%,#f7f2ea_100%)] text-stone-950">
         <div className="relative overflow-hidden text-white">
           <img src={heroOutdoorImage} alt="Paisajes de Argentina" className="absolute inset-0 h-full w-full object-cover" />
-          <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(7,18,14,0.86)_0%,rgba(12,44,35,0.74)_45%,rgba(18,64,52,0.54)_100%)]" />
+          <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(8,18,34,0.9)_0%,rgba(12,55,97,0.76)_48%,rgba(25,116,176,0.58)_100%)]" />
           <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px)', backgroundSize: '36px 36px' }} />
           <div className="relative mx-auto max-w-7xl px-6 py-6 lg:px-10">
             <div className="flex items-center justify-between gap-4 rounded-full border border-white/10 bg-white/5 px-5 py-3 backdrop-blur">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-sky-400 text-stone-950 shadow-lg shadow-emerald-500/30">
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-sky-300 text-stone-950 shadow-lg shadow-sky-500/30">
                   <Icons.Map />
                 </div>
                 <div>
@@ -6585,13 +6647,13 @@ const App: React.FC = () => {
                 </h1>
                 <p className="mt-6 max-w-2xl text-base font-bold leading-7 text-white/74 sm:text-lg">
                   {regLang === 'es'
-                    ? 'Descubrí aventuras, cursos, talleres, experiencias gastronómicas, tiendas y propuestas para toda la familia. Si ofrecés experiencias, también podés publicarlas y gestionarlas desde acá.'
-                    : 'Discover adventures, courses, workshops, gastronomy, shops, and family-friendly plans. If you offer experiences, you can publish and manage them from the same ecosystem.'}
+                  ? 'Descubrí aventuras, cursos, talleres, experiencias gastronómicas y propuestas para toda la familia. Si ofrecés experiencias, también podés publicarlas y gestionarlas desde acá.'
+                  : 'Discover adventures, courses, workshops, gastronomy, and family-friendly plans. If you offer experiences, you can publish and manage them from the same ecosystem.'}
                 </p>
                 <div className="mt-8 flex flex-wrap gap-3">
                   <button
                     onClick={() => navigateToPath(APP_PUBLIC_PATH)}
-                    className="rounded-full bg-sky-400 px-6 py-3 text-xs font-black uppercase tracking-[0.22em] text-stone-950 shadow-[0_20px_40px_rgba(16,185,129,0.24)] transition hover:-translate-y-0.5"
+                    className="rounded-full bg-sky-300 px-6 py-3 text-xs font-black uppercase tracking-[0.22em] text-stone-950 shadow-[0_20px_40px_rgba(56,189,248,0.28)] transition hover:-translate-y-0.5"
                   >
                     {regLang === 'es' ? 'Quiero conocer la app' : 'I want to see the app'}
                   </button>
@@ -6624,135 +6686,11 @@ const App: React.FC = () => {
                     </div>
                     <div className="overflow-hidden rounded-[3rem] border border-white/8 bg-stone-50">
                       <div className="relative h-[590px] overflow-hidden bg-stone-50">
-                        <div className="relative z-10 flex h-full flex-col">
-                          <div className="border-b border-stone-100 bg-white px-4 pb-3 pt-9 shadow-sm">
-                            <div className="mb-4 flex items-center justify-between">
-                              <div className="flex flex-col">
-                                <p className="text-[26px] font-black italic leading-none tracking-[-0.05em] text-stone-900">Recorre Argentina</p>
-                                <span className="mt-1 text-[8px] font-bold uppercase tracking-[0.18em] text-sky-600">
-                                  {regLang === 'es' ? 'Descubrí Argentina' : 'Outdoor World'}
-                                </span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-stone-200 bg-white text-stone-500 shadow-sm">
-                                  <Icons.Map />
-                                </div>
-                                <div className="h-10 w-10 overflow-hidden rounded-2xl ring-1 ring-stone-100">
-                                  <img
-                                    src="https://images.unsplash.com/photo-1522163182402-834f871fd851?auto=format&fit=crop&w=400&q=80"
-                                    alt="Recorre Argentina profile"
-                                    className="h-full w-full object-cover"
-                                  />
-                                </div>
-                              </div>
-                            </div>
-
-                            <div className="rounded-2xl bg-stone-100 px-4 py-3">
-                              <p className="text-[11px] font-bold text-stone-400">
-                                {regLang === 'es' ? 'Buscar en Mundo...' : 'Search in World...'}
-                              </p>
-                            </div>
-
-                            <div className="mt-3 flex items-center gap-2.5">
-                              <span className="whitespace-nowrap text-[8px] font-black uppercase tracking-[0.18em] text-stone-400">
-                                {regLang === 'es' ? 'Provincia:' : 'Province:'}
-                              </span>
-                              <div className="flex-1 rounded-xl bg-stone-100 px-3.5 py-2">
-                                <p className="text-[10px] font-bold text-stone-700">
-                                  {regLang === 'es' ? 'Todas las provincias' : 'All provinces'}
-                                </p>
-                              </div>
-                            </div>
-
-                            <div className="mt-3 grid grid-cols-2 gap-2">
-                              <div className="rounded-2xl bg-sky-800 px-3 py-3 text-center text-[10px] font-black uppercase tracking-[0.18em] text-white shadow-md">
-                                {regLang === 'es' ? 'Refugios' : 'Shelters'}
-                              </div>
-                              <div className="rounded-2xl border border-stone-200 bg-white px-3 py-3 text-center text-[10px] font-black uppercase tracking-[0.18em] text-stone-500">
-                                {regLang === 'es' ? 'Actividades' : 'Activities'}
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="flex-1 overflow-hidden px-4 py-4">
-                            <div className="mb-3 flex gap-2 overflow-hidden">
-                              {[
-                                regLang === 'es' ? 'Expediciones +24hs' : 'Expeditions +24h',
-                                regLang === 'es' ? 'Cursos' : 'Courses',
-                                regLang === 'es' ? 'Eventos' : 'Events',
-                              ].map((chip, index) => (
-                                <div
-                                  key={chip}
-                                  className={`min-w-0 rounded-xl px-3 py-2 text-center text-[8px] font-black uppercase tracking-[0.14em] leading-tight ${index === 0 ? 'bg-sky-800 text-white' : 'border border-stone-200 bg-white text-stone-500'}`}
-                                >
-                                  <span className="block truncate">{chip}</span>
-                                </div>
-                              ))}
-                            </div>
-
-                            <div className="space-y-3">
-                              <div className="overflow-hidden rounded-[2rem] border border-stone-100 bg-white shadow-[0_16px_35px_rgba(15,23,42,0.08)]">
-                                <div className="h-40 bg-[url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80')] bg-cover bg-center" />
-                                <div className="space-y-2 px-4 py-4">
-                                  <div className="flex items-start justify-between gap-3">
-                                    <div>
-                                      <p className="text-[22px] font-black tracking-tight text-stone-900">Refugio Laguna</p>
-                                      <p className="text-[10px] font-black uppercase tracking-[0.18em] text-stone-400">
-                                        {regLang === 'es' ? 'Mendoza · Alta montaña' : 'Mendoza · High mountain'}
-                                      </p>
-                                    </div>
-                                    <div className="rounded-full bg-sky-100 px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-sky-700">
-                                      4.9
-                                    </div>
-                                  </div>
-                                  <p className="text-[13px] font-semibold leading-6 text-stone-500">
-                                    {regLang === 'es'
-                                      ? 'Refugios, actividades y servicios reales en una sola experiencia.'
-                                      : 'Shelters, activities, and real services in one experience.'}
-                                  </p>
-                                </div>
-                              </div>
-
-                              <div className="grid grid-cols-2 gap-3">
-                                <div className="rounded-[1.7rem] bg-[#123826] px-4 py-4 text-white shadow-[0_15px_35px_rgba(6,78,59,0.18)]">
-                                  <p className="text-[10px] font-black uppercase tracking-[0.18em] text-sky-200">
-                                    {regLang === 'es' ? 'Mapa vivo' : 'Live map'}
-                                  </p>
-                                  <p className="mt-2 text-base font-black leading-5">
-                                    {regLang === 'es' ? 'Explorá por zona' : 'Explore by area'}
-                                  </p>
-                                </div>
-                                <div className="rounded-[1.7rem] border border-stone-100 bg-white px-4 py-4 text-stone-900 shadow-[0_15px_35px_rgba(15,23,42,0.06)]">
-                                  <p className="text-[10px] font-black uppercase tracking-[0.18em] text-stone-400">
-                                    {regLang === 'es' ? 'Comunidad' : 'Community'}
-                                  </p>
-                                  <p className="mt-2 text-base font-black leading-5">
-                                    {regLang === 'es' ? 'Tips y contactos' : 'Tips and contacts'}
-                                  </p>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="border-t border-stone-100 bg-white/90 px-6 py-4 backdrop-blur-xl">
-                            <div className="flex items-center justify-between">
-                              {[
-                                { label: regLang === 'es' ? 'Explorar' : 'Explore', active: true, icon: <Icons.Search /> },
-                                { label: regLang === 'es' ? 'Comunidad' : 'Community', active: false, icon: <Icons.Community /> },
-                                { label: regLang === 'es' ? 'Perfil' : 'Profile', active: false, icon: <Icons.User /> },
-                              ].map((item) => (
-                                <div key={item.label} className="flex flex-col items-center gap-1.5">
-                                  <div className={`flex h-10 w-10 items-center justify-center rounded-2xl ${item.active ? 'bg-sky-800 text-white shadow-md' : 'text-stone-400'}`}>
-                                    {item.icon}
-                                  </div>
-                                  <span className={`text-[8px] font-black uppercase tracking-[0.14em] ${item.active ? 'text-sky-700' : 'text-stone-400'}`}>
-                                    {item.label}
-                                  </span>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        </div>
+                        <img
+                          src={heroAppPreviewImage}
+                          alt="Captura de pantalla de Recorre Argentina"
+                          className="h-full w-full object-contain object-center"
+                        />
                       </div>
                     </div>
                     <div className="mx-auto mt-3 h-1.5 w-28 rounded-full bg-stone-700/90" />
@@ -6762,6 +6700,78 @@ const App: React.FC = () => {
             </div>
           </div>
         </div>
+
+        <section id="regiones" className="border-t border-stone-200/70 bg-[#f8f4ec]">
+          <div className="mx-auto max-w-7xl px-6 py-16 lg:px-10 lg:py-24">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+              <div>
+                <p className="text-[11px] font-black uppercase tracking-[0.24em] text-sky-700">
+                  {regLang === 'es' ? 'Regiones del país' : 'Country regions'}
+                </p>
+                <h2 className="mt-3 max-w-3xl text-4xl font-black italic tracking-tight text-stone-950 sm:text-5xl">
+                  {regLang === 'es'
+                    ? 'Argentina por regiones, para elegir mejor qué tipo de viaje querés hacer.'
+                    : 'Argentina by region, so you can choose the kind of trip you want.'}
+                </h2>
+              </div>
+              <p className="max-w-xl text-sm font-bold leading-7 text-stone-600">
+                {regLang === 'es'
+                  ? 'Cada bloque reúne referencias reales para planificar mejor: naturaleza, cultura, gastronomía y nivel de actividad.'
+                  : 'Each block brings real references to plan better: nature, culture, gastronomy, and activity level.'}
+              </p>
+            </div>
+            <div className="mt-10 grid gap-5 md:grid-cols-2">
+              {regionHighlights.map((region) => (
+                <article key={region.title} className="overflow-hidden rounded-[2rem] border border-stone-200 bg-white shadow-sm">
+                  <div className="relative h-52">
+                    <img src={region.image} alt={region.title} className="h-full w-full object-cover" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                    <div className="absolute inset-x-0 bottom-0 p-5 text-white">
+                      <p className="text-2xl font-black italic tracking-tight">{region.title}</p>
+                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/80">{region.subtitle}</p>
+                    </div>
+                  </div>
+                  <div className="px-5 py-5">
+                    <p className="text-sm font-bold leading-7 text-stone-600">{region.reference}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="actividades" className="border-t border-stone-200/70 bg-[#efe5d4]">
+          <div className="mx-auto max-w-7xl px-6 py-16 lg:px-10 lg:py-24">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+              <div>
+                <p className="text-[11px] font-black uppercase tracking-[0.24em] text-sky-700">
+                  {regLang === 'es' ? 'Actividades principales' : 'Main activity blocks'}
+                </p>
+                <h2 className="mt-3 max-w-3xl text-4xl font-black italic tracking-tight text-stone-950 sm:text-5xl">
+                  {regLang === 'es'
+                    ? 'Aventuras, gastronomía, cursos, talleres y eventos turísticos en una sola landing.'
+                    : 'Adventures, food, courses, workshops, and tourism events in one landing.'}
+                </h2>
+              </div>
+              <p className="max-w-xl text-sm font-bold leading-7 text-stone-600">
+                {regLang === 'es'
+                  ? 'Este bloque deja claro qué vas a encontrar en Recorre Argentina y cómo se organiza la experiencia.'
+                  : 'This block makes clear what you will find in Recorre Argentina and how the experience is organized.'}
+              </p>
+            </div>
+            <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+              {tourismBlocks.map((block) => (
+                <article key={block.title} className="overflow-hidden rounded-[1.7rem] border border-stone-200 bg-white shadow-sm">
+                  <img src={block.image} alt={block.title} className="h-40 w-full object-cover" />
+                  <div className="p-5">
+                    <p className="text-xl font-black italic tracking-tight text-stone-900">{block.title}</p>
+                    <p className="mt-3 text-sm font-bold leading-7 text-stone-600">{block.description}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
 
         <section id="audiencias" className="border-t border-stone-200/70 bg-[#fbf7f1]">
           <div className="mx-auto max-w-7xl px-6 py-16 lg:px-10 lg:py-24">
@@ -6956,7 +6966,7 @@ const App: React.FC = () => {
         </div>
       </section>
 
-        <section className="relative overflow-hidden border-t border-white/10 bg-[linear-gradient(135deg,#0f172a_0%,#0f3f66_45%,#0f3f34_100%)] px-6 py-16 text-white lg:px-10 lg:py-24">
+        <section className="relative overflow-hidden border-t border-white/10 bg-[linear-gradient(135deg,#0c1e35_0%,#0f4c81_52%,#2b9de7_100%)] px-6 py-16 text-white lg:px-10 lg:py-24">
           <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&q=80&w=1600)', backgroundSize: 'cover', backgroundPosition: 'center' }} />
           <div className="relative mx-auto max-w-7xl">
             <div className="max-w-3xl">
@@ -7041,7 +7051,7 @@ const App: React.FC = () => {
 
         <section className="border-t border-stone-200/70 bg-[#f6efe4]">
           <div className="mx-auto grid max-w-7xl gap-6 px-6 py-16 lg:grid-cols-[1.1fr_0.9fr] lg:px-10 lg:py-24">
-            <div className="rounded-[2.5rem] bg-[linear-gradient(180deg,#11456d_0%,#0b2b46_100%)] p-8 text-white shadow-[0_20px_50px_rgba(20,30,20,0.14)] lg:p-10">
+            <div className="rounded-[2.5rem] bg-[linear-gradient(180deg,#0f4c81_0%,#0b2f53_100%)] p-8 text-white shadow-[0_20px_50px_rgba(16,43,74,0.2)] lg:p-10">
               <p className="text-[10px] font-black uppercase tracking-[0.24em] text-sky-200">
                 {regLang === 'es' ? 'Comunidad viajera' : 'Travel community'}
               </p>
@@ -7152,7 +7162,7 @@ const App: React.FC = () => {
                 <div className="overflow-hidden rounded-[1.6rem] border border-stone-200">
                   <img
                     src="https://images.pexels.com/photos/7438213/pexels-photo-7438213.jpeg?cs=srgb&dl=pexels-maverazc-7438213.jpg&fm=jpg"
-                    alt="Rack con skis y equipo en tienda de montaña"
+                    alt="Experiencia gastronómica regional"
                     className="h-36 w-full object-cover"
                     referrerPolicy="no-referrer"
                     onError={(event) => {
@@ -7163,29 +7173,29 @@ const App: React.FC = () => {
                 </div>
               </div>
               <p className="text-[10px] font-black uppercase tracking-[0.24em] text-sky-700">
-                {regLang === 'es' ? 'Tiendas y servicios' : 'Shops and services'}
+                {regLang === 'es' ? 'Gastronomía y cultura local' : 'Food and local culture'}
               </p>
               <h2 className="mt-4 text-4xl font-black italic tracking-tight text-stone-950">
                 {regLang === 'es'
-                  ? 'Preparar una salida también implica saber dónde equiparte.'
-                  : 'Getting equipped should also be part of the journey.'}
+                  ? 'Cada viaje también se vive desde su cocina, su cultura y su identidad local.'
+                  : 'Every trip is also lived through local food, culture, and identity.'}
               </h2>
               <p className="mt-4 text-sm font-bold leading-7 text-stone-600">
                 {regLang === 'es'
-                  ? 'Recorre Argentina no se queda solo en el plan. También suma tiendas de montaña, equipamiento técnico y alquiler de equipos para que preparar una salida sea mucho más simple.'
-                  : 'Recorre Argentina does not stop at the plan. It also includes shops, brands, and useful services so getting ready for a trip feels easier.'}
+                  ? 'Recorre Argentina no se queda solo en el plan. También suma propuestas gastronómicas y experiencias culturales para que cada viaje tenga más contexto local.'
+                  : 'Recorre Argentina goes beyond planning. It also adds food and cultural experiences so every trip has stronger local context.'}
               </p>
               <div className="mt-6 grid gap-3">
                 {[
                   regLang === 'es'
-                    ? 'Tiendas y servicios dentro del mismo ecosistema turístico'
-                    : 'Shops and services inside the same travel ecosystem',
+                    ? 'Gastronomía y cultura dentro del mismo ecosistema turístico'
+                    : 'Food and culture inside the same travel ecosystem',
                   regLang === 'es'
-                    ? 'Servicios para escapadas, cursos o actividades familiares'
-                    : 'Equipment rental for outings, courses, or expeditions',
+                    ? 'Rutas de sabores para escapadas, cursos o actividades familiares'
+                    : 'Flavor routes for outings, courses, or family activities',
                   regLang === 'es'
-                    ? 'Más contexto para saber dónde equiparte antes de salir'
-                    : 'More context to know where to look before heading out',
+                    ? 'Más contexto local para elegir mejor cada destino'
+                    : 'More local context to choose each destination better',
                 ].map((item) => (
                   <div key={item} className="rounded-[1.5rem] bg-stone-100 px-4 py-4 text-sm font-black text-stone-800">
                     {item}
@@ -7196,7 +7206,7 @@ const App: React.FC = () => {
             <div className="overflow-hidden rounded-[2.5rem] border border-stone-200 shadow-sm">
               <img
                 src="https://images.pexels.com/photos/34771214/pexels-photo-34771214.jpeg?cs=srgb&dl=pexels-2156176234-34771214.jpg&fm=jpg"
-                alt="Interior de tienda especializada en equipo de montaña y nieve"
+                alt="Plato regional en entorno turístico argentino"
                 className="h-full min-h-[320px] w-full object-cover object-center"
                 referrerPolicy="no-referrer"
                 onError={(event) => {
@@ -7209,17 +7219,17 @@ const App: React.FC = () => {
         </section>
 
         <section className="mx-auto max-w-7xl border-t border-stone-200/70 px-6 py-16 lg:px-10 lg:py-24">
-            <div className="rounded-[2.5rem] bg-[linear-gradient(135deg,#11261d_0%,#17372b_50%,#2c5e4a_100%)] p-8 text-white shadow-[0_30px_80px_rgba(9,18,14,0.24)] lg:p-10">
+            <div className="rounded-[2.5rem] bg-[linear-gradient(135deg,#0d2f52_0%,#0f4c81_50%,#2b9de7_100%)] p-8 text-white shadow-[0_30px_80px_rgba(10,37,62,0.24)] lg:p-10">
               <p className="text-[10px] font-black uppercase tracking-[0.24em] text-sky-200">
                 {regLang === 'es' ? 'Descargá Recorre Argentina' : 'Download Recorre Argentina'}
               </p>
               <h2 className="mt-4 max-w-3xl text-4xl font-black italic tracking-tight sm:text-5xl">
-                {regLang === 'es' ? 'Descargá Recorre Argentina desde tu tienda.' : 'Download Recorre Argentina from your store.'}
+                {regLang === 'es' ? 'Descargá Recorre Argentina en tu celular.' : 'Download Recorre Argentina on your phone.'}
               </h2>
               <p className="mt-4 max-w-3xl text-sm font-bold leading-7 text-white/74">
                 {regLang === 'es'
-                  ? 'Acá tenés los dos accesos separados. Escaneás con el teléfono y elegís si querés ir a App Store o Google Play.'
-                  : 'If you want to download the app, here are the two separate access points. Scan with your phone and it takes you to the matching store.'}
+                  ? 'Acá tenés los dos accesos separados. Escaneás con el teléfono y elegís App Store o Google Play.'
+                  : 'If you want to download the app, here are the two separate access points. Scan with your phone and choose App Store or Google Play.'}
               </p>
               <div className="mt-8 grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
                 <div className="flex items-center justify-center rounded-[2rem] border border-white/10 bg-black/15 p-8">
@@ -7312,8 +7322,8 @@ const App: React.FC = () => {
                 </button>
                 <p className="self-center text-[11px] font-bold tracking-[0.04em] text-white/60">
                   {regLang === 'es'
-                    ? 'Cuando estén las fichas reales de Recorre Argentina en cada tienda, estos accesos se apuntan directo ahí.'
-                    : 'Once Recorre Argentina has its real store listings, these entry points can link directly there.'}
+                    ? 'Cuando estén las fichas reales de Recorre Argentina, estos accesos se apuntan directo ahí.'
+                    : 'Once Recorre Argentina has its official listings, these entry points can link directly there.'}
                 </p>
               </div>
             </div>
@@ -7339,8 +7349,8 @@ const App: React.FC = () => {
               </h2>
               <p className="mt-4 text-sm font-bold leading-7 text-stone-700">
                 {regLang === 'es'
-                  ? 'Sitios, experiencias, cursos, talleres, propuestas gastronómicas o tiendas: podés mostrar lo que hacés, recibir consultas y ordenar tus reservas desde un mismo lugar.'
-                  : 'Shelters, activities, courses, events, or shops: you can join, show what you do, and start getting visibility and traction inside the ecosystem.'}
+                  ? 'Sitios, experiencias, cursos, talleres y propuestas gastronómicas: podés mostrar lo que hacés, recibir consultas y ordenar tus reservas desde un mismo lugar.'
+                  : 'Shelters, activities, courses, events, and food experiences: you can join, show what you do, and start getting visibility and traction inside the ecosystem.'}
               </p>
               <div className="mt-6 grid gap-3 sm:grid-cols-2">
                 {[
@@ -7430,7 +7440,7 @@ const App: React.FC = () => {
                 <div className="mt-4 flex flex-col gap-3 text-sm font-bold text-white/75">
                   <a href="mailto:hola@explorer.app">hola@explorer.app</a>
                   <a href="#">Instagram</a>
-                  <a href="#">{regLang === 'es' ? 'Próximamente en stores' : 'Coming soon to stores'}</a>
+                  <a href="#">{regLang === 'es' ? 'Próximamente en plataformas' : 'Coming soon on platforms'}</a>
                 </div>
               </div>
             </div>
@@ -19149,7 +19159,6 @@ const App: React.FC = () => {
               {currentView === 'shelters' && renderExplorerHome(true)}
               {currentView === 'community' && renderCommunity()}
               {currentView === 'messages' && renderMessages()}
-              {currentView === 'shops' && renderShops()}
               {currentView === 'profile' && renderProfile()}
               {currentView === 'saved' && renderSaved()}
               {currentView === 'noti_tips' && renderNotiTips()}
@@ -19167,14 +19176,12 @@ const App: React.FC = () => {
                     { id: 'explore_public', icon: <Icons.Search />, label: regLang === 'es' ? 'Explorar' : 'Explore' },
                     { id: 'community', icon: <Icons.Community />, label: regLang === 'es' ? 'Red' : 'Network' },
                     { id: 'messages', icon: <Icons.Community />, label: regLang === 'es' ? 'Mensajes' : 'Messages' },
-                    { id: 'shops', icon: <Icons.Store />, label: regLang === 'es' ? 'Tiendas' : 'Shops' },
                     { id: 'profile', icon: <Icons.User />, label: regLang === 'es' ? 'Perfil' : 'Profile' }
                   ]
                 : [
                     { id: 'explore', icon: <Icons.Mountain />, label: regLang === 'es' ? 'Mundo' : 'World' },
                     { id: 'community', icon: <Icons.Community />, label: regLang === 'es' ? 'Red' : 'Network' },
                     { id: 'messages', icon: <Icons.Community />, label: regLang === 'es' ? 'Mensajes' : 'Messages' },
-                    { id: 'shops', icon: <Icons.Store />, label: regLang === 'es' ? 'Tiendas' : 'Shops' },
                     { id: 'profile', icon: <Icons.User />, label: regLang === 'es' ? 'Perfil' : 'Profile' }
                   ]
             ).map(item => (
