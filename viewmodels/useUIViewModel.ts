@@ -3,7 +3,7 @@ import { ViewState, ThemeMode } from '../types';
 
 export const useUIViewModel = () => {
   const [currentView, setCurrentView] = useState<ViewState>('explore');
-  const [regLang, setRegLang] = useState<'es' | 'en'>('es');
+  const [regLang, setRegLang] = useState<any>('es');
   const [themeMode, setThemeMode] = useState<ThemeMode>(() => {
     const saved = localStorage.getItem('cumbre_theme');
     return (saved as ThemeMode) || 'system';

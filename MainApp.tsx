@@ -65,6 +65,28 @@ const regI18n: any = {
     exp: 'Experiencia',
     sports: 'Deportes (Practicas o te gustan)',
     finish: 'Finalizar y Explorar',
+    providerRegistration: 'Registro de Prestador',
+    completeProviderTitle: 'Completá los datos para solicitar el alta como prestador.',
+    completeProviderHint: 'El administrador revisará tu solicitud antes de habilitar tus servicios.',
+    bookingModule: '¿Usarás módulo de reservas?',
+    bookingModuleHint: 'Activalo si querés gestionar reservas, cupos o inscripciones desde la app.',
+    providerName: 'Nombre del Prestador / Marca',
+    providerNamePlaceholder: 'Ej. Club Andino Bariloche',
+    emailVerifiedByGoogle: 'Email verificado por Google',
+    phone: 'Teléfono',
+    providerStartDate: 'Fecha de inicio de actividades',
+    enabledServices: 'Servicios habilitados',
+    serviceRequired: 'Elegí al menos un servicio para dar de alta.',
+    serviceLabels: {
+      shelters: 'Sitios',
+      activities: 'Experiencias',
+      gastronomy: 'Gastronómicas',
+      courses: 'Cursos',
+      events: 'Eventos',
+    },
+    selectDate: 'Seleccionar fecha',
+    clear: 'Limpiar',
+    done: 'Listo',
     placeholderCountry: 'Ej. España, USA...',
     placeholderUser: 'Explorer_Arg',
     select: 'Seleccionar...',
@@ -126,6 +148,28 @@ const regI18n: any = {
     exp: 'Experience',
     sports: 'Sports (You practice or like)',
     finish: 'Finish and Explore',
+    providerRegistration: 'Provider Registration',
+    completeProviderTitle: 'Complete the details to request provider access.',
+    completeProviderHint: 'The administrator will review your request before enabling your services.',
+    bookingModule: 'Will you use booking module?',
+    bookingModuleHint: 'Enable it if you want to manage bookings, capacity, or enrollments from the app.',
+    providerName: 'Provider / Brand Name',
+    providerNamePlaceholder: 'e.g. Andino Club Bariloche',
+    emailVerifiedByGoogle: 'Email verified by Google',
+    phone: 'Phone',
+    providerStartDate: 'Start date of operations',
+    enabledServices: 'Enabled services',
+    serviceRequired: 'Choose at least one service to publish.',
+    serviceLabels: {
+      shelters: 'Places',
+      activities: 'Experiences',
+      gastronomy: 'Food & Drink',
+      courses: 'Courses',
+      events: 'Events',
+    },
+    selectDate: 'Select date',
+    clear: 'Clear',
+    done: 'Done',
     placeholderCountry: 'e.g. Spain, USA...',
     placeholderUser: 'Explorer_Arg',
     select: 'Select...',
@@ -176,6 +220,402 @@ const regI18n: any = {
   }
 };
 
+const createRegistrationCopy = (copy: any) => ({
+  ...regI18n.en,
+  ...copy,
+  difficultyLabels: regI18n.en.difficultyLabels,
+  errors: {
+    ...regI18n.en.errors,
+    ...(copy.errors || {}),
+  },
+  theme: {
+    ...regI18n.en.theme,
+    ...(copy.theme || {}),
+  },
+  notifications: regI18n.en.notifications,
+  serviceLabels: {
+    ...regI18n.en.serviceLabels,
+    ...(copy.serviceLabels || {}),
+  },
+  config: {
+    ...regI18n.en.config,
+    ...(copy.config || {}),
+  },
+});
+
+Object.assign(regI18n, {
+  zhMandarin: createRegistrationCopy({
+    createAccount: '创建你的账户',
+    foreigner: '我是外国游客',
+    noLiveArg: '我不住在阿根廷',
+    username: '用户名',
+    email: '电子邮件',
+    country: '来源国家',
+    province: '居住省份',
+    visitingProvince: '访问省份',
+    birthDate: '出生日期',
+    finish: '完成并开始探索',
+    providerRegistration: '服务商注册',
+    completeProviderTitle: '请填写资料以申请成为服务商。',
+    completeProviderHint: '管理员会审核你的申请，然后启用你的服务。',
+    bookingModule: '你会使用预订模块吗？',
+    bookingModuleHint: '如果你想在应用内管理预订、名额或报名，请开启。',
+    providerName: '服务商 / 品牌名称',
+    providerNamePlaceholder: '例如：巴里洛切安第斯俱乐部',
+    emailVerifiedByGoogle: '电子邮件已通过 Google 验证',
+    phone: '电话',
+    providerStartDate: '开始运营日期',
+    enabledServices: '启用的服务',
+    serviceRequired: '请至少选择一项要发布的服务。',
+    serviceLabels: { shelters: '地点', activities: '体验', gastronomy: '美食', courses: '课程', events: '活动' },
+    placeholderCountry: '例如：西班牙、美国...',
+    placeholderUser: 'Explorer_Arg',
+    select: '请选择...',
+    langLabel: '语言',
+    errors: {
+      required: '请填写必填字段（*）。',
+      email: '请输入有效的电子邮件。',
+      birthDate: '注册必须年满 18 岁。',
+      name: '姓名至少需要 3 个字符，且不能包含特殊符号。',
+      country: '请输入你的来源国家。',
+    },
+    config: { lang: '语言' },
+  }),
+  zh: createRegistrationCopy({
+    createAccount: '建立你的帳戶',
+    foreigner: '我是外國旅客',
+    noLiveArg: '我不住在阿根廷',
+    username: '使用者名稱',
+    email: '電子郵件',
+    country: '來源國家',
+    province: '居住省份',
+    visitingProvince: '造訪省份',
+    birthDate: '出生日期',
+    finish: '完成並開始探索',
+    providerRegistration: '服務商註冊',
+    completeProviderTitle: '請填寫資料以申請成為服務商。',
+    completeProviderHint: '管理員會審核你的申請，然後啟用你的服務。',
+    bookingModule: '你會使用預訂模組嗎？',
+    bookingModuleHint: '如果你想在應用程式內管理預訂、名額或報名，請開啟。',
+    providerName: '服務商 / 品牌名稱',
+    providerNamePlaceholder: '例如：巴里洛切安第斯俱樂部',
+    emailVerifiedByGoogle: '電子郵件已由 Google 驗證',
+    phone: '電話',
+    providerStartDate: '開始營運日期',
+    enabledServices: '啟用的服務',
+    serviceRequired: '請至少選擇一項要發布的服務。',
+    serviceLabels: { shelters: '地點', activities: '體驗', gastronomy: '美食', courses: '課程', events: '活動' },
+    placeholderCountry: '例如：西班牙、美國...',
+    placeholderUser: 'Explorer_Arg',
+    select: '請選擇...',
+    langLabel: '語言',
+    errors: {
+      required: '請填寫必填欄位（*）。',
+      email: '請輸入有效的電子郵件。',
+      birthDate: '註冊必須年滿 18 歲。',
+      name: '名稱至少需要 3 個字元，且不能包含特殊符號。',
+      country: '請輸入你的來源國家。',
+    },
+    config: { lang: '語言' },
+  }),
+  ja: createRegistrationCopy({
+    createAccount: 'アカウントを作成',
+    foreigner: '私は外国人観光客です',
+    noLiveArg: 'アルゼンチン在住ではありません',
+    username: 'ユーザー名',
+    email: 'メール',
+    country: '出身国',
+    province: '居住州',
+    visitingProvince: '訪問する州',
+    birthDate: '生年月日',
+    finish: '完了して探索',
+    providerRegistration: '事業者登録',
+    completeProviderTitle: '事業者として申請するための情報を入力してください。',
+    completeProviderHint: '管理者が申請を確認してからサービスを有効化します。',
+    bookingModule: '予約モジュールを使用しますか？',
+    bookingModuleHint: 'アプリで予約、定員、申込を管理したい場合は有効にしてください。',
+    providerName: '事業者 / ブランド名',
+    providerNamePlaceholder: '例：アンデス・クラブ・バリローチェ',
+    emailVerifiedByGoogle: 'Google で確認済みのメール',
+    phone: '電話',
+    providerStartDate: '営業開始日',
+    enabledServices: '有効なサービス',
+    serviceRequired: '公開するサービスを少なくとも1つ選択してください。',
+    serviceLabels: { shelters: '場所', activities: '体験', gastronomy: 'グルメ', courses: 'コース', events: 'イベント' },
+    placeholderCountry: '例：スペイン、米国...',
+    placeholderUser: 'Explorer_Arg',
+    select: '選択...',
+    langLabel: '言語',
+    errors: {
+      required: '必須項目（*）を入力してください。',
+      email: '有効なメールアドレスを入力してください。',
+      birthDate: '登録には18歳以上である必要があります。',
+      name: '名前は3文字以上で、特殊記号は使用できません。',
+      country: '出身国を入力してください。',
+    },
+    config: { lang: '言語' },
+  }),
+  de: createRegistrationCopy({
+    createAccount: 'Konto erstellen',
+    foreigner: 'Ich bin Ausländer/in (Tourist/in)',
+    noLiveArg: 'Ich wohne nicht in Argentinien',
+    username: 'Benutzername',
+    email: 'E-Mail',
+    country: 'Herkunftsland',
+    province: 'Wohnsitzprovinz',
+    visitingProvince: 'Besuchte Provinz',
+    birthDate: 'Geburtsdatum',
+    finish: 'Abschließen und entdecken',
+    providerRegistration: 'Anbieterregistrierung',
+    completeProviderTitle: 'Fülle die Angaben aus, um Anbieterzugang zu beantragen.',
+    completeProviderHint: 'Die Administration prüft deine Anfrage, bevor deine Services aktiviert werden.',
+    bookingModule: 'Buchungsmodul verwenden?',
+    bookingModuleHint: 'Aktiviere es, wenn du Buchungen, Plätze oder Anmeldungen in der App verwalten möchtest.',
+    providerName: 'Anbieter- / Markenname',
+    providerNamePlaceholder: 'z. B. Andino Club Bariloche',
+    emailVerifiedByGoogle: 'E-Mail von Google verifiziert',
+    phone: 'Telefon',
+    providerStartDate: 'Startdatum der Aktivitäten',
+    enabledServices: 'Aktivierte Services',
+    serviceRequired: 'Wähle mindestens einen Service zur Veröffentlichung aus.',
+    serviceLabels: { shelters: 'Orte', activities: 'Erlebnisse', gastronomy: 'Gastronomie', courses: 'Kurse', events: 'Veranstaltungen' },
+    placeholderCountry: 'z. B. Spanien, USA...',
+    placeholderUser: 'Explorer_Arg',
+    select: 'Auswählen...',
+    langLabel: 'Sprache',
+    errors: {
+      required: 'Bitte fülle die Pflichtfelder (*) aus.',
+      email: 'Gib eine gültige E-Mail-Adresse ein.',
+      birthDate: 'Du musst mindestens 18 Jahre alt sein.',
+      name: 'Der Name muss mindestens 3 Zeichen haben und darf keine Sonderzeichen enthalten.',
+      country: 'Bitte gib dein Herkunftsland ein.',
+    },
+    config: { lang: 'Sprache' },
+  }),
+  fr: createRegistrationCopy({
+    createAccount: 'Créer votre compte',
+    foreigner: 'Je suis étranger/ère (touriste)',
+    noLiveArg: "Je ne réside pas en Argentine",
+    username: "Nom d'utilisateur",
+    email: 'E-mail',
+    country: "Pays d'origine",
+    province: 'Province de résidence',
+    visitingProvince: 'Province visitée',
+    birthDate: 'Date de naissance',
+    finish: 'Terminer et explorer',
+    providerRegistration: 'Inscription prestataire',
+    completeProviderTitle: 'Complétez les informations pour demander un accès prestataire.',
+    completeProviderHint: "L'administrateur examinera votre demande avant d'activer vos services.",
+    bookingModule: 'Utiliserez-vous le module de réservation ?',
+    bookingModuleHint: "Activez-le si vous souhaitez gérer réservations, places ou inscriptions depuis l'app.",
+    providerName: 'Prestataire / Nom de marque',
+    providerNamePlaceholder: 'Ex. Club Andino Bariloche',
+    emailVerifiedByGoogle: 'E-mail vérifié par Google',
+    phone: 'Téléphone',
+    providerStartDate: 'Date de début des activités',
+    enabledServices: 'Services activés',
+    serviceRequired: 'Choisissez au moins un service à publier.',
+    serviceLabels: { shelters: 'Lieux', activities: 'Expériences', gastronomy: 'Gastronomie', courses: 'Cours', events: 'Événements' },
+    placeholderCountry: 'Ex. Espagne, États-Unis...',
+    placeholderUser: 'Explorer_Arg',
+    select: 'Sélectionner...',
+    langLabel: 'Langue',
+    errors: {
+      required: 'Veuillez compléter les champs obligatoires (*).',
+      email: 'Saisissez une adresse e-mail valide.',
+      birthDate: 'Vous devez avoir au moins 18 ans pour vous inscrire.',
+      name: 'Le nom doit contenir au moins 3 caractères et aucun symbole spécial.',
+      country: "Veuillez indiquer votre pays d'origine.",
+    },
+    config: { lang: 'Langue' },
+  }),
+  ptBR: createRegistrationCopy({
+    createAccount: 'Crie sua conta',
+    foreigner: 'Sou estrangeiro/a (turista)',
+    noLiveArg: 'Não moro na Argentina',
+    username: 'Nome de usuário',
+    email: 'E-mail',
+    country: 'País de origem',
+    province: 'Província de residência',
+    visitingProvince: 'Província de visita',
+    birthDate: 'Data de nascimento',
+    finish: 'Finalizar e explorar',
+    providerRegistration: 'Cadastro de prestador',
+    completeProviderTitle: 'Complete os dados para solicitar acesso como prestador.',
+    completeProviderHint: 'O administrador vai analisar sua solicitação antes de habilitar seus serviços.',
+    bookingModule: 'Você usará o módulo de reservas?',
+    bookingModuleHint: 'Ative se quiser gerenciar reservas, vagas ou inscrições pelo app.',
+    providerName: 'Prestador / Nome da marca',
+    providerNamePlaceholder: 'Ex. Club Andino Bariloche',
+    emailVerifiedByGoogle: 'E-mail verificado pelo Google',
+    phone: 'Telefone',
+    providerStartDate: 'Data de início das atividades',
+    enabledServices: 'Serviços habilitados',
+    serviceRequired: 'Escolha pelo menos um serviço para publicar.',
+    serviceLabels: { shelters: 'Locais', activities: 'Experiências', gastronomy: 'Gastronomia', courses: 'Cursos', events: 'Eventos' },
+    placeholderCountry: 'Ex. Espanha, EUA...',
+    placeholderUser: 'Explorer_Arg',
+    select: 'Selecionar...',
+    langLabel: 'Idioma',
+    errors: {
+      required: 'Preencha os campos obrigatórios (*).',
+      email: 'Insira um e-mail válido.',
+      birthDate: 'Você deve ter pelo menos 18 anos para se cadastrar.',
+      name: 'O nome deve ter pelo menos 3 caracteres e não conter símbolos especiais.',
+      country: 'Informe seu país de origem.',
+    },
+    config: { lang: 'Idioma' },
+  }),
+  ptPT: createRegistrationCopy({
+    createAccount: 'Crie a sua conta',
+    foreigner: 'Sou estrangeiro/a (turista)',
+    noLiveArg: 'Não resido na Argentina',
+    username: 'Nome de utilizador',
+    email: 'E-mail',
+    country: 'País de origem',
+    province: 'Província de residência',
+    visitingProvince: 'Província de visita',
+    birthDate: 'Data de nascimento',
+    finish: 'Concluir e explorar',
+    providerRegistration: 'Registo de prestador',
+    completeProviderTitle: 'Preencha os dados para solicitar acesso como prestador.',
+    completeProviderHint: 'O administrador irá analisar o seu pedido antes de ativar os seus serviços.',
+    bookingModule: 'Vai utilizar o módulo de reservas?',
+    bookingModuleHint: 'Ative se quiser gerir reservas, vagas ou inscrições pela app.',
+    providerName: 'Prestador / Nome da marca',
+    providerNamePlaceholder: 'Ex. Club Andino Bariloche',
+    emailVerifiedByGoogle: 'E-mail verificado pela Google',
+    phone: 'Telefone',
+    providerStartDate: 'Data de início das atividades',
+    enabledServices: 'Serviços ativados',
+    serviceRequired: 'Escolha pelo menos um serviço para publicar.',
+    serviceLabels: { shelters: 'Locais', activities: 'Experiências', gastronomy: 'Gastronomia', courses: 'Cursos', events: 'Eventos' },
+    placeholderCountry: 'Ex. Espanha, EUA...',
+    placeholderUser: 'Explorer_Arg',
+    select: 'Selecionar...',
+    langLabel: 'Idioma',
+    errors: {
+      required: 'Preencha os campos obrigatórios (*).',
+      email: 'Introduza um e-mail válido.',
+      birthDate: 'Tem de ter pelo menos 18 anos para se registar.',
+      name: 'O nome deve ter pelo menos 3 caracteres e não conter símbolos especiais.',
+      country: 'Indique o seu país de origem.',
+    },
+    config: { lang: 'Idioma' },
+  }),
+  it: createRegistrationCopy({
+    createAccount: 'Crea il tuo account',
+    foreigner: 'Sono straniero/a (turista)',
+    noLiveArg: 'Non vivo in Argentina',
+    username: 'Nome utente',
+    email: 'Email',
+    country: 'Paese di origine',
+    province: 'Provincia di residenza',
+    visitingProvince: 'Provincia visitata',
+    birthDate: 'Data di nascita',
+    finish: 'Completa ed esplora',
+    providerRegistration: 'Registrazione fornitore',
+    completeProviderTitle: "Completa i dati per richiedere l'accesso come fornitore.",
+    completeProviderHint: "L'amministratore esaminerà la richiesta prima di abilitare i servizi.",
+    bookingModule: 'Userai il modulo prenotazioni?',
+    bookingModuleHint: "Attivalo se vuoi gestire prenotazioni, posti o iscrizioni dall'app.",
+    providerName: 'Fornitore / Nome del brand',
+    providerNamePlaceholder: 'Es. Club Andino Bariloche',
+    emailVerifiedByGoogle: 'Email verificata da Google',
+    phone: 'Telefono',
+    providerStartDate: 'Data di inizio attività',
+    enabledServices: 'Servizi abilitati',
+    serviceRequired: 'Scegli almeno un servizio da pubblicare.',
+    serviceLabels: { shelters: 'Luoghi', activities: 'Esperienze', gastronomy: 'Gastronomia', courses: 'Corsi', events: 'Eventi' },
+    placeholderCountry: 'Es. Spagna, USA...',
+    placeholderUser: 'Explorer_Arg',
+    select: 'Seleziona...',
+    langLabel: 'Lingua',
+    errors: {
+      required: 'Completa i campi obbligatori (*).',
+      email: 'Inserisci un indirizzo email valido.',
+      birthDate: 'Devi avere almeno 18 anni per registrarti.',
+      name: 'Il nome deve avere almeno 3 caratteri e non contenere simboli speciali.',
+      country: 'Inserisci il tuo paese di origine.',
+    },
+    config: { lang: 'Lingua' },
+  }),
+  ko: createRegistrationCopy({
+    createAccount: '계정 만들기',
+    foreigner: '저는 외국인 관광객입니다',
+    noLiveArg: '아르헨티나에 거주하지 않습니다',
+    username: '사용자 이름',
+    email: '이메일',
+    country: '출신 국가',
+    province: '거주 주',
+    visitingProvince: '방문할 주',
+    birthDate: '생년월일',
+    finish: '완료하고 탐색하기',
+    providerRegistration: '제공자 등록',
+    completeProviderTitle: '제공자 접근 권한을 신청하려면 정보를 입력해 주세요.',
+    completeProviderHint: '관리자가 요청을 검토한 뒤 서비스를 활성화합니다.',
+    bookingModule: '예약 모듈을 사용하시겠어요?',
+    bookingModuleHint: '앱에서 예약, 정원, 신청을 관리하려면 활성화하세요.',
+    providerName: '제공자 / 브랜드 이름',
+    providerNamePlaceholder: '예: 안디노 클럽 바릴로체',
+    emailVerifiedByGoogle: 'Google로 인증된 이메일',
+    phone: '전화',
+    providerStartDate: '활동 시작일',
+    enabledServices: '활성화된 서비스',
+    serviceRequired: '게시할 서비스를 하나 이상 선택해 주세요.',
+    serviceLabels: { shelters: '장소', activities: '체험', gastronomy: '미식', courses: '강좌', events: '이벤트' },
+    placeholderCountry: '예: 스페인, 미국...',
+    placeholderUser: 'Explorer_Arg',
+    select: '선택...',
+    langLabel: '언어',
+    errors: {
+      required: '필수 항목(*)을 입력해 주세요.',
+      email: '유효한 이메일을 입력해 주세요.',
+      birthDate: '등록하려면 만 18세 이상이어야 합니다.',
+      name: '이름은 3자 이상이어야 하며 특수 기호를 포함할 수 없습니다.',
+      country: '출신 국가를 입력해 주세요.',
+    },
+    config: { lang: '언어' },
+  }),
+  ru: createRegistrationCopy({
+    createAccount: 'Создайте аккаунт',
+    foreigner: 'Я иностранец/иностранка (турист)',
+    noLiveArg: 'Я не живу в Аргентине',
+    username: 'Имя пользователя',
+    email: 'Эл. почта',
+    country: 'Страна происхождения',
+    province: 'Провинция проживания',
+    visitingProvince: 'Провинция посещения',
+    birthDate: 'Дата рождения',
+    finish: 'Завершить и исследовать',
+    providerRegistration: 'Регистрация поставщика',
+    completeProviderTitle: 'Заполните данные, чтобы запросить доступ поставщика.',
+    completeProviderHint: 'Администратор рассмотрит заявку перед включением ваших услуг.',
+    bookingModule: 'Использовать модуль бронирования?',
+    bookingModuleHint: 'Включите его, если хотите управлять бронированиями, местами или регистрациями в приложении.',
+    providerName: 'Поставщик / название бренда',
+    providerNamePlaceholder: 'Напр. Club Andino Bariloche',
+    emailVerifiedByGoogle: 'Эл. почта подтверждена Google',
+    phone: 'Телефон',
+    providerStartDate: 'Дата начала деятельности',
+    enabledServices: 'Включенные услуги',
+    serviceRequired: 'Выберите хотя бы одну услугу для публикации.',
+    serviceLabels: { shelters: 'Места', activities: 'Впечатления', gastronomy: 'Гастрономия', courses: 'Курсы', events: 'События' },
+    placeholderCountry: 'Напр. Испания, США...',
+    placeholderUser: 'Explorer_Arg',
+    select: 'Выбрать...',
+    langLabel: 'Язык',
+    errors: {
+      required: 'Заполните обязательные поля (*).',
+      email: 'Введите действительный адрес эл. почты.',
+      birthDate: 'Для регистрации вам должно быть не менее 18 лет.',
+      name: 'Имя должно содержать не менее 3 символов и не содержать специальных знаков.',
+      country: 'Введите страну происхождения.',
+    },
+    config: { lang: 'Язык' },
+  }),
+});
+
 const APP_PUBLIC_PATH = '/app';
 const ADMIN_PORTAL_PATH = '/portal';
 const ADMIN_INACTIVITY_TIMEOUT_MS = 10 * 60 * 1000;
@@ -193,7 +633,27 @@ const DEFAULT_SHOP_IMAGE = 'https://images.unsplash.com/photo-1520607162513-7770
 const CONFIGURED_OAUTH_REDIRECT_URL = import.meta.env.VITE_AUTH_REDIRECT_URL?.trim();
 const GOOGLE_WEB_CLIENT_ID = import.meta.env.VITE_GOOGLE_WEB_CLIENT_ID?.trim() || '';
 const NATIVE_OAUTH_REDIRECT_URL = 'com.cumbre.explorer://auth/callback';
-const APP_MOCK_MODE = String(import.meta.env.VITE_APP_MOCK_MODE || '').toLowerCase() === 'true';
+const APP_MOCK_MODE_SETTING = String(import.meta.env.VITE_APP_MOCK_MODE || '').toLowerCase();
+const HAS_SUPABASE_CONFIG = Boolean(
+  (import.meta.env.VITE_SUPABASE_AUTH_URL?.trim() || import.meta.env.VITE_SUPABASE_URL?.trim())
+  && import.meta.env.VITE_SUPABASE_ANON_KEY?.trim()
+);
+const IS_LOCALHOST = typeof window !== 'undefined' && /^(localhost|127\.0\.0\.1)$/i.test(window.location.hostname);
+const APP_MOCK_MODE = APP_MOCK_MODE_SETTING === 'true' || (APP_MOCK_MODE_SETTING !== 'false' && IS_LOCALHOST && !HAS_SUPABASE_CONFIG);
+const PROFILE_LANGUAGE_OPTIONS = [
+  { code: 'en', label: 'Inglés' },
+  { code: 'es', label: 'Español' },
+  { code: 'zhMandarin', label: 'Chino mandarín' },
+  { code: 'zh', label: 'Chino' },
+  { code: 'ja', label: 'Japonés' },
+  { code: 'de', label: 'Alemán' },
+  { code: 'fr', label: 'Francés' },
+  { code: 'ptBR', label: 'Portugués Brasil' },
+  { code: 'ptPT', label: 'Portugués Portugal' },
+  { code: 'it', label: 'Italiano' },
+  { code: 'ko', label: 'Koreano' },
+  { code: 'ru', label: 'Ruso' },
+];
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const getLocalDateKey = (date: Date): string => {
   const y = date.getFullYear();
@@ -5845,6 +6305,7 @@ const App: React.FC = () => {
     birthDate: '',
     experience: Difficulty.EASY,
     preferredSports: [] as ActivityType[],
+    language: 'es',
     isForeigner: false,
     instagram: '',
     avatar: DEFAULT_PROFILE_AVATAR
@@ -5961,30 +6422,29 @@ const App: React.FC = () => {
   const handleSocialLogin = async (provider: 'google' | 'facebook' | 'apple', providerFlow: boolean) => {
     if (isSocialAuthLoading) return;
     if (APP_MOCK_MODE) {
-      const mockRole = providerFlow ? 'provider' : 'explorer';
-      const mockRegisteredKey = providerFlow ? MOCK_REGISTERED_PROVIDER_KEY : MOCK_REGISTERED_EXPLORER_KEY;
       const mockProfileKey = providerFlow ? MOCK_PROFILE_PROVIDER_KEY : MOCK_PROFILE_EXPLORER_KEY;
-      const hasCompletedMockRegistration = localStorage.getItem(mockRegisteredKey) === 'true' || Boolean(localStorage.getItem(mockProfileKey));
+      const mockProfile = {
+        name: providerFlow ? 'Prestador Demo' : 'Explorador Demo',
+        email: providerFlow ? 'provider.mock@conocemiargentina.local' : 'explorer.mock@conocemiargentina.local',
+        avatar: DEFAULT_PROFILE_AVATAR,
+      };
+      localStorage.setItem(mockProfileKey, JSON.stringify(mockProfile));
+      localStorage.setItem(providerFlow ? MOCK_REGISTERED_PROVIDER_KEY : MOCK_REGISTERED_EXPLORER_KEY, 'true');
       setIsProviderFlow(providerFlow);
       setIsProviderUser(providerFlow);
-      setIsRegistering(!hasCompletedMockRegistration);
-      setIsAuthenticated(hasCompletedMockRegistration);
-      setCurrentProfileId(`mock-${mockRole}`);
+      setIsRegistering(true);
+      setIsAuthenticated(false);
+      setCurrentProfileId(null);
       setOauthEmailLocked(false);
       setProfileData((prev) => ({
         ...prev,
-        name: providerFlow ? 'Prestador Demo' : 'Explorador Demo',
-        email: providerFlow ? 'provider.mock@conocemiargentina.local' : 'explorer.mock@conocemiargentina.local',
+        name: mockProfile.name,
+        email: mockProfile.email,
         avatar: prev.avatar || DEFAULT_PROFILE_AVATAR,
       }));
       setSocialAuthLoadingLabel('');
       setIsSocialAuthLoading(false);
-      if (hasCompletedMockRegistration) {
-        setCurrentView(providerFlow ? 'shelters' : 'explore_public');
-        showToast(regLang === 'es' ? 'Modo mock activo: acceso local habilitado.' : 'Mock mode active: local access enabled.');
-      } else {
-        showToast(regLang === 'es' ? 'Completá tu registro para continuar.' : 'Complete your registration to continue.');
-      }
+      showToast(regLang === 'es' ? 'Completá tu registro para continuar.' : 'Complete your registration to continue.');
       return;
     }
     try {
@@ -7458,7 +7918,7 @@ const App: React.FC = () => {
       <div className="w-full max-w-md bg-white dark:bg-stone-900 rounded-[2rem] p-5 shadow-2xl">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-sm font-black text-stone-900 dark:text-stone-50 uppercase tracking-widest">
-            {regLang === 'es' ? 'Seleccionar fecha' : 'Select date'}
+            {rt.selectDate}
           </h3>
           <button
             onClick={() => setShowBirthDatePicker(false)}
@@ -7519,7 +7979,7 @@ const App: React.FC = () => {
             }}
             className="flex-1 bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest"
           >
-            {regLang === 'es' ? 'Limpiar' : 'Clear'}
+              {rt.clear}
           </button>
             <button
               type="button"
@@ -7536,7 +7996,7 @@ const App: React.FC = () => {
               }}
               className="flex-1 bg-emerald-800 text-white px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest"
             >
-              {regLang === 'es' ? 'Listo' : 'Done'}
+              {rt.done}
             </button>
         </div>
       </div>
@@ -7675,7 +8135,7 @@ const App: React.FC = () => {
         <div className="relative z-10 w-full max-w-sm flex flex-col h-[90vh] bg-white dark:bg-stone-900 rounded-[2.5rem] p-8 shadow-2xl overflow-y-auto no-scrollbar animate-in slide-in-from-bottom-20 duration-500">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-black text-stone-900 dark:text-stone-50 tracking-tighter italic leading-none">
-              {isProviderFlow ? (regLang === 'es' ? 'Registro de Prestador' : 'Provider Registration') : rt.createAccount}
+              {isProviderFlow ? rt.providerRegistration : rt.createAccount}
             </h2>
             <button onClick={() => { clearRegistrationForm(); setIsRegistering(false); }} className="text-stone-300 p-2"><Icons.ChevronLeft /></button>
           </div>
@@ -7684,14 +8144,10 @@ const App: React.FC = () => {
             {isProviderFlow && (
               <div className="bg-emerald-50 dark:bg-emerald-900/20 p-4 rounded-2xl border border-emerald-100 dark:border-emerald-800/40">
                 <p className="text-[9px] font-black text-emerald-700 dark:text-emerald-300 uppercase tracking-widest">
-                  {regLang === 'es'
-                    ? 'Este perfil publicará refugios, actividades, entrenamientos o expediciones.'
-                    : 'This profile will publish shelters, activities, trainings, or expeditions.'}
+                  {rt.completeProviderTitle}
                 </p>
                 <p className="text-[9px] text-emerald-700/80 dark:text-emerald-300/80 font-bold uppercase tracking-widest mt-2">
-                  {regLang === 'es'
-                    ? 'Podrás dar de alta múltiples publicaciones y operar en varias provincias.'
-                    : 'You can publish multiple listings and operate across several provinces.'}
+                  {rt.completeProviderHint}
                 </p>
               </div>
             )}
@@ -7699,12 +8155,10 @@ const App: React.FC = () => {
               <div className="bg-stone-50 dark:bg-stone-800 p-4 rounded-2xl border border-stone-100 dark:border-stone-700 flex items-center justify-between">
                 <div>
                   <p className="text-xs font-black text-stone-800 dark:text-stone-100">
-                    {regLang === 'es' ? '¿Usarás módulo de reservas?' : 'Will you use booking module?'}
+                    {rt.bookingModule}
                   </p>
                   <p className="text-[9px] text-stone-400 font-bold uppercase tracking-widest">
-                    {regLang === 'es'
-                      ? 'Si lo activás, exploradores podrán reservar desde la app.'
-                      : 'If enabled, explorers will be able to book from the app.'}
+                    {rt.bookingModuleHint}
                   </p>
                 </div>
                 <input
@@ -7717,19 +8171,29 @@ const App: React.FC = () => {
             )}
             <div className="flex flex-col gap-2">
               <label className="text-[10px] font-black uppercase text-stone-400 ml-1">{rt.langLabel}</label>
-            <div className="flex gap-2">
-                <button 
-                  onClick={() => setRegLang('es')} 
-                  className={`flex-1 py-2 rounded-xl text-[10px] font-black uppercase transition-all border ${regLang === 'es' ? 'bg-sky-700 text-white border-sky-700 shadow-md' : 'bg-stone-50 dark:bg-stone-800 text-stone-400 border-stone-100 dark:border-stone-700'}`}
-                >
-                  Español
-                </button>
-                <button 
-                  onClick={() => setRegLang('en')} 
-                  className={`flex-1 py-2 rounded-xl text-[10px] font-black uppercase transition-all border ${regLang === 'en' ? 'bg-sky-700 text-white border-sky-700 shadow-md' : 'bg-stone-50 dark:bg-stone-800 text-stone-400 border-stone-100 dark:border-stone-700'}`}
-                >
-                  English
-                </button>
+              <div className="flex flex-wrap gap-2">
+                {PROFILE_LANGUAGE_OPTIONS.map((languageOption) => {
+                  const isSelected = profileData.language === languageOption.code;
+                  return (
+                    <button
+                      key={languageOption.code}
+                      onClick={() => {
+                        setProfileData((prev) => ({
+                          ...prev,
+                          language: languageOption.code,
+                        }));
+                        setRegLang(languageOption.code);
+                      }}
+                      className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-tight transition-all border ${
+                        isSelected
+                          ? 'bg-sky-700 text-white border-sky-700 shadow-md'
+                          : 'bg-stone-50 dark:bg-stone-800 text-stone-400 border-stone-100 dark:border-stone-700'
+                      }`}
+                    >
+                      {languageOption.label}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
@@ -7751,14 +8215,14 @@ const App: React.FC = () => {
             <div className="space-y-4">
               <div className="space-y-1">
                 <label className="text-[10px] font-black uppercase text-stone-400 ml-1">
-                  {isProviderFlow ? (regLang === 'es' ? 'Nombre del Prestador / Marca' : 'Provider / Brand Name') : rt.username} *
+                  {isProviderFlow ? rt.providerName : rt.username} *
                 </label>
                 <input 
                   type="text" 
                   value={profileData.name}
                   onBlur={(e) => validateField('name', e.target.value, 'reg')}
                   onChange={(e) => { setProfileData({...profileData, name: sanitizePersonNameInput(e.target.value)}); if (formErrors.name) setFormErrors({...formErrors, name: false}); }}
-                  placeholder={isProviderFlow ? (regLang === 'es' ? 'Ej. Club Andino Bariloche' : 'e.g. Andino Club Bariloche') : rt.placeholderUser} 
+                  placeholder={isProviderFlow ? rt.providerNamePlaceholder : rt.placeholderUser} 
                   className={`w-full bg-stone-50 dark:bg-stone-800 border rounded-xl py-3 px-4 font-bold text-stone-800 dark:text-stone-100 outline-none transition-all ${formErrors.name ? 'border-red-500 ring-2 ring-red-500/10' : 'border-stone-100 dark:border-stone-700 focus:ring-2 focus:ring-emerald-500/20'}`}
                 />
               </div>
@@ -7775,7 +8239,7 @@ const App: React.FC = () => {
                 />
                 {oauthEmailLocked && (
                   <p className="text-[9px] text-stone-400 font-bold uppercase tracking-widest ml-1">
-                    {regLang === 'es' ? 'Email verificado por Google' : 'Email verified by Google'}
+                    {rt.emailVerifiedByGoogle}
                   </p>
                 )}
               </div>
@@ -7792,7 +8256,7 @@ const App: React.FC = () => {
               {isProviderFlow && (
                 <div className="space-y-1">
                   <label className="text-[10px] font-black uppercase text-stone-400 ml-1">
-                    {regLang === 'es' ? 'Teléfono' : 'Phone'} *
+                    {rt.phone} *
                   </label>
                   <input
                     type="tel"
@@ -7837,10 +8301,10 @@ const App: React.FC = () => {
                 </select>
               </div>
 
-              <div className={`grid gap-4 ${isProviderFlow ? 'grid-cols-1' : 'grid-cols-2'}`}>
+              <div className="grid gap-4 grid-cols-1">
                 <div className="space-y-1">
                   <label className="text-[10px] font-black uppercase text-stone-400 ml-1">
-                    {isProviderFlow ? (regLang === 'es' ? 'Fecha de inicio de actividades' : 'Start date of operations') : rt.birthDate}
+                    {isProviderFlow ? rt.providerStartDate : rt.birthDate}
                   </label>
                   <input 
                     type="date" 
@@ -7860,49 +8324,23 @@ const App: React.FC = () => {
                     className={`w-full bg-stone-50 dark:bg-stone-800 border rounded-xl py-3 px-4 font-bold text-stone-800 dark:text-stone-100 outline-none transition-all ${formErrors.birthDate ? 'border-red-500 ring-2 ring-red-500/10' : 'border-stone-100 dark:border-stone-700 focus:ring-2 focus:ring-emerald-500/20'}`}
                   />
                 </div>
-                {!isProviderFlow && (
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-black uppercase text-stone-400 ml-1">{rt.exp}</label>
-                    <select 
-                      value={profileData.experience}
-                      onChange={(e) => setProfileData({...profileData, experience: e.target.value as Difficulty})}
-                      className="w-full bg-stone-50 dark:bg-stone-800 border border-stone-100 dark:border-stone-700 rounded-xl py-3 px-4 font-bold text-stone-800 dark:text-stone-100 outline-none appearance-none"
-                    >
-                      {Object.values(Difficulty).map(d => (
-                        <option key={d} value={d}>
-                          {rt.difficultyLabels[d]}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                )}
               </div>
 
+              {isProviderFlow && (
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase text-stone-400 ml-1">
-                  {isProviderFlow ? (regLang === 'es' ? 'Servicios habilitados' : 'Enabled services') : rt.sports}
+                  {rt.enabledServices}
                 </label>
                 <div className="flex flex-wrap gap-2">
-                  {(isProviderFlow
-                    ? PROVIDER_SERVICE_OPTIONS.map((service) => ({
-                        label: regLang === 'es' ? service.labelEs : service.labelEn,
+                  {PROVIDER_SERVICE_OPTIONS.map((service) => ({
+                        label: rt.serviceLabels?.[service.id] || service.labelEn,
                         value: service.id,
-                      }))
-                    : Object.values(ActivityType).map((sport) => ({ label: sport, value: sport }))
-                  ).map((item) => {
-                    const isSelected = isProviderFlow
-                      ? profileData.providerServices.includes(item.value)
-                      : profileData.preferredSports.includes(item.value as ActivityType);
+                      })).map((item) => {
+                    const isSelected = profileData.providerServices.includes(item.value);
                     return (
                       <button
                         key={item.label}
-                        onClick={() => {
-                          if (isProviderFlow) {
-                            toggleProviderServiceSelection(item.value, 'reg');
-                            return;
-                          }
-                          toggleSport(item.value as ActivityType);
-                        }}
+                        onClick={() => toggleProviderServiceSelection(item.value, 'reg')}
                         className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-tight transition-all border ${
                           isSelected 
                             ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700' 
@@ -7910,7 +8348,6 @@ const App: React.FC = () => {
                         }`}
                       >
                         <span className="inline-flex items-center gap-1.5">
-                          {!isProviderFlow && <span aria-hidden="true">{SPORT_ICON_MAP[item.value as ActivityType] || '🏕️'}</span>}
                           <span>{item.label}</span>
                         </span>
                       </button>
@@ -7919,42 +8356,10 @@ const App: React.FC = () => {
                 </div>
                 {isProviderFlow && formErrors.providerServices && (
                   <p className="text-[9px] font-bold text-red-500 ml-1">
-                    {regLang === 'es' ? 'Elegí al menos un servicio para dar de alta.' : 'Choose at least one service to publish.'}
+                    {rt.serviceRequired}
                   </p>
                 )}
               </div>
-              {isProviderFlow && providerServicesRequireSports(profileData.providerServices) && (
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase text-stone-400 ml-1">
-                    {regLang === 'es' ? 'Deportes para Experiencias' : 'Sports for Experiences'}
-                  </label>
-                  <div className="flex flex-wrap gap-2">
-                    {Object.values(ActivityType).map((sport) => {
-                      const isSelected = profileData.preferredSports.includes(sport);
-                      return (
-                        <button
-                          key={sport}
-                          onClick={() => toggleSport(sport)}
-                          className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-tight transition-all border ${
-                            isSelected
-                              ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700'
-                              : 'bg-stone-50 dark:bg-stone-800 text-stone-400 border-stone-100 dark:border-stone-700'
-                          }`}
-                        >
-                          <span className="inline-flex items-center gap-1.5">
-                            <span aria-hidden="true">{SPORT_ICON_MAP[sport] || '🏕️'}</span>
-                            <span>{sport}</span>
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                  {formErrors.preferredSports && (
-                    <p className="text-[9px] font-bold text-red-500 ml-1">
-                      {regLang === 'es' ? 'Si ofrecés actividades, elegí al menos un deporte.' : 'If you offer activities, choose at least one sport.'}
-                    </p>
-                  )}
-                </div>
               )}
             </div>
 

@@ -12,6 +12,7 @@ export const useProfileViewModel = () => {
     birthDate: '',
     experience: Difficulty.EASY,
     preferredSports: [] as ActivityType[],
+    language: 'es',
     isForeigner: false,
     instagram: '',
     avatar: 'https://i.pravatar.cc/150?u=new_user'
@@ -105,9 +106,6 @@ export const useProfileViewModel = () => {
       case 'providerServices':
         isInvalid = isProvider && (!Array.isArray(value) || value.length === 0);
         break;
-      case 'preferredSports':
-        isInvalid = isProvider && currentData.providerServices.includes('activities') && (!Array.isArray(value) || value.length === 0);
-        break;
     }
 
     setFormErrors(prev => ({ ...prev, [field]: isInvalid }));
@@ -116,7 +114,7 @@ export const useProfileViewModel = () => {
 
   const validateForm = (data: any, isRegistering: boolean, rt: any, isProvider: boolean = false) => {
     const fields = isProvider
-      ? ['name', 'email', 'phone', 'birthDate', 'provincia', 'providerServices', 'preferredSports']
+      ? ['name', 'email', 'phone', 'birthDate', 'provincia', 'providerServices']
       : ['name', 'email', 'birthDate', 'provincia'];
     if (data.isForeigner) fields.push('countryOrigin');
     
